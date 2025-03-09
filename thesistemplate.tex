@@ -1,0 +1,343 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                %%
+%% An example for writting your thesis using LaTeX                %%
+%% Original version by Luis Costa,  changes by Perttu Puska       %%
+%% Support for Swedish added 15092014                             %%
+%%                                                                %%
+%% This example consists of the files                             %%
+%%         thesistemplate.tex (versio 2.01)                       %%
+%%         opinnaytepohja.tex (versio 2.01) (for text in Finnish) %%
+%%         aaltothesis.cls (versio 2.01)                          %%
+%%         kuva1.eps                                              %%
+%%         kuva2.eps                                              %%
+%%         kuva1.pdf                                              %%
+%%         kuva2.pdf                                              %%
+%%                                                                %%
+%%                                                                %%
+%% Typeset either with                                            %%
+%% latex:                                                         %%
+%%             $ latex opinnaytepohja                             %%
+%%             $ latex opinnaytepohja                             %%
+%%                                                                %%
+%%   Result is the file opinnayte.dvi, which                      %%
+%%   is converted to ps format as follows:                        %%
+%%                                                                %%
+%%             $ dvips opinnaytepohja -o                          %%
+%%                                                                %%
+%%   and then to pdf as follows:                                  %%
+%%                                                                %%
+%%             $ ps2pdf opinnaytepohja.ps                         %%
+%%                                                                %%
+%% Or                                                             %%
+%% pdflatex:                                                      %%
+%%             $ pdflatex opinnaytepohja                          %%
+%%             $ pdflatex opinnaytepohja                          %%
+%%                                                                %%
+%%   Result is the file opinnaytepohja.pdf                        %%
+%%                                                                %%
+%% Explanatory comments in this example begin with                %%
+%% the characters %%, and changes that the user can make          %%
+%% with the character %                                           %%
+%%                                                                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Uncomment one of these:
+%% the 1st when using pdflatex, which directly typesets your document in
+%% pdf (use jpg or pdf figures), or
+%% the 2nd when producing a ps file (use eps figures, don't use ps figures!).
+\documentclass[english,12pt,a4paper,pdftex,sci,utf8]{aaltothesis}
+%\documentclass[english,12pt,a4paper,dvips]{aaltothesis}
+
+%% To the \documentclass above
+%% specify your school: arts, biz, chem, elec, eng, sci
+%% specify the character encoding scheme used by your editor: utf8, latin1
+
+%% Use one of these if you write in Finnish (see the Finnish template):
+%%
+%\documentclass[finnish,12pt,a4paper,pdftex,elec,utf8]{aaltothesis}
+%\documentclass[finnish,12pt,a4paper,dvips]{aaltothesis}
+
+\usepackage{graphicx}
+
+
+%% Use this if you write hard core mathematics, these are usually needed
+\usepackage{amsfonts,amssymb,amsbsy}
+
+%% Use the macros in this package to change how the hyperref package below 
+%% typesets its hypertext -- hyperlink colour, font, etc. See the package
+%% documentation. It also defines the \url macro, so use the package when 
+%% not using the hyperref package.
+%%
+%\usepackage{url}
+
+%% Use this if you want to get links and nice output. Works well with pdflatex.
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdfpagemode=UseNone, pdfstartview=FitH,
+  colorlinks=true,urlcolor=red,linkcolor=blue,citecolor=black,
+  pdftitle={Default Title, Modify},pdfauthor={Your Name},
+  pdfkeywords={Modify keywords}}
+
+
+%% All that is printed on paper starts here
+\begin{document}
+
+%% Change the school field to specify your school if the automatically 
+%% set name is wrong
+ \university{aalto University}
+ \school{School of Science}
+
+%% Only for B.Sc. thesis: Choose your degree programme. 
+\degreeprogram{Computer Science}
+%%
+
+
+%% Valitse yksi näistä kolmesta
+%%
+%% Choose one of these:
+\univdegree{BSc}
+%\univdegree{MSc}
+%\univdegree{Lic}
+
+%% Your own name (should be self explanatory...)
+\author{Daniel Michaeli}
+
+%% Your thesis title comes here and again before a possible abstract in
+%% Finnish or Swedish . If the title is very long and latex does an
+%% unsatisfactory job of breaking the lines, you will have to force a
+%% linebreak with the \\ control character. 
+%% Do not hyphenate titles.
+%% 
+
+\thesistitle{A Review of GPU Acceleration Techniques in Option Pricing Models}
+\place{Espoo}
+
+%% For B.Sc. thesis use the date when you present your thesis. 
+%% 
+%% Kandidaatintyön päivämäärä on sen esityspäivämäärä! 
+\date{16.2.2025}
+
+%% B.Sc. or M.Sc. thesis supervisor 
+%% Note the "\" after the comma. This forces the following space to be 
+%% a normal interword space, not the space that starts a new sentence. 
+%% This is done because the fullstop isn't the end of the sentence that
+%% should be followed by a slightly longer space but is to be followed
+%% by a regular space.
+%%
+\supervisor{M.Sc.\ Henrik Lievonen} %{Prof.\ Pirjo Professori}
+
+%% B.Sc. or M.Sc. thesis advisors(s). You can give upto two advisors in
+%% this template. Check with your supervisor how many official advisors
+%% you can have.
+%%
+%\advisor{Prof.\ Pirjo Professori}
+%\advisor{D.Sc.\ (Tech.) Olli Ohjaaja}
+\advisor{M.Sc.\ Henrik Lievonen}
+
+%% Aalto logo: syntax:
+%% \uselogo{aaltoRed|aaltoBlue|aaltoYellow|aaltoGray|aaltoGrayScale}{?|!|''}
+%%
+%% Logo language is set to be the same as the document language.
+%% Logon kieli on sama kuin dokumentin kieli
+%%
+\uselogo{aaltoBlack}{''}
+
+%% Create the coverpage
+%%
+\makecoverpage
+
+
+%% Note that when writting your master's thesis in English, place
+%% the English abstract first followed by the possible Finnish abstract
+
+%% English abstract.
+%% All the information required in the abstract (your name, thesis title, etc.)
+%% is used as specified above.
+%% Specify keywords
+%%
+%% Kaikki tiivistelmässä tarvittava tieto (nimesi, työnnimi, jne.) käytetään
+%% niin kuin se on yllä määritelty.
+%% Avainsanat
+%%
+\keywords{throughput, latency, tradeoff, optimization, performance}
+%% Abstract text
+\begin{abstractpage}[english]
+
+Throughput and latency are distinct but related key metrics for evaluating performance in computing systems. It is a generally accepted notion that there exists a trade-off effect between these characteristics, and one must thus optimize for one at the cost of the other. The choice of optimization depends heavily on the use-case and context of the system and its environment.
+
+This thesis examines why this tradeoff exists, how it manifests in different computing contexts, and what techniques exist for optimization. Drawing from queueing theory, the tradeoff is firstly explained through studying the mathematical relationship between the metrics, after which additional, context-specific tradeoff effects are explained. The thesis also explores various optimization strategies and design patterns for managing these tradeoffs, as well as recent developments in minimizing their effects.
+\end{abstractpage}
+
+%% Force a new page so that the possible English abstract starts on a new page
+%%
+%% Pakotetaan uusi sivu varmuuden vuoksi, jotta 
+%% mahdollinen suomenkielinen ja englanninkielinen tiivistelmä
+%% eivät tule vahingossakaan samalle sivulle
+\newpage
+%
+
+%% Force new page so that the Swedish abstract starts from a new page
+\newpage
+%
+%% Swedish abstract. Delete if you don't need it. 
+%% 
+\thesistitle{Genomströmning och latens i datorsystem: en anlays av avvägningseffekter och optimeringsstrategier}
+\advisor{M.Sc.\ Henrik Lievonen} %
+\degreeprogram{Datateknik}
+\department{Institutionen för radiovetenskap och -teknik}%
+\professorship{Kretsteori}  %
+%% Abstract keywords
+\keywords{Nyckelord p\aa{} svenska,\\ Temperatur}
+%% Abstract text
+\begin{abstractpage}[swedish]
+ Genomströmning och latens är besläktade men distinkta nyckeltal för att utvärdera prestanda i datorsystem. Det är en allmänt accepterad uppfattning att det finns en avvägningseffekt mellan dessa egenskaper, och man måste därför optimera för den ena på bekostnad av den andra. Valet av optimering beror i hög grad på systemets användningsfall och kontext samt dess miljö.
+ 
+ Denna avhandling undersöker varför denna avvägning existerar, hur den manifesterar sig i olika beräkningssammanhang, och vilka tekniker som finns för optimering av dem. Genom att utgå från köteori förklaras avvägningen först genom att studera det matematiska förhållandet mellan måtten, varefter ytterligare kontextspecifika avvägningseffekter förklaras. Avhandlingen utforskar också olika optimeringsstrategier och designmönster för att hantera dessa avvägningar, samt den senaste utvecklingen inom minimering av deras effekter.
+\end{abstractpage}
+
+\newpage
+
+
+%% Table of contents. 
+
+\thesistableofcontents
+
+
+
+
+%% Tweaks the page numbering to meet the requirement of the thesis format:
+%% Begin the pagenumbering in Arabian numerals (and leave the first page
+%% of the text body empty, see \thispagestyle{empty} below).
+%% Additionally, force the actual text to begin on a new page with the 
+%% \clearpage command.
+%% \clearpage is similar to \newpage, but it also flushes the floats (figures
+%% and tables).
+%% There is no need to change these
+%%
+\cleardoublepage
+\storeinipagenumber
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+
+%% Text body begins. Note that since the text body
+%% is mostly in Finnish the majority of comments are
+%% also in Finnish after this point. There is no point in explaining
+%% Finnish-language specific thesis conventions in English. Someday 
+%% this text will possibly be translated to English.
+%%
+\section{Introduction}
+
+%% Ensimm\"ainen sivu tyhj\"aksi
+%% 
+%% Leave first page empty
+\thispagestyle{empty}
+Options are a type of financial contract between two parties that, in the simplest form, specifies the right but not the obligation to buy or sell an asset, at a predetermined price, by a specific future date. (Hull with page number). Options are a type of financial derivative, that is, their value depends on the value of an underlying asset. Advances in both financial mathematics (sources) and computational power (sources) have allowed for rapid growth in the derivatives market by improving pricing models and risk management tools. The use of derivatives has increased significantly over the last 50 years, not only among investors but also among so called non-financial corporations \cite{bartram2009international}. The use of options and other derivatives allows for sophisticated investment and risk-management strategies by providing finer exposure control.
+
+There are many different option pricing models, each with their pros and cons, and based on different underlying assumptions. Regardless of the choice of model, the importance of speed remains critical. All else being equal, faster computations lead to improved decision-making in investing and risk management. Modern market dynamics are heavily influenced by automated, high-frequency trading systems, and price fluctuations 
+
+
+The aim of this thesis is to formally introduce the concepts of throughput and latency, examine their relationship and trade-offs, and explore use-cases and optimization techniques in popular domains of computing and software engineering. Section~\ref{sec:background} introduces formal definitions and mathematical relationships from queuing theory. Section~\ref{sec:tradeoff} motivates the reasons for the trade-off effect, both from a fundamental, mathematical standpoint, as well as by examining additional context-specific phenomena. Section~\ref{sec:usecases} examines common use cases and system requirements with clear optimization priority towards either throughput or latency. Finally, different optimization strategies for increasing throughput, minimizing latency, or balancing both are presented in Section~\ref{sec:optimization}.
+
+%% Opinn\"aytteess\"a jokainen osa alkaa uudelta sivulta, joten \clearpage
+%%
+%% In a thesis, every section starts a new page, hence \clearpage
+\clearpage
+
+\section{Background} \label{sec:background}
+
+Computer systems can be characterized by various performance metrics, with throughput and latency being two fundamental ones. This section presents the theoretical foundation for understanding these metrics and their relationships, followed by an examination of how they manifest in different computing contexts.
+
+\subsection{Formal definitions of throughput and latency}
+
+\subsection{Methods for measuring throughput and latency}
+
+\subsection{Little's Law and Fundamental relationship}
+
+Little's Law provides a fundamental framework for relating throughput and latency in steady-state systems. The law states that $L=\lambda W$ , where $L$ is the average number of items in the system, $\lambda$ is the average arrival rate (throughput), and $W$ is the average time spent in the system (latency). While this relationship doesn't directly indicate a trade-off, it establishes the basic connection between these metrics. \bigskip
+--- more stuff here to come!
+
+
+\section{Trade-off} \label{sec:tradeoff}
+\subsection{Modelling Computer Systems as Queuing Processes, Availability versus Idle}
+Queueing theory provides a more detailed framework for understanding system performance, particularly regarding how utilization affects latency. A key result shows that as system utilization (p) approaches 100%, the average waiting time approaches infinity, following the relationship:
+
+Average response time = service time / (1 - p)
+
+This relationship demonstrates a fundamental limitation: systems operating at very high utilization levels inevitably experience increased latency. This principle applies broadly across computing systems, from processor instruction queues to network packet buffers, as these can all be modeled as queueing systems where work units wait to be served by finite resources.
+
+\subsection{Domain-Specific Additional physical tradeoff effects}
+
+While queueing theory provides a universal framework, different computing domains exhibit additional, specific mechanisms that create or influence throughput-latency tradeoffs.
+
+In microprocessor design, throughput-latency tradeoffs manifest through several mechanisms:
+\begin{itemize}
+    \item Power constraints create an inherent trade-off between energy per instruction and execution speed
+    \item Pipeline depth affects both throughput capabilities and instruction latency
+    \item Cache hierarchies balance access speed against capacity
+\end{itemize}
+
+In parallel processing environments, additional factors include:
+\begin{itemize}
+    \item Setup overhead for parallel execution
+    \item Synchronization costs between parallel units
+    \item Resource allocation and management overhead
+\end{itemize}
+
+
+
+\clearpage
+
+\section{System Requirements and Use Cases} \label{sec:usecases}
+\subsection{General Performance Review Across Computing Domains}
+\subsection{High-Throughput Systems}
+\subsection{Low-latency Systems}
+%\section{Tutkimusaineisto ja -menetelm\"at}
+
+T\"ass\"a osassa kuvataan k\"aytetty tutkimusaineisto ja
+tutkimuksen metodologiset valinnat, sek\"a
+kerrotaan tutkimuksen toteutustapa ja k\"aytetyt menetelm\"at. 
+
+\clearpage
+
+\section{Optimization Strategies and Techniques} \label{sec:optimization}
+\subsection{Throughput-Optimized Techniques}
+\subsection{Latency-Optimized Techniques}
+
+
+%% Huomaa seuraavassa kappaleessa lainausmerkkien ulkopuolella piste, 
+%% koska piste ei lopeta lainattua tekstinp\"atk\"a\"a.
+%% Jos lainattu tekstinp\"atk\"a loppuu v\"alimerkkiin, tulee v\"alimerkki
+%% lainausmerkkien sis\"alle: 
+%% "Et tu, Brute?" sanoi Caesar kuollessaan.
+Tutkimustuloksien merkityst\"a on aina syyt\"a arvioida ja tarkastella
+kriittisesti.  Joskus tarkastelu voi olla t\"ass\"a osassa, mutta se
+voidaan my\"os j\"att\"a\"a viimeiseen osaan, jolloin viimeisen osan nimeksi
+tulee >>Tarkastelu>>. Tutkimustulosten merkityst\"a voi arvioida my\"os
+>>Johtop\"a\"at\"okset>>-otsikon alla viimeisess\"a osassa. 
+
+T\"ass\"a osassa on syyt\"a my\"os arvioida tutkimustulosten luotettavuutta.
+Jos tutkimustulosten merkityst\"a arvioidaan >>Tarkastelu>>-osassa,
+voi luotettavuuden arviointi olla my\"os siell\"a. 
+
+\clearpage
+
+\section{Summary} 
+%\section{Yhteenveto}
+
+Opinn\"aytteen tekij\"a vastaa siit\"a, ett\"a opinn\"ayte on t\"ass\"a dokumentissa
+ja opinn\"aytteen tekemist\"a k\"asittelevill\"a luennoilla sek\"a
+harjoituksissa annettujen ohjeiden mukainen muotoseikoiltaan,
+rakenteeltaan ja ulkoasultaan.\cite{grochowski2004best}
+
+
+\cleardoublepage
+\phantomsection
+
+\addcontentsline{toc}{chapter}{\bibname}
+\bibliographystyle{IEEEtran}
+\bibliography{bibliography.bib}
+
+
+\end{document}
