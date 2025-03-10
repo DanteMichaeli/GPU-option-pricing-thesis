@@ -229,7 +229,7 @@ English bla bla bla
 %% 
 %% Leave first page empty
 \thispagestyle{empty}
-Options are a type of financial contract between two parties that grants the right - but not the obligation - to buy or sell an asset at a predetermined price by a specific future date. (Hull with page number). Options are a type of financial derivative, meaning that their value depends on the value of an underlying asset. Advances in both financial mathematics \cite{merton1994influence} and affordable computational power \cite{nordhaus2007two} have driven rapid growth in the derivatives market by improving pricing models and risk management tools. The use of derivatives has increased significantly in the last 50 years, not only among investors but also among so-called nonfinancial corporations \cite{bartram2009international}. The use of options and other derivatives allows for both levered speculation and sophisticated investment and risk management strategies by providing finer exposure control.
+Options are a type of financial contract between two parties that grants the right - but not the obligation - to buy or sell a specific amount of an asset at a predetermined price by a specific future date \cite[p. 6]{hull2016options}. Options are a type of financial derivative, meaning that their value depends on the value of an underlying asset. Advances in both financial mathematics \cite{merton1994influence} and affordable computational power \cite{nordhaus2007two} have driven rapid growth in the derivatives market by improving pricing models and risk management tools. The use of derivatives has increased significantly in the last 50 years, not only among investors but also among so-called nonfinancial corporations \cite{bartram2009international}. The use of options and other derivatives allows for both levered speculation and sophisticated investment and risk management strategies by providing finer exposure control.
 
 There are many different option pricing models, each with their pros and cons, and based on different underlying assumptions. Regardless of the choice of model, the importance of speed remains critical. All else being equal, faster computation leads to improved decision-making in investing and risk management because of either executing faster, having more data available, or both. This has led to the interest in re-implementing common option pricing models to run, either in part or fully, on the graphics processing unit (GPU) due to its powerful parallel processing capabilities compared to the central processing unit (CPU).
 
@@ -238,7 +238,7 @@ This thesis forms a literature review of common option pricing models' GPU accel
 
 For scope restriction purposes, the following choices have been made:
 \begin{itemize}
-    \item Only European and American style (vanilla) options are considered, with the exception of the Monte Carlo methods, which are particularly suitable for pricing exotic options with complex payoff structures.
+    \item Only European and American style (vanilla) options are considered, with the exception of the Monte Carlo methods, which are particularly suitable for pricing exotic options with complex payoff structures. I will use the term "vanilla options" throughout the thesis to refer to both European and American style options (to be presented), whereas "exotic options" refer to more complex contracts. Unless explicitly stated otherwise, all discussions and conclusions apply to options in general. When specific terms are used, the statements pertain strictly to those contract styles.
     
     \item The purpose of this paper is to draw general conclusions about the GPU acceleration potential for different model groups. The referenced research uses varying microprocessor architectures and performance metrics. Other differences, like the number of active cores in the baseline CPU implementation, or the extent to which further optimization in e.g. memory access patterns have been implemented, also play a role. Thus, it must be acknowledged that direct quantitative comparisons are not always possible. Instead, I intend to incorporate the data into a more holistic, qualitative assessment that also considers the other factors of scalability and implementation difficulty.
 
@@ -253,13 +253,42 @@ For scope restriction purposes, the following choices have been made:
 
 \section{Option Pricing Fundamentals} \label{sec:optionfundamentals}
 
-The following section presents a sufficient theoretical introduction to options. Firstly, general definitions and payoff structures are established. Next, the focus shifts towards valuation. The risk-neutral valuation framework is presented, (non-rigorously) explaining the mathematical principles that underpin all major pricing models. This is followed by a subsection on the key determinants that influence option prices, and the sensitivity measures, known as "the Greeks", that quantify how prices change in response to these determinants. The section concludes with a discussion on the inherent computational challenges of option pricing, further motivating the exploration of GPU acceleration techniques.
+The following section presents a sufficient theoretical introduction to options. Firstly, general definitions are established, after which 
+vanilla option payoff functions are examined. Next, the risk-neutral valuation framework is presented, (non-rigorously) explaining the mathematical principles that underpin all major pricing models. This is followed by a subsection on the key determinants that influence option prices, and the sensitivity measures, known as "the Greeks", that quantify how prices change in response to these determinants. The section concludes with a discussion on the inherent computational challenges of option pricing, further motivating the exploration of GPU acceleration techniques.
 
-I will use the term "vanilla options" throughout the thesis to refer to both European and American style options (to be presented). Unless explicitly stated otherwise, all discussions and conclusions apply to options in general. When specific terms, such as "European" or "vanilla" options are used, the statements hold strictly to those contract types.
 
-\subsection{Definitions and Terminology}
+\subsection{Vanilla Option Definitions and Payoff Structures}
+Chapter 1.5 in \cite{hull2016options} presents the following useful definitions and related terminology:
 
-\subsection{Option Payoff Functions}
+\paragraph{Call Option:}Grants the holder the right (but not the obligation) to buy the underlying asset by a certain date for a certain price.
+
+\paragraph{Put Option:}Grants the holder the right (but not the obligation) to sell the underlying asset by a certain date for a certain price.
+
+\paragraph{Strike Price:}The predetermined price at which the underlying asset can be bought (for a call option) or sold (for a put option) upon exercise.
+
+\paragraph{Maturity (date):}The predetermined date on which the option expires, determining the latest point at which it can be exercised.
+\bigskip
+
+Note the ambiguous use of "by", as the specific rules for when an option can be exercised depends on the style of option. For our vanilla options, a European-style option must be exercised on the maturity date, whereas an American-style option can be exercised at any time up to the maturity.
+
+
+
+
+
+
+
+
+- call vs put
+- long vs short
+    - always needs a matching pair?
+- option = right / OPTION. differ vs other similar contracts with obligation like futures. Pay a premium for the OPTION to buy / sell or not. Summary Diagram on long/short vs put/call, box chart of upsides and downsides for each position?
+- Same for American, but they might be more worth due to option of exercising early!
+- payoff versus
+- Moneyness terms explanation with graphs, revers relationship between call and put, "intrinsic value" measure,
+
+- Hull Chapters 1.5, 8, 9, 19 for exotics
+
+
 
 \subsection{Risk-Neutral Valuation Framework}
 
