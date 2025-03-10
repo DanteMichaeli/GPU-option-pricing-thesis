@@ -271,17 +271,31 @@ Chapter 1.5 in \cite{hull2016options} presents the following useful definitions 
 
 Note the ambiguous use of "by", as the specific rules for when an option can be exercised depends on the style of option. For our vanilla options, a European-style option must be exercised on the maturity date, whereas an American-style option can be exercised at any time up to the maturity.
 
+There are always two parties to every option contract: the investor (buyer), who takes the long position, pays an up front premium to the underwriter (seller) for the right to engage in a future trade. A single option contract is considered a zero-sum game between the investor and the underwriter. Thus, we have a pair of mirrored positions for both a call option and a put option. These can be visualized by graphing the profit of each position at the time of exercising as a function of the underlying asset price. Alternatively, one can consider the slightly modified \textbf{payoff} of the position, which ignores the premium and focuses on the fundamental mechanics of the option itself.
+
+In similar fashion as in \cite[pp. 7-10]{hull2016options}, each position's profit diagram is presented below, along with a practical example for intuition. We consider European-style options, and transaction costs have been ignored.
+
+\subsubsection{Call Option Positions}
+Let $K$ be the strike price and $S_T$ the price of the underlying asset at maturity. The investor is willing to pay up front in order to fix a price for a later time. In other words, they expect the price of the underlying asset to rise enough to offset the premium. Figure 
+
+
+
+As an example, consider a manufacturer that relies heavily on crude oil for their final product. If they expect a sharp increase in oil prices in a year from now they might choose to enter a long position in a call option with the oil distributor. The manufacturer knows it cannot afford the projected oil prices, and is willing to pay a premium in order to hedge against that risk.
 
 
 
 
+
+
+
+\bigskip
 
 
 
 - call vs put
 - long vs short
     - always needs a matching pair?
-- option = right / OPTION. differ vs other similar contracts with obligation like futures. Pay a premium for the OPTION to buy / sell or not. Summary Diagram on long/short vs put/call, box chart of upsides and downsides for each position?
+- option = right / OPTION. differ vs other similar contracts with obligation like futures. Pay a premium for  Summary Diagram on long/short vs put/call, box chart of upsides and downsides for each position?
 - Same for American, but they might be more worth due to option of exercising early!
 - payoff versus
 - Moneyness terms explanation with graphs, revers relationship between call and put, "intrinsic value" measure,
@@ -297,11 +311,6 @@ Note the ambiguous use of "by", as the specific rules for when an option can be 
 \subsection{The Greeks}
 
 \subsection{Computational Challenges in Option Pricing}
-
-
-
-Little's Law provides a fundamental framework for relating throughput and latency in steady-state systems. The law states that $L=\lambda W$ , where $L$ is the average number of items in the system, $\lambda$ is the average arrival rate (throughput), and $W$ is the average time spent in the system (latency). While this relationship doesn't directly indicate a trade-off, it establishes the basic connection between these metrics. \bigskip
---- more stuff here to come!
 
 
 \section{The GPU and Parallel Computing} \label{sec:gpu-computing}
