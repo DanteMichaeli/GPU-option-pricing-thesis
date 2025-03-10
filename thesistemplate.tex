@@ -305,32 +305,38 @@ Little's Law provides a fundamental framework for relating throughput and latenc
 
 
 \section{The GPU and Parallel Computing} \label{sec:gpu-computing}
-\subsection{Modelling Computer Systems as Queuing Processes, Availability versus Idle}
-Queueing theory provides a more detailed framework for understanding system performance, particularly regarding how utilization affects latency. A key result shows that as system utilization (p) approaches 100%, the average waiting time approaches infinity, following the relationship:
+\subsection{CPU vs. GPU Architecture}
 
-Average response time = service time / (1 - p)
+Traditional CPU design philosophy
+GPU architectural principles
+SIMD vs. SIMT execution models
+Memory hierarchy differences
 
-This relationship demonstrates a fundamental limitation: systems operating at very high utilization levels inevitably experience increased latency. This principle applies broadly across computing systems, from processor instruction queues to network packet buffers, as these can all be modeled as queueing systems where work units wait to be served by finite resources.
+\subsection{GPU Programming Model}
 
-\subsection{Domain-Specific Additional physical tradeoff effects}
+Thread hierarchy (threads, blocks, grids)
+Memory spaces (global, shared, constant, texture)
+Execution model and scheduling
+CUDA/OpenCL programming paradigms
 
-While queueing theory provides a universal framework, different computing domains exhibit additional, specific mechanisms that create or influence throughput-latency tradeoffs.
+\subsection{Parallel Computing Fundamentals and GPU suitability}
 
-In microprocessor design, throughput-latency tradeoffs manifest through several mechanisms:
-\begin{itemize}
-    \item Power constraints create an inherent trade-off between energy per instruction and execution speed
-    \item Pipeline depth affects both throughput capabilities and instruction latency
-    \item Cache hierarchies balance access speed against capacity
-\end{itemize}
+Types of parallelism (data, task, instruction)
+Amdahl's Law and theoretical speedup limits
+Dependency chains and their impact
+Synchronization requirements
+Characteristics of "GPU-friendly" algorithms
+Identifying parallelizable components
+Common computation patterns in finance
+Performance metrics and evaluation
 
-In parallel processing environments, additional factors include:
-\begin{itemize}
-    \item Setup overhead for parallel execution
-    \item Synchronization costs between parallel units
-    \item Resource allocation and management overhead
-\end{itemize}
+\subsection{Performance Considerations} ???
 
-
+Memory transfer bottlenecks
+Thread divergence
+Coalesced memory access
+Occupancy optimization
+Warp efficiency
 
 \clearpage
 
