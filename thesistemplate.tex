@@ -60,10 +60,13 @@
 %\documentclass[finnish,12pt,a4paper,dvips]{aaltothesis}
 
 \usepackage{graphicx}
+\usepackage[inkscapelatex=false]{svg}
+\usepackage{tikz}
 
 
 %% Use this if you write hard core mathematics, these are usually needed
-\usepackage{amsfonts,amssymb,amsbsy}
+\usepackage{amsfonts,amssymb,amsbsy, amsmath}
+
 
 %% Use the macros in this package to change how the hyperref package below 
 %% typesets its hypertext -- hyperlink colour, font, etc. See the package
@@ -78,6 +81,8 @@
   colorlinks=true,urlcolor=red,linkcolor=blue,citecolor=black,
   pdftitle={Default Title, Modify},pdfauthor={Your Name},
   pdfkeywords={Modify keywords}}
+
+\usepackage{float}
 
 
 %% All that is printed on paper starts here
@@ -257,7 +262,7 @@ The following section presents a sufficient theoretical introduction to options.
 vanilla option payoff functions are examined. Next, the risk-neutral valuation framework is presented, (non-rigorously) explaining the mathematical principles that underpin all major pricing models. This is followed by a subsection on the key determinants that influence option prices, and the sensitivity measures, known as "the Greeks", that quantify how prices change in response to these determinants. The section concludes with a discussion on the inherent computational challenges of option pricing, further motivating the exploration of GPU acceleration techniques.
 
 
-\subsection{Vanilla Option Definitions and Payoff Structures}
+\subsection{Definitions}
 Chapter 1.5 in \cite{hull2016options} presents the following useful definitions and related terminology:
 
 \paragraph{Call Option:}Grants the holder the right (but not the obligation) to buy the underlying asset by a certain date for a certain price.
@@ -271,16 +276,58 @@ Chapter 1.5 in \cite{hull2016options} presents the following useful definitions 
 
 Note the ambiguous use of "by", as the specific rules for when an option can be exercised depends on the style of option. For our vanilla options, a European-style option must be exercised on the maturity date, whereas an American-style option can be exercised at any time up to the maturity.
 
-There are always two parties to every option contract: the investor (buyer), who takes the long position, pays an up front premium to the underwriter (seller) for the right to engage in a future trade. A single option contract is considered a zero-sum game between the investor and the underwriter. Thus, we have a pair of mirrored positions for both a call option and a put option. These can be visualized by graphing the profit of each position at the time of exercising as a function of the underlying asset price. Alternatively, one can consider the slightly modified \textbf{payoff} of the position, which ignores the premium and focuses on the fundamental mechanics of the option itself.
+There are always two parties to every option contract: the investor (buyer), who takes the long position, pays an up front premium to the underwriter (seller) for the right to engage in a future trade. A single option contract is considered a zero-sum game between the investor and the underwriter. Thus, we have a pair of mirrored positions for both a call option and a put option. These can be visualized by graphing the profit of each position at the time of exercising as a function of the underlying asset price. Alternatively, one can consider the slightly modified \textbf{payoff} of the position, which adds the premium back to the profit and focuses on the fundamental mechanics of the option itself:
+\begin{equation}
+    \text{profit}=\text{payoff}-\text{premium}
+\end{equation}
 
-In similar fashion as in \cite[pp. 7-10]{hull2016options}, each position's profit diagram is presented below, along with a practical example for intuition. We consider European-style options, and transaction costs have been ignored.
+\subsection{Vanilla Option Payoff Structures}
+
+
+In a similar fashion to \cite[pp. 7-10]{hull2016options}, profit diagrams for each vanilla option position is presented below, along with practical examples for intuition. We consider European-style options for simplicity, but the profit diagrams for American-style options are identical as we only add the option of exercising earlier than at maturity. Transaction costs have been ignored. Let $p$ be the premium, or price paid for the option, $K$ the strike price, and $S_T$ the price of the underlying asset at maturity.
+
+
 
 \subsubsection{Call Option Positions}
-Let $K$ be the strike price and $S_T$ the price of the underlying asset at maturity. The investor is willing to pay up front in order to fix a price for a later time. In other words, they expect the price of the underlying asset to rise enough to offset the premium. Figure 
+The investor is willing to pay a premium up front in order to fix a price for a later time. In other words, they expect the price of the underlying asset to rise enough to offset this premium. Figure ~\ref{fig:call_payoff} depicts the profit diagram of a long position of a call option.
 
+\begin{center}
+\begin{figure}[H]
+\centering
+    \begin{tikzpicture}[scale=1.5, >=stealth]
 
+        % Shade area to the right of K (extending fully up to x-axis)
+        \fill[gray!10] (2,-0.8) -- (7,-0.8) -- (7,4) -- (2,4) -- cycle;
 
-As an example, consider a manufacturer that relies heavily on crude oil for their final product. If they expect a sharp increase in oil prices in a year from now they might choose to enter a long position in a call option with the oil distributor. The manufacturer knows it cannot afford the projected oil prices, and is willing to pay a premium in order to hedge against that risk.
+        % Define axes (extended x-axis)
+        \draw[->] (0,0) -- (7,0) node[below,xshift=-55,yshift=-2pt, align=center] {\small Underlying asset price \\ at maturity $S_T$ (€)};
+        \draw[->] (0,-1.5) -- (0,4) node[above] {\small Profit (€)};
+        
+        
+        % Strike price line
+        \draw[dashed] (2,0) -- (2,-0.8) node[above, yshift=35] {\large$K$};
+        
+        % Payoff function (thicker blue line)
+        \draw[line width=1.5pt, blue] (0,-0.8) -- (2,-0.8) -- (5,3);
+        
+        % Marking zero level
+        \node[left] at (0,0) {0};
+        
+        % Adding the premium annotation
+        \draw (-0.07,-0.8) -- (0,-0.8); % Short tick line
+        \node[left] at (-0.1,-0.8) {\small $-p$};
+
+        % Add "In the Money" label inside the fully shaded area
+        \node[gray!60] at (5,1.5) {\small \textbf{In the Money}};
+    \end{tikzpicture}
+    \caption{Profit diagram for a long call option. $K$ = strike price, $p$ = premium}
+    \label{fig:call_payoff}
+\end{figure}
+\end{center}
+
+As long as $S_T$ < $K$ we are at a net loss equal to the paid premium $p$. The option is said to be \textbf{out of the money (OTM)}, and has no intrinsic value. When $S_T = K$ the option is considered to be \textbf{at the money (ATM)}, after which, when $S_T > K$ it is \textbf{in the money (ITM)} and has some intrinsic value, or a positive payoff. Still, the profit remains negative as long as payoff < $p$. Only  after offsetting the premium does the option truly become profitable for the investor. Assuming liquid markets, they could then exercise the option to buy the underlying asset for the strike price, only to immediately sell for the current market price to profit off the difference. In general, ITM options are exercised, as the intrinsic value helps to offset at least some of the loss incurred from paying the premium.  
+
+To demonstrate options' role in risk management as opposed to pure speculation, consider a company that relies heavily on crude oil for their manufacturing. If they expect a sharp increase in oil prices in a year from now they might choose to enter a long position in a call option with the oil distributor. The manufacturer knows it cannot afford the projected oil prices, and is willing to pay a premium in order to hedge against that risk.
 
 
 
