@@ -398,7 +398,8 @@ as the investor will only exercise when ITM to either profit or offset losses. T
     -\max(S_T-K,0) = \min(K-S_T,0)
 \end{equation}
 
-due to the zero-sum nature of the contract \cite[p. 9]{hull2016options}. \textbf{DO I NEED PAYOFF GRAPHS?? THEY'RE VERY SIMILAR}
+due to the zero-sum nature of the contract \cite[p. 9]{hull2016options}.
+
 
 \subsubsection{Put Option Positions}
 The investor is willing to pay a premium up front in order to fix a price for selling a later time. In other words, they expect the price of the underlying asset to decrease enough to offset this premium. Meanwhile, the underwriter receives a premium but is obligated to engage in this potential future trade, and thus expects the price not to decrease too much from the market price. Figure ~\ref{fig:put_payoff} depicts the profit diagrams of the long and short positions of a put option:
@@ -504,11 +505,26 @@ as being ITM now means $K > S_T$. The payoff in the corresponding short position
 
 due to the zero-sum nature of the contract \cite[p. 10]{hull2016options}.
 
+The long position in any option contract is never obligated to exercise, and the loss is therefore limited to the premium paid. On the other hand, the underwriter is always obligated to engage in a disadvantageous trade with the buyer. This, combined with the fact that underlying asset prices have no theoretical upper bound, whereas they are (in most cases) limited to non-negative values, makes taking the short position inherently more risky. Figure \ref{fig:optiontable} aggregates information about the extreme-case profit and loss incurred from the different option types and positions.
 
-Underlying asset prices are often theoretically unbounded, whereas the potential losses are limited (no negative prices). For this reason, taking the short position is inherently more risky as the potential losses are limitless. Table\ref{???} aggregates the information about the risk of taking different option positions.
-
-INSERT TABLE HERE
-
+\begin{figure}[htbp]
+\centering
+\label{options-risk-table}
+\begin{tabular}{|l|p{5cm}|p{5cm}|}
+\hline
+\textbf{Position} & \textbf{Call Options} & \textbf{Put Options} \\
+\hline
+\textbf{Long} & \textbf{Maximum Gain:} $+\infty$
+\newline \textbf{Maximum Loss:} $-p$ & \textbf{Maximum Gain:} $K-p$
+\newline \textbf{Maximum Loss:} $-p$ \\
+\hline
+\textbf{Short} & \textbf{Maximum Gain:} $+p$
+\newline \textbf{Maximum Loss:} $-\infty$ & \textbf{Maximum Gain:} $+p$
+\newline \textbf{Maximum Loss:} $-(K-p)$ \\
+\hline
+\end{tabular}
+\caption{Risk profiles for different option positions. $p$ = premium paid/received, $K$ = strike price. Long calls have unlimited upside potential due to theoretically unbounded asset prices, with losses limited to the premium paid. Short calls mirror this with unlimited downside risk. Put options have bounded payoffs as asset prices cannot fall below zero, with maximum gain for long puts at $K-p$ (when spot price reaches zero) and maximum loss for short puts at $-(K-p)$.}\label{fig:optiontable}
+\end{figure}
 
 
 
@@ -518,7 +534,7 @@ Hull et. al. \cite{hull2013fundamentals} define six factors influencing the pric
 
 The stock price relative to the strike price is perhaps the most obvious factor. The effect on the payoff is thoroughly explained in subsection ~\ref{payoffs}, and the price naturally increases with the payoff. Thus, the price of a call option increases with the underlying asset, while the inverse relationship is observed for a put option.
 
-Volatility, a statistical measure of the variation in asset prices over a specific time period, has a positive effect on both call and put options. This can be motivated by the limited downside - unlimited upside nature of options (SEE TABLE XXX), which makes larger price movements more advantageous as it increases the probability of moving ITM. This is especially obvious for OTM positions, where a price movement is still needed in order not to expire worthless, but holds for ITM positions as well, as the unlimited potential for becoming even deeper ITM outweighs the limited downside of going OTM.
+Volatility, a statistical measure of the variation in asset prices over a specific time period, has a positive effect on both call and put options. This can be motivated by the limited downside - unlimited upside nature of options (see figure \ref{fig:optiontable}), which makes larger price movements more advantageous as it increases the probability of moving ITM. This is especially obvious for OTM positions, where a price movement is still needed in order not to expire worthless, but holds for ITM positions as well, as the unlimited potential for becoming even deeper ITM outweighs the limited downside of going OTM.
 
 Time to maturity has a more complex relationship with the price, and depends on both the option style and the context. For American-style options where early exercise is allowed, it makes sense that an expiration date further in the future leads to more opportunity for favorable movements in the underlying, thereby commanding a higher price. This is effectively the same argument as was made for  volatility. While this so called "time-decay" argument also holds for European-style options, the lack of early-exercise complicates the matter. There exist specific scenarios where one would benefit from exercising the option earlier. The authors propose the example of a future dividend payment to the shareholders of the underlying company, which theoretically decreases the share price and thereby the value of the corresponding call option. An example of a put option being of higher value with a shorter timer to maturity would be the case of a very deep ITM position, e.g. if the company of the underlying asset has filed for bankruptcy. The option will almost certainly expire ITM, and thus by the \textbf{time value of money} principle this cash flow is worth more the earlier it is received \cite[pp. 97-101]{berk2007corporate}.
 
@@ -527,7 +543,7 @@ The risk-free rate represents the return on investment one can expect from a so 
 
 The final determinant considers the dividend policy of the underlying asset (stock). Theoretically, a company's share price is reduced by the dividend, as this money is directly deducted from the cash flows that make up the value of the equity in the first place \cite{modigliani1958cost}. Thus, a dividend payment policy decreases the value of a call option, and increases the value of a put option.
 
-In addition to pricing the option, traders and risk managers alike are often interested in measuring how sensitive this price is to changes in these determinants. Model imperfections make it desirable to understand the effect of small perturbation in the variables, hence these often play a significant role in different hedging and trading strategies \cite{hull2016options}. Wilmott \cite{wilmott2013paul} defines the following five main sensitivity measures, also known as \emph{the Greeks}, with respect to the aforementioned determinants. \bigskip \\Let $V$ be the price (value) of the option, $S$ the underlying asset price, $t$ the time to maturity, $r$ the risk-free rate, and $\sigma$ the volatility of the underlying asset. A high-level definition of the Greeks is:
+In addition to pricing the option, traders and risk managers alike are often interested in measuring how sensitive this price is to changes in these determinants. Model imperfections make it desirable to understand the effect of small perturbation in the variables, hence these often play a significant role in different hedging and trading strategies \cite{hull2016options}. This additional demand for fast computing makes GPU-accelerated algorithms even more attractive. Wilmott \cite{wilmott2013paul} defines the following five main sensitivity measures, also known as \emph{the Greeks}, with respect to the aforementioned determinants. \bigskip \\Let $V$ be the price (value) of the option, $S$ the underlying asset price, $t$ the time to maturity, $r$ the risk-free rate, and $\sigma$ the volatility of the underlying asset. A high-level definition of the Greeks is:
 \begin{align*}
     \Delta &= \frac{\partial V}{\partial S} & \text{(Delta: sensitivity to changes in the underlying price)} \\[0.5em]
     \Gamma &= \frac{\partial^2 V}{\partial S^2} & \text{(Gamma: rate of change of Delta, or convexity)} \\[0.5em]
@@ -536,7 +552,7 @@ In addition to pricing the option, traders and risk managers alike are often int
     \rho &= \frac{\partial V}{\partial r} & \text{(Rho: sensitivity to changes in the risk-free rate)}
 \end{align*}
 
-Note that the formal definitions of the Greeks are model-specific. The choice to represent them using partial derivatives suggests the context of a continuous-time model, and are indeed defined in relation to the BSM model. Nevertheless, this formulation provides an intuitive understanding of the measurements. In discrete-time models (like CRR) or discretized approximations of BSM, the Greeks are redefined or estimated using different techniques (do I need sources???).
+Note that the formal definitions of the Greeks are model-specific. The choice to represent them using partial derivatives suggests the context of a continuous-time model, and these are indeed defined in relation to the BSM model. Nevertheless, this formulation provides an intuitive understanding of the measurements. In discrete-time models (like CRR) or discretized approximations of BSM, the Greeks are redefined or estimated using different techniques (do I need sources???).
 
 
 \subsection{Risk-Neutral Valuation Framework}
