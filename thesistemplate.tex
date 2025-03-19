@@ -507,6 +507,8 @@ due to the zero-sum nature of the contract \cite[p. 10]{hull2016options}.
 
 The long position in any option contract is never obligated to exercise, and the loss is therefore limited to the premium paid. On the other hand, the underwriter is always obligated to engage in a disadvantageous trade with the buyer. This, combined with the fact that underlying asset prices have no theoretical upper bound, whereas they are (in most cases) limited to non-negative values, makes taking the short position inherently more risky. Figure \ref{fig:optiontable} aggregates information about the extreme-case profit and loss incurred from the different option types and positions.
 
+
+
 \begin{figure}[htbp]
 \centering
 \label{options-risk-table}
@@ -526,6 +528,7 @@ The long position in any option contract is never obligated to exercise, and the
 \caption{Risk profiles for different option positions. $p$ = premium paid/received, $K$ = strike price. Long calls have unlimited upside potential due to theoretically unbounded asset prices, with losses limited to the premium paid. Short calls mirror this with unlimited downside risk. Put options have bounded payoffs as asset prices cannot fall below zero, with maximum gain for long puts at $K-p$ (when spot price reaches zero) and maximum loss for short puts at $-(K-p)$.}\label{fig:optiontable}
 \end{figure}
 
+The objective of pricing models is to find the so-called fair value of the option ($p$). Although market prices form through the dynamic interaction of buyers and sellers, they are still to a large extent based on theoretical pricing frameworks. These models provide a rational foundation for valuing derivatives based on mathematical and economic theory. While real-world prices may show short-term deviations, markets tend to converge toward theoretically justified values over time, as persistent mispricing creates exploitable opportunities. The theoretical fair value serves as a crucial reference point that informs trading decisions and risk management strategies.
 
 
 \subsection{Price Determinants and Sensitivity}
@@ -543,7 +546,7 @@ The risk-free rate represents the return on investment one can expect from a so 
 
 The final determinant considers the dividend policy of the underlying asset (stock). Theoretically, a company's share price is reduced by the dividend, as this money is directly deducted from the cash flows that make up the value of the equity in the first place \cite{modigliani1958cost}. Thus, a dividend payment policy decreases the value of a call option, and increases the value of a put option.
 
-In addition to pricing the option, traders and risk managers alike are often interested in measuring how sensitive this price is to changes in these determinants. Model imperfections make it desirable to understand the effect of small perturbation in the variables, hence these often play a significant role in different hedging and trading strategies \cite{hull2016options}. This additional demand for fast computing makes GPU-accelerated algorithms even more attractive. Wilmott \cite{wilmott2013paul} defines the following five main sensitivity measures, also known as \emph{the Greeks}, with respect to the aforementioned determinants. \bigskip \\Let $V$ be the price (value) of the option, $S$ the underlying asset price, $t$ the time to maturity, $r$ the risk-free rate, and $\sigma$ the volatility of the underlying asset. A high-level definition of the Greeks is:
+In addition to pricing the option, traders and risk managers alike are often interested in measuring how sensitive this price is to changes in these determinants. Model imperfections make it desirable to understand the effect of small perturbation in the variables, hence these often play a significant role in different hedging and trading strategies \cite{hull2016options}. These sensitivity calculations often require additional computational effort beyond basic option pricing, as each Greek may require re-evaluating the pricing model with perturbed inputs or calculating complex partial derivatives. In practice, risk management systems need to calculate both prices and multiple Greeks for thousands of options simultaneously, substantially increasing computational demands and making GPU acceleration particularly valuable \textbf{(do I need src for this?????)}. \textbf{(maybe I need to state something here about the later chapters also having a look at how these can be computed efficiently alongside the price. But depends on what the sources have to say)}. Wilmott \cite{wilmott2013paul} defines the following five main sensitivity measures, also known as \emph{the Greeks}, with respect to the aforementioned determinants. Let $V$ be the price (value) of the option, $S$ the underlying asset price, $t$ the time to maturity, $r$ the risk-free rate, and $\sigma$ the volatility of the underlying asset. A high-level definition of the Greeks is:
 \begin{align*}
     \Delta &= \frac{\partial V}{\partial S} & \text{(Delta: sensitivity to changes in the underlying price)} \\[0.5em]
     \Gamma &= \frac{\partial^2 V}{\partial S^2} & \text{(Gamma: rate of change of Delta, or convexity)} \\[0.5em]
@@ -555,14 +558,96 @@ In addition to pricing the option, traders and risk managers alike are often int
 Note that the formal definitions of the Greeks are model-specific. The choice to represent them using partial derivatives suggests the context of a continuous-time model, and these are indeed defined in relation to the BSM model. Nevertheless, this formulation provides an intuitive understanding of the measurements. In discrete-time models (like CRR) or discretized approximations of BSM, the Greeks are redefined or estimated using different techniques (do I need sources???).
 
 
-\subsection{Risk-Neutral Valuation Framework}
+\subsection{No-Arbitrage Pricing and Risk-Neutrality}
+Previously, all main "ingredients" for our pricing formulas were introduced. This section outlines the foundational theoretical framework that underpins all option pricing models, and moves one step closer to calculating $p$. In line with the scope, the focus will be on intuition as opposed to rigor. Avid readers are encouraged to explore the references in greater detail. We continue with the common set of assumptions that maintains the theory, such as no transaction costs and perfectly liquid markets.
+
+A starting point would be to draw inspiration from the arguments used when pricing other assets. We often consider the theoretical value of an asset as the discounted sum of all future cash flows it produces. In case of uncertainty (as is the case of all risky assets) it is not an unreasonable idea to discount the \emph{expected value} these cash flows instead, as it represents a theoretical long-term average of the returns \textbf{(basic math and financial theory, do I need src for this?)}. Calculating this expected value, however, requires defining a set of possible outcomes (returns) and assigning a probability to each one of them. This is often the limitation of pricing models in general, as these assumptions are questionable at best. Nonetheless, starting out with a simplistic model will lead to interesting and useful revelations that can be expanded on. 
+
+
+
+
+
+
+
+
+1. Start with the Basic Problem
+Begin by framing the fundamental challenge: "How do we determine what an option is worth today, given its uncertain future payoff?"
+2. Introduce the Replication Concept
+Explain that options can be priced by creating portfolios of simpler instruments (stocks and bonds) that replicate their payoffs. Due to no-arbitrage principles, the option must be worth exactly what this replicating portfolio costs.
+3. Use the Binomial Model as a Concrete Example
+The one-period binomial model provides an intuitive entry point:
+
+Show how a stock that can go up or down can be combined with risk-free bonds to replicate an option's payoff
+Demonstrate that this leads to a unique option price regardless of investor preferences
+
+4. Explain the Risk-Neutral Insight
+Show how solving the replication equations reveals a simpler way to think about option pricing:
+
+We can calculate the option price by taking the expected value of future payoffs under special "risk-neutral" probabilities
+These probabilities make all assets grow at the risk-free rate (on average)
+This isn't claiming the world is risk-neutral, but provides a computational shortcut
+
+5. Connect to Different Pricing Models
+Explain that different option pricing models implement this same principle, but make different assumptions about how the underlying asset's price evolves:
+
+Lattice models: Discrete price movements with risk-neutral probabilities
+PDE models: Continuous price paths with specific dynamics
+Monte Carlo: Simulation of many possible price paths under risk-neutral assumptions
+
+This approach provides:
+
+An intuitive understanding of the fundamental pricing principle
+A clear connection to the different computational methods you'll discuss later
+Sufficient theoretical foundation without overwhelming mathematical detail
+
 - the choice of option pricing model really is the choice of how to model the underlying asset's price behavior
 \subsubsection{Replicating portfolio and no-arbitrage principle}
 \subsection{risk-neutral derivation, and how it manifests in our three model groups}
 
-\subsection{The Greeks}
 
-\subsection{Computational Challenges in Option Pricing}
+\subsection{WHY GPU? the need for computational power:
+
+This is a crucial question that gets to the heart of why GPU acceleration is valuable in option pricing. The justification comes from several real-world financial applications:
+
+Risk Management: Financial institutions need to calculate Value-at-Risk (VaR) and other risk metrics for portfolios containing thousands of options. This often requires:
+
+Recalculating all option prices under multiple scenarios
+Computing Greeks to understand sensitivity to market movements
+Running these calculations daily or even intraday
+
+
+Regulatory Requirements: Banking regulations like Basel III require comprehensive stress testing of portfolios, involving:
+
+Calculating option values under hundreds of different market scenarios
+Reporting results within strict timeframes
+
+
+Electronic Market Making: Firms that provide liquidity in options markets need to:
+
+Continuously update prices for hundreds or thousands of options
+Adjust their quotes as market conditions change
+Maintain accurate hedging calculations (based on Greeks)
+
+
+Portfolio Optimization: Investment firms need to:
+
+Evaluate complex trading strategies across multiple options
+Test different portfolio compositions
+Optimize hedging positions using sensitivity metrics
+
+
+
+This computational demand is documented in various sources:
+
+Academic papers like "GPU Computing in Finance: Recent Applications and Developments" by Giles & Xiaosong (2014) discuss these requirements
+Financial industry whitepapers from firms like NVIDIA and JP Morgan
+Case studies from banks that have implemented GPU solutions for options pricing
+
+The computational demands become especially intense during market stress when quick recalculation is critical, making the case for GPU acceleration even stronger.}
+
+
+
+- why GPU, why optimize for throughput vs latency
 
 
 \section{The GPU and Parallel Computing} \label{sec:gpu-computing}
