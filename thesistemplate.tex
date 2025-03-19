@@ -281,10 +281,10 @@ There are always two parties to every option contract: the investor (buyer), who
     \text{profit}=\text{payoff}-\text{premium}
 \end{equation}
 
-\subsection{Vanilla Option Payoff Structures}
+\subsection{Vanilla Option Payoff Structures}\label{payoffs}
 
 
-In a similar fashion to \cite[pp. 7-10]{hull2016options}, profit diagrams for each vanilla option position is presented below, along with practical examples for intuition. We consider European-style options for simplicity, but the profit diagrams for American-style options are identical as we only add the option of exercising earlier than at maturity. Transaction costs have been ignored. Let $p$ be the premium, or price paid for the option, $K$ the strike price, and $S_T$ the price of the underlying asset at maturity.
+In a similar fashion to \cite[pp. 7-10]{hull2016options}, profit diagrams for each vanilla option position is presented below, along with practical examples for intuition. We consider European-style options for simplicity, but the profit diagrams for American-style options are identical as we only add the option of exercising earlier than at maturity. The options are based on one unit of the underlying asset. Transaction costs have been ignored. Let $p$ be the premium, or price paid for the option, $K$ the strike price, and $S_T$ the price of the underlying asset at maturity.
 
 
 
@@ -401,7 +401,7 @@ as the investor will only exercise when ITM to either profit or offset losses. T
 due to the zero-sum nature of the contract \cite[p. 9]{hull2016options}. \textbf{DO I NEED PAYOFF GRAPHS?? THEY'RE VERY SIMILAR}
 
 \subsubsection{Put Option Positions}
-The investor is willing to pay a premium up front in order to fix a price for selling a later time. In other words, they expect the price of the underlying asset to decrease enough to offset this premium. Meanwhile, the underwriter receives a premium but is obligated to engage in this potential future trade, and thus expects the price not to decrease too much from the market price. Figures X and Y depict the profit diagrams of the long and short positions of a put option:
+The investor is willing to pay a premium up front in order to fix a price for selling a later time. In other words, they expect the price of the underlying asset to decrease enough to offset this premium. Meanwhile, the underwriter receives a premium but is obligated to engage in this potential future trade, and thus expects the price not to decrease too much from the market price. Figure ~\ref{fig:put_payoff} depicts the profit diagrams of the long and short positions of a put option:
 
 
 \begin{figure}[H]
@@ -447,10 +447,10 @@ The investor is willing to pay a premium up front in order to fix a price for se
     \begin{scope}[shift={(7.5,2)}]  
 
         % Shade area to the right of K (ITM for short put)
-        \fill[gray!10] (2,2.5) -- (7,2.5) -- (7,-2) -- (2,-2) -- cycle;
+        \fill[gray!20] (2,2.5) -- (7,2.5) -- (7,-2) -- (2,-2) -- cycle;
 
         % Shade area to the left of K (OTM for short put)
-        \fill[gray!20] (0,2.5) -- (2,2.5) -- (2,-2) -- (0,-2) -- cycle;
+        \fill[gray!10] (0,2.5) -- (3,2.5) -- (3,-2) -- (0,-2) -- cycle;
 
         % Define axes
         \draw[->] (0,0) -- (7,0) node[below,xshift=-18,yshift=-2pt, align=center] {\small$S_T$ (€)};
@@ -469,11 +469,11 @@ The investor is willing to pay a premium up front in order to fix a price for se
         \draw (-0.07,1.5) -- (0,1.5); % Short tick line
         \node[left] at (-0.1,1.5) {\small $+p$};
 
-        % Add "ITM" label inside the shaded area (short put ITM is right of K)
-        \node[gray!60] at (5,1) {\small \textbf{ITM}};
+        % Add "OTM" label inside the shaded area (short put OTM is right of K)
+        \node[gray!60] at (5,1) {\small \textbf{OTM}};
 
-        % Add "OTM" label inside the shaded area (short put OTM is left of K)
-        \node[gray!60] at (1,1) {\small \textbf{OTM}};
+        % Add "ITM" label inside the shaded area (short put ITM is left of K)
+        \node[gray!60] at (1,1) {\small \textbf{ITM}};
 
     \end{scope}
 
@@ -485,23 +485,57 @@ The investor is willing to pay a premium up front in order to fix a price for se
 \label{fig:put_payoff}
 \end{figure}
 
+A put option is worthless (OTM) when $S_T > K$ as the investor will not exercise it to sell for a lower price than market value. By the same token, the option is ITM when  $S_T < K$, as the investor can then buy the underlying asset at market value and sell it for the strike price \cite[p. 209]{hull2013fundamentals}. Again, being ITM is not sufficient to be profitable - the price difference must be large enough to offset the paid premium.
+
+An example use case would be a crude oil supplier forecasting low prices in a year's time and entering the long position to secure a minimum revenue. Again, a premium is paid to hedge against a risk of price swings. The short side would be taken by a market participant who expects crude oil prices not to fall enough to offset the received premium.
+\bigskip
+
+The payoff from the long position in a put option is defined as
+
+\begin{equation}
+    \max(K-S_T,0)
+\end{equation}
+
+as being ITM now means $K > S_T$. The payoff in the corresponding short position is
+
+\begin{equation}
+    -\max(K-S_T,0) = \min(S_T-K,0)
+\end{equation}
+
+due to the zero-sum nature of the contract \cite[p. 10]{hull2016options}.
 
 
-- call vs put
-- long vs short
-    - always needs a matching pair?
-- option = right / OPTION. differ vs other similar contracts with obligation like futures. Pay a premium for  Summary Diagram on long/short vs put/call, box chart of upsides and downsides for each position?
-- Same for American, but they might be more worth due to option of exercising early!
-- payoff versus
-- Moneyness terms explanation with graphs, revers relationship between call and put, "intrinsic value" measure,
+Underlying asset prices are often theoretically unbounded, whereas the potential losses are limited (no negative prices). For this reason, taking the short position is inherently more risky as the potential losses are limitless. Table\ref{???} aggregates the information about the risk of taking different option positions.
 
-- Hull Chapters 1.5, 8, 9, 19 for exotics
+INSERT TABLE HERE
+
+
+
+
+\subsection{Option Price Determinants}
+
+Hull et. al. \cite{hull2013fundamentals} define six factors influencing the price of the option. While these often make up the variables in our pricing models, one can intuitively reason about their effect in a model-free context. This also, however, provides some explanation on why they appear in the models in the first place. They are presented below in the order of "straight-forwardness". When discussing each factor, all else is assumed equal. This is rarely the case in practice, however, as markets quickly incorporate available information into prices (FAMA citation??). The underlying asset price is consequently affected by changes in some of the factors.
+
+The stock price relative to the strike price is perhaps the most obvious factor. The effect on the payoff is thoroughly explained in subsection ~\ref{payoffs}, and the price naturally increases with the payoff. Thus, the price of a call option increases with the underlying asset, while the inverse relationship is observed for a put option.
+
+Volatility of the underlying asset, loosely defined as a measure of how aggressive price swings to expect, increases the value of both calls and puts. The limited downside (the paid premium) but unlimited upside means that there is more to gain from larger price swings in the underlying asset. This is especially obvious for OTM positions, where a price movement is still needed in order not to expire worthless, but holds for ITM positions as well, as the unlimited potential for becoming even deeper ITM outweighs the limited downside of going OTM.
+
+Time to maturity has a more complex relationship with the price, and depends on both the option style and the context. For American-style options where early exercise is allowed, it makes sense that an expiration date further in the future leads to more opportunity for favorable movements in the underlying, thereby commanding a higher price. This is effectively the same argument as was made for the volatility. While the general time-decay argument also holds for European-style options, the lack of early-exercise complicates the matter. There exist specific scenarios where one would benefit from exercising the option earlier. The authors propose the example of a future dividend payment to the shareholders of the underlying company, which theoretically decreases the share price and thereby the value of the corresponding call option. Analystnotes.com \textbf{(do I spell this example out myself??? since it's from some shitty website, and not perhaps even original source)} illuminates another example for the case of a European put option benefiting from a shorter time to maturity.
+
+
+The risk-free rate represents the return on investment one can expect from a so called risk-free investment. In practice, this means some form of government-backed treasury bill (as the government is "too big to fail"). It often serves as a sort of benchmark measurement to which investors compare the expected rates of return of other, riskier investments. Given a risk level for an investment, an increase in the risk-free rate leads to investors expecting a higher return on said investment. Consequently, since the expected rate of return is often used as the discount rate for obtaining the present value of future cash flows, it decreases the present value of the strike price, which, all else being equal, is a better deal for the buyer and increases the value of the call option. By the same token, the value of a put option decreases, as the strike price is "worth more" by maturity than what it is in today's money. In practice, however, interest rates tend to have a notable impact on underlying asset prices as well, so this is more of a theoretical relationship.
+
+The final determinant considers the dividend policy of the underlying asset (stock). Theoretically, a company's share price is reduced by the dividend (SOURCE?) as this money is directly deducted from the profits that make up the value of the equity in the first place. Thus, a dividend payment policy decreases the value of a call option, and increases the value of a put option.
+
+
+
 
 
 
 \subsection{Risk-Neutral Valuation Framework}
-
-\subsection{Option Price Determinants}
+- the choice of option pricing model really is the choice of how to model the underlying asset's price behavior
+\subsubsection{Replicating portfolio and no-arbitrage principle}
+\subsection{risk-neutral derivation, and how it manifests in our three model groups}
 
 \subsection{The Greeks}
 
