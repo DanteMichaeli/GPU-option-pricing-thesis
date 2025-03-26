@@ -533,7 +533,7 @@ The objective of pricing models is to find the so-called fair value of the optio
 
 \subsection{Price Determinants and Sensitivity}
 
-Hull et. al. \cite{hull2013fundamentals} define six factors influencing the price of the option. While these often make up the variables in our pricing models, one can intuitively reason about their effect in a model-free context. This also, however, provides some explanation on why they appear in the models in the first place. They are presented in a "ceteris paribus" context (all else being equal). This is rarely the case in practice, however, as markets quickly incorporate available information into prices \cite{fama1970efficient}. The underlying asset price is consequently affected by changes in some of the factors. For clarity, we are considering the long position, i.e. the perspective of the buyer.
+Hull et al. \cite{hull2013fundamentals} define six factors influencing the price of the option. While these often make up the variables in our pricing models, one can intuitively reason about their effect in a model-free context. This also, however, provides some explanation on why they appear in the models in the first place. They are presented in a "ceteris paribus" context (all else being equal). This is rarely the case in practice, however, as markets quickly incorporate available information into prices \cite{fama1970efficient}. The underlying asset price is consequently affected by changes in some of the factors. For clarity, we are considering the long position, i.e. the perspective of the buyer.
 
 The stock price relative to the strike price is perhaps the most obvious factor. The effect on the payoff is thoroughly explained in subsection ~\ref{payoffs}, and the price naturally increases with the payoff. Thus, the price of a call option increases with the underlying asset, while the inverse relationship is observed for a put option.
 
@@ -558,52 +558,145 @@ In addition to pricing the option, traders and risk managers alike are often int
 Note that the formal definitions of the Greeks are model-specific. The choice to represent them using partial derivatives suggests the context of a continuous-time model, and these are indeed defined in relation to the BSM model. Nevertheless, this formulation provides an intuitive understanding of the measurements. In discrete-time models (like CRR) or discretized approximations of BSM, the Greeks are redefined or estimated using different techniques (do I need sources???).
 
 
-\subsection{No-Arbitrage Pricing and Risk-Neutrality}
-Previously, all main "ingredients" for our pricing formulas were introduced. This section outlines the foundational theoretical framework that underpins all option pricing models, and moves one step closer to calculating $p$. In line with the scope, the focus will be on intuition as opposed to rigor. Avid readers are encouraged to explore the references in greater detail. We continue with the common set of assumptions that maintains the theory, such as no transaction costs and perfectly liquid markets.
+\subsection{No-Arbitrage Pricing and the Replicating Portfolio ??? Risk-Neutrality}
+Previously, all main "ingredients" for our pricing formulas were introduced. This section outlines the foundational theoretical framework that underpins all option pricing models, and moves one step closer to formulating the models which we want to implement. In line with the scope, the focus will be on intuition as opposed to rigor. Avid readers are encouraged to explore the references in greater detail. We continue with the common set of assumptions that maintains the theory, such as no transaction costs and perfectly liquid markets.
 
-A starting point would be to draw inspiration from the arguments used when pricing other assets. We often consider the theoretical value of an asset as the discounted sum of all future cash flows it produces. In case of uncertainty (as is the case of all risky assets) it is not an unreasonable idea to discount the \emph{expected value} these cash flows instead, as it represents a theoretical long-term average of the returns \textbf{(basic math and financial theory, do I need src for this?)}. Calculating this expected value, however, requires defining a set of possible outcomes (returns) and assigning a probability to each one of them. This is often the limitation of pricing models in general, as these assumptions are questionable at best. Nonetheless, starting out with a simplistic model will lead to interesting and useful revelations that can be expanded on. 
+A starting point would be to draw inspiration from the arguments used when pricing other assets. We often consider the theoretical value of an asset as the discounted sum of all future cash flows it produces. In case of uncertainty (as is the case of all risky assets) it is not an unreasonable idea to discount the \emph{expected value} these cash flows instead, as it represents a theoretical long-term average of the returns \textbf{(basic math and financial theory, do I need src for this?)}. Calculating this expected value, however, requires defining a set of possible outcomes (returns) and assigning a probability to each one of them. This is often the limitation of pricing models in general, as the guesstimates are questionable and varies with people's risk preferences. Nonetheless, starting out with a simplistic model will lead to interesting and useful revelations that can be expanded on. This setup considers European-style options.
+
+The \emph{no-arbitrage principle} is the essential assumption for what is to come. Arbitrage describes the act of simultaneous buying and selling the same asset in different markets to make risk-free profit off price differences. Imagine the price of tomatoes being higher in one of two neighboring towns. Perhaps the tomato farmers were really successful in town A this year, and the increased supply dropped the prices somewhat. This information has not yet been priced into the tomatoes in town B. The adroit tradesman could then buy tomatoes in town A and immediately sell them in town B to pocket the difference, without taking any position on future tomato price movements. This, again, assumes ideal conditions, like enough liquidity to always be able to both buy and sell, as well as ignoring friction costs like transportation. The idea behind our assumption is that this situation ultimately is self-eliminating: as the tradesman continues to introduce more tomatoes to the total supply in town B they will drive the price down until an equilibrium has been reached. Other people may take notice, and decide to adopt the same strategy, eliminating the opportunity even faster. The information of the increased supply in town A has now been priced into the tomatoes in town B. This example is not too far-fetched from reality. Modern digital markets, while not perfectly adhering to the assumptions laid out above, form an environment where short-term arbitrage opportunities can exist. Nevertheless, as sophisticated market participants exploit these market inefficiencies they quickly disappear due to subsequent price corrections. Thus, the no-arbitrage principle is a reasonable assumption, at least over longer time periods. If our pricing methodology is based on future cash flows it logically follows that in absence of arbitrage opportunities two assets producing the same cash flows must be priced equally (DO I NEED SRC FOR THIS?????).
+
+If then, it were possible to find an existing asset with identical cash flows as the option itself, whose price is already known, that should theoretically equal the price of the option. Hull et al. \cite{hull2013fundamentals} consider a one-step binomial model as the simplest setup to utilize this assumption. In this discrete-time model we consider the underlying asset price's evolution over one time-step. This will be presented in a slightly different manner.Let $S_0$ be the current price of an asset, and $f$ the current price of an option on this underlying asset, with time $T$ to maturity. The underlying price is restricted to two future states: $S_0u$ or $S_0d$ ($u>1$, $d<1$), each corresponding to the option payoffs $f_u$ and $f_d$. This restriction allows for creating a so-called \emph{replicating portfolio} that fully matches the payoff structure of the option. This portfolio consists of $\Delta$ shares of the underlying asset, as well as $B$ amount of a risk-free asset, for example money in a savings account, appreciating in value by the risk-free rate $r$. After time period $T$ our portfolio can be in two states, depending on if the underlying asset price increased or decreased. Equating these with the corresponding option payoffs obtains two equations with two unknown variables, $\Delta$ and $B$:
+
+\begin{equation}
+\begin{cases}
+    \Delta (S_0u) + B(1+r) = f_u\\
+    \Delta (S_0d) + B(1+r) = f_d
+\end{cases}
+\end{equation}
+Solving for these variables yields
+
+\begin{equation}
+    \Delta = \frac{f_u - f_d}{S_0(u-d)}
+\end{equation}
+\begin{equation}
+    B = \frac{f_du-f_ud}{(u-d)(1+r)}
+\end{equation}
+
+It is evidently possible to construct a portfolio with identical payoff structure as the option itself, according to
+
+
+\begin{equation}
+     \frac{f_u - f_d}{S_0(u-d)} S_0 + \frac{f_du-f_ud}{(u-d)(1+r)}
+\end{equation}\label{eq:reppor}
+
+
+Assuming no-arbitrage, the price of the option must thus equal the price of constructing the replicating portfolio (i.e. buying $\Delta$ shares and investing $B$ in a risk-free asset). Otherwise, one could buy the cheaper alternative while selling the more expensive to obtain a risk-free profit. A negative $\Delta$ implies shorting the underlying asset (do I need footnote for shorting?), and a negative $B$ implies borrowing money at the risk-free rate instead of lending (saving) it.
+
+There are several interesting points to note about this result: firstly, note that $\Delta$, representing the amount of shares to hold or short, can also be mathematically thought of as the ratio of the range of option prices at maturity to the range of the underlying prices at maturity. The choice of notation is deliberate, as this is precisely the one-step discrete version of the delta Greek introduced earlier. Secondly, note that the derivation assumed neither call nor put, and functions therefore as a pricing model for any European-style option. Perhaps the most interesting observation, however, is the fact that this pricing approach contains no information about the expected return of the underlying, or the probability with which it will rise/fall in value. The authors motivate this intuitively by the fact that such expectations are already reflected in the price of the underlying, and need not be explicitly accounted for. The option is priced relative to the underlying.
+
+This also leads to the fundamental concept of \emph{risk-neutral} valuation. Rearrange THE EQUATION ABOVE into
+
+\begin{equation}
+     \frac{1}{1+r}(f_u(\frac{(1+r)-d}{u-d})+f_d(\frac{u-(1+r)}{u-d}))
+\end{equation}
+
+. Let $\tilde p := \frac{(1+r)-d}{u-d}$ be the probability of an up move, and  $\tilde q := \frac{u-(1+r)}{u-d}$ the probability of a down move. The no-arbitrage assumption imposes $d \leq (1+r) \leq u$, which leads to $0 \leq \tilde p \leq 1$ and  $0 \leq \tilde q \leq 1$ (https://quant.stackexchange.com/questions/55239/explaining-the-risk-neutral-measure) OR (https://web.ma.utexas.edu/users/mcudina/m339d-lecture-17-binomial-option-pricing-one-period.pdf)
+. Furthermore, $\tilde p + \tilde q = 1$ (quant stack citation???). These can be interpreted as risk-neutral probabilities, and thus the option can be priced as the expected payoff under this new probability measure, discounted at the risk-free rate. One can think of risk-neutral valuation as a convenient mathematical reformulation. By considering the equivalent situation in an alternative reality where market participants are assumed to be risk-neutral (which clearly does not hold in our reality \cite{kahneman2013prospect}) one obtains a more familiar framework for valuing assets by considering their discounted expected cash flows. This reformulation enables the use of powerful tools from probability theory. For these reasons, the risk-neutral approach is widely adopted in modern option pricing, and elements of it will be found in all of the models to be introduced later. \cite{gisiger2010risk} \cite{tham2001risk}
+
+\begin{equation}
+     \frac{1}{1+r}(f_u\cdot \tilde p + f_d \cdot (1-\tilde p))
+\end{equation}
 
 
 
 
 
+(IMAGE  OF THE BINOMIAL ONE STEP THINGY)
 
 
 
-1. Start with the Basic Problem
-Begin by framing the fundamental challenge: "How do we determine what an option is worth today, given its uncertain future payoff?"
-2. Introduce the Replication Concept
-Explain that options can be priced by creating portfolios of simpler instruments (stocks and bonds) that replicate their payoffs. Due to no-arbitrage principles, the option must be worth exactly what this replicating portfolio costs.
-3. Use the Binomial Model as a Concrete Example
-The one-period binomial model provides an intuitive entry point:
 
-Show how a stock that can go up or down can be combined with risk-free bonds to replicate an option's payoff
-Demonstrate that this leads to a unique option price regardless of investor preferences
+\section{The GPU and Parallel Computing} \label{sec:gpu-computing}
+The graphics processing unit (GPU) is a processor specified for graphics-related processing. Starting in the 1980s, the demand for 2D and 3D graphically based consumer software, mainly driven by video games, surged. In practice, this entailed performing a large amount of floating-point operations per seconds (FLOPS) associated with graphical operations like shading and rasterization. Front-runners of delivering affordable graphics computing capabilities included NVIDIA and ATI Technologies (later acquired by Advanced Micro Devices (AMD)).\cite{sanders2010cuda} \cite{kirk2016programming}
 
-4. Explain the Risk-Neutral Insight
-Show how solving the replication equations reveals a simpler way to think about option pricing:
+Hennessy and Patterson \cite{hennessy2011computer} loosely define \emph{latency} as the time between the start and completion of a single event, and \emph{throughput} as the total amount of work performed in a given time. These metrics (and specific variants thereof) are widely used in computing performance contexts. While both central processing units (CPUs) and GPUs have seen performance improvements on both ends, the authors show that relative throughput improvements tend to outweigh relative latency improvements. This is not unreasonable - increasing throughput is (within limits) mostly a manner of providing more of the same resources already available. Latency improvements have, on the other hand, already reached closer to the theoretical limits imposed by the laws of physics \cite{hennessy2011computer} \cite{sanders2010cuda}. Suomela's summary of statistics on trends for both clock speed and instruction latencies corroborate these claims (cite PPC website?).
 
-We can calculate the option price by taking the expected value of future payoffs under special "risk-neutral" probabilities
-These probabilities make all assets grow at the risk-free rate (on average)
-This isn't claiming the world is risk-neutral, but provides a computational shortcut
+This, in combination with the fact that graphics-related calculations are well-structured for concurrency exploitation (covered in section \ref{subsec:parallell}), led to the evolution towards the exceptionally throughput-optimized GPU architectures of today's age. At the same time, there grew an increasing interest in the utilization of these parallel computing capabilities for other purposes. However, these advances alone were insufficient in unlocking the potential for so called general-purpose GPU (GPGPU) programming, as the hardware lacked the flexibility needed for general-purpose computing, and no GPGPU programming models and tools were readily available. The initial graphics-intended hardware and software ecosystems effectively forced developers to mask their problems as those found in the graphics domain. Only after advances in these areas could GPGPU programming truly flourish. In 2007, NVIDIA released the compute unified device architecture \emph{CUDA} and corresponding software tools that greatly removed earlier restrictions in favor of GPGPU-programming. The hardware was now directly accessible without considering graphics-related interfaces, and the software tool for writing CUDA applications was a simple extension layer on top of familiar C/C++. Today, GPGPU applications are found in a wide variety of fields, including computational finance. \cite{sanders2010cuda} \cite{kirk2016programming}
 
-5. Connect to Different Pricing Models
-Explain that different option pricing models implement this same principle, but make different assumptions about how the underlying asset's price evolves:
+\subsection{CPU and GPU Architecture}
 
-Lattice models: Discrete price movements with risk-neutral probabilities
-PDE models: Continuous price paths with specific dynamics
-Monte Carlo: Simulation of many possible price paths under risk-neutral assumptions
+Figure \ref{fig:CPUandGPU} represents a very simple model of a modern CPU and GPU. The \emph{arithmetic logic unit} (ALU) is responsible for performing bitwise operations on data, \emph{registers} (not explicitly visible in figure) for storing memory addresses, instructions, and data to operate on, as well as additional supporting components, e.g. for control of flow, or communication with the external environment. The CPU operates in a loop of two-staged fetch-execute instruction cycles, where an instruction is first loaded into the so-called instruction register. After this, the instruction is decoded and executed, which in practice means either data processing, data transfer, or control logic related to the instruction sequence. This loop continues until the program halts due to either finishing or due to an interruption by another module.\cite{stallings2011operating}
 
-This approach provides:
+CPUs have with time adapted to improve performance by utilizing various parallelism mechanisms. Instruction-level parallelism (ILP) refers to a set of techniques the processor uses for executing multiple instructions, either in part or fully, simultaneously. Common examples of these are pipelining, branch prediction and speculative execution. Processor architectures often contain \emph{single instruction multiple data} (SIMD) capabilities through large vector registers capable of storing multiples of the same data type, and instructions that can operate on these at once. And to top it off, most modern processors are multi-core, meaning they literally contain multiple instances of the main aforementioned components for use. This enables a higher thread-level parallelism (TLP), where a \emph{thread} — informally defined as an independent sequence of instructions that can be scheduled and executed as a separate unit of work \textbf{do I need src??} — can run on each core simultaneously. Despite this, the CPU remains primarily latency-optimized, and does not hold a candle to the typical GPU throughput. \cite{hennessy2011computer}
 
-An intuitive understanding of the fundamental pricing principle
-A clear connection to the different computational methods you'll discuss later
-Sufficient theoretical foundation without overwhelming mathematical detail
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{CPUAndGPU.png}
+    \caption{Simple diagrams of modern multi-core CPU and GPU architectures, showcasing their main respective components. Each CPU core contains an arithmetic logic unit (ALU) for performing bitwise operations and a control unit for handling program flow. Hierarchical (L1-L3) on-chip cache memory minimizes data transfer bottlenecks between the (D)RAM and the cores. On the GPU, streaming multiprocessors correspond to cores. The design clearly emphasizes parallel computing power over control and latency optimization. The PCI-Express serves as a data transfer interface between the processors. source: https://enccs.github.io/gpu-programming/2-gpu-ecosystem/ OK TO DO THIS??}
+    \label{fig:CPUandGPU}
+\end{figure}
 
-- the choice of option pricing model really is the choice of how to model the underlying asset's price behavior
-\subsubsection{Replicating portfolio and no-arbitrage principle}
-\subsection{risk-neutral derivation, and how it manifests in our three model groups}
+In contrast, while lacking many of the sophistication that makes the CPU excel at sequential and "control-complex" tasks, the GPU fits in more raw computation power for a massively throughput-optimized architecture that excels at the specialized task of parallel numerical computation. The term single instruction multiple thread (SIMT) is often used to describe GPU computation, as the concurrency is enabled on thread-level by a massive amount of threads running scalar computations in parallel, as opposed to single-threaded computation using SIMD and ILP methods (or multi-threaded on a comparatively few cores). Suomela (cite PPC) has nicely summarized these differing parallelism paradigms. A modern CUDA-based GPU containing many independent \emph{streaming multiprocessors} (SM), which can be considered as a group of many \emph{streaming processors} (SP) (read: ALUs) sharing some control units and instruction memory registers. Threads are grouped in to groups of 32, called \emph{warps}, which always execute in lock-step, i.e. simultaneous execution on their respective data. The threads in a warp are thus dispatched to a corresponding amount of SPs using these shared resources. Similarly to a multi-core CPU, all SMs share a higher-latency global memory (akin to RAM), and are individually allocated a small but fast on-chip cache for minimizing data transfer bottlenecks, among other things (to be discussed later). \cite{sanders2010cuda} \cite{kirk2016programming} (cite PPC)
 
+
+
+\subsection{(GP)GPU Programming Model}
+
+
+
+add * footnote explaining warps vs blocks, link to Suomela PPC
+Thread hierarchy (threads, blocks, grids)
+Memory spaces (global, shared, constant, texture)
+
+-> WHY THIS? difference between logical view vs hardware view. Logical for structuring problem (indexing) according to its "natural dimensions" better, and hardware independence no matter how many SMs available et.c. + shared memory constructs for synching work!
+
+
+
+
+Hardware-Level Concerns (Managed by GPU)
+
+Warp formation and execution (32 threads in lockstep)
+Warp scheduling on available SMs
+Thread masking during branch divergence
+Memory coalescing at warp level
+Register allocation per thread
+L1/L2 cache management
+SM resource allocation
+Load balancing across SMs
+
+Programmer-Level Concerns (Your Focus)
+
+Block and grid dimensions that match problem structure
+Thread indexing within problem domain
+Shared memory allocation and usage
+Managing data transfers between CPU and GPU
+Minimizing thread divergence
+Optimizing memory access patterns
+Balancing resources per thread/block
+Maximizing occupancy (concurrent warps)
+Synchronization between threads when needed
+Decomposing problem into parallel components
+
+The key insight is that programmers think in terms of the problem structure (blocks/grids), while the hardware manages the execution details (warps/SMs). This separation of concerns is what makes CUDA both powerful and accessible.RetryClaude can make mistakes. Please double-check responses.
+
+
+
+
+
+Execution model and scheduling
+CUDA/OpenCL programming paradigms
+
+\subsection{Parallel Computing Fundamentals and GPU suitability}\label{subsec:parallell}
+
+Types of parallelism (data, task, instruction)
+Amdahl's Law and theoretical speedup limits
+Dependency chains and their impact
+Synchronization requirements
+Characteristics of "GPU-friendly" algorithms
+Identifying parallelizable components
+MAKE POINT THAT GRAPHICS CALCULATIONS ON PIXESL ETC WERE LARGELY PARALLELIZABLE DUE TO LOW DEPENDENCY CHAINS  
+Common computation patterns in finance
+Performance metrics and evaluation
 
 \subsection{WHY GPU? the need for computational power:
 
@@ -649,40 +742,6 @@ The computational demands become especially intense during market stress when qu
 
 - why GPU, why optimize for throughput vs latency
 
-
-\section{The GPU and Parallel Computing} \label{sec:gpu-computing}
-\subsection{CPU vs. GPU Architecture}
-
-Traditional CPU design philosophy
-GPU architectural principles
-SIMD vs. SIMT execution models
-Memory hierarchy differences
-
-\subsection{GPU Programming Model}
-
-Thread hierarchy (threads, blocks, grids)
-Memory spaces (global, shared, constant, texture)
-Execution model and scheduling
-CUDA/OpenCL programming paradigms
-
-\subsection{Parallel Computing Fundamentals and GPU suitability}
-
-Types of parallelism (data, task, instruction)
-Amdahl's Law and theoretical speedup limits
-Dependency chains and their impact
-Synchronization requirements
-Characteristics of "GPU-friendly" algorithms
-Identifying parallelizable components
-Common computation patterns in finance
-Performance metrics and evaluation
-
-\subsection{Performance Considerations} ???
-
-Memory transfer bottlenecks
-Thread divergence
-Coalesced memory access
-Occupancy optimization
-Warp efficiency
 
 \clearpage
 
