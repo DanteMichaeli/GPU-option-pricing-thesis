@@ -62,6 +62,7 @@
 \usepackage{graphicx}
 \usepackage[inkscapelatex=false]{svg}
 \usepackage{tikz}
+\usepackage{subcaption}
 
 
 %% Use this if you write hard core mathematics, these are usually needed
@@ -539,7 +540,7 @@ The stock price relative to the strike price is perhaps the most obvious factor.
 
 Volatility, a statistical measure of the variation in asset prices over a specific time period, has a positive effect on both call and put options. This can be motivated by the limited downside - unlimited upside nature of options (see figure \ref{fig:optiontable}), which makes larger price movements more advantageous as it increases the probability of moving ITM. This is especially obvious for OTM positions, where a price movement is still needed in order not to expire worthless, but holds for ITM positions as well, as the unlimited potential for becoming even deeper ITM outweighs the limited downside of going OTM.
 
-Time to maturity has a more complex relationship with the price, and depends on both the option style and the context. For American-style options where early exercise is allowed, it makes sense that an expiration date further in the future leads to more opportunity for favorable movements in the underlying, thereby commanding a higher price. This is effectively the same argument as was made for  volatility. While this so called "time-decay" argument also holds for European-style options, the lack of early-exercise complicates the matter. There exist specific scenarios where one would benefit from exercising the option earlier. The authors propose the example of a future dividend payment to the shareholders of the underlying company, which theoretically decreases the share price and thereby the value of the corresponding call option. An example of a put option being of higher value with a shorter timer to maturity would be the case of a very deep ITM position, e.g. if the company of the underlying asset has filed for bankruptcy. The option will almost certainly expire ITM, and thus by the \textbf{time value of money} principle this cash flow is worth more the earlier it is received \cite[pp. 97-101]{berk2007corporate}.
+Time to maturity has a more complex relationship with the price, and depends on both the option style and the context. For American-style options where early exercise is allowed, it makes sense that an expiration date further in the future leads to more opportunity for favorable movements in the underlying, thereby commanding a higher price. This is effectively the same argument as was made for volatility. While this so called "time-decay" argument also holds for European-style options, the lack of early-exercise complicates the matter. There exist specific scenarios where one would benefit from exercising the option earlier. The authors propose the example of a future dividend payment to the shareholders of the underlying company, which theoretically decreases the share price and thereby the value of the corresponding call option. An example of a put option being of higher value with a shorter timer to maturity would be the case of a very deep ITM position, e.g. if the company of the underlying asset has filed for bankruptcy. The option will almost certainly expire ITM, and thus by the \textbf{time value of money} principle this cash flow is worth more the earlier it is received \cite[pp. 97-101]{berk2007corporate}.
 
 
 The risk-free rate represents the return on investment one can expect from a so called risk-free investment. In practice, this means some form of government-backed treasury bill (as the government is "too big to fail"). It often serves as a sort of benchmark measurement to which investors compare the expected rates of return of other, riskier investments. Given a risk level for an investment, an increase in the risk-free rate leads to investors expecting a higher return on said investment. Consequently, since the expected rate of return is often used as the discount rate for obtaining the present value of future cash flows, it decreases the present value of the strike price, which, all else being equal, is a better deal for the buyer and increases the value of the call option. By the same token, the value of a put option decreases, as the strike price is "worth more" by maturity than what it is in today's money. In practice, however, interest rates tend to have a notable and varying impact on different underlying asset prices as well, so this is more of a theoretical relationship assuming a standard share as the underlying.
@@ -610,8 +611,7 @@ This also leads to the fundamental concept of \emph{risk-neutral} valuation. Rea
      \frac{1}{1+r}\left(f_u(\frac{(1+r)-d}{u-d})+f_d(\frac{u-(1+r)}{u-d})\right)
 \end{equation}
 
-. Let $\tilde p := \frac{(1+r)-d}{u-d}$ be the probability of an up move, and  $\tilde q := \frac{u-(1+r)}{u-d}$ the probability of a down move. The no-arbitrage assumption imposes $d \leq (1+r) \leq u$, which leads to $0 \leq \tilde p \leq 1$ and  $0 \leq \tilde q \leq 1$ (https://quant.stackexchange.com/questions/55239/explaining-the-risk-neutral-measure) OR (https://web.ma.utexas.edu/users/mcudina/m339d-lecture-17-binomial-option-pricing-one-period.pdf)
-. Furthermore, $\tilde p + \tilde q = 1$ (quant stack citation???). These can be interpreted as risk-neutral probabilities, and thus the option can be priced as the expected payoff under this new probability measure, discounted at the risk-free rate. One can think of risk-neutral valuation as a convenient mathematical reformulation. By considering the equivalent situation in an alternative reality where market participants are assumed to be risk-neutral (which clearly does not hold in our reality \cite{kahneman2013prospect}) one obtains a more familiar framework for valuing assets by considering their discounted expected cash flows. This reformulation enables the use of powerful tools from probability theory. For these reasons, the risk-neutral approach is widely adopted in modern option pricing, and elements of it will be found in all of the models to be introduced later. \cite{gisiger2010risk} \cite{tham2001risk}
+. Let $\tilde p := \frac{(1+r)-d}{u-d}$ be the probability of an up move, and  $\tilde q := \frac{u-(1+r)}{u-d}$ the probability of a down move. The no-arbitrage assumption imposes $d \leq (1+r) \leq u$, which leads to $0 \leq \tilde p \leq 1$ and  $0 \leq \tilde q \leq 1$ (https://quant.stackexchange.com/questions/55239/explaining-the-risk-neutral-measure) OR (https://web.ma.utexas.edu/users/mcudina/m339d-lecture-17-binomial-option-pricing-one-period.pdf). Furthermore, $\tilde p + \tilde q = 1$ (quant stack citation???). These can be interpreted as risk-neutral probabilities, and thus the option can be priced as the expected payoff under this new probability measure, discounted at the risk-free rate. One can think of risk-neutral valuation as a convenient mathematical reformulation. By considering the equivalent situation in an alternative reality where market participants are assumed to be risk-neutral (which clearly does not hold in our reality \cite{kahneman2013prospect}) one obtains a more familiar framework for valuing assets by considering their discounted expected cash flows. This elegant reformulation enables the use of powerful tools from probability theory. For these reasons, the risk-neutral approach is widely adopted in modern option pricing, and elements of it will be found in all of the models to be introduced later. \cite{gisiger2010risk} \cite{tham2001risk}
 
 \begin{equation}
      \frac{1}{1+r}(f_u\cdot \tilde p + f_d \cdot (1-\tilde p))
@@ -757,9 +757,67 @@ The computational demands become especially intense during market stress when qu
 
 \section{GPU Acceleration of the Cox-Ross-Rubinstein Binomial Model} \label{sec:gpu-crr}
 
-The CRR model extends the idea of the one-period binomial model into its multi-period counterpart. Again, by assuming discrete time-periods and constant factors u and d, we now obtain a larger set of final states for the price of the underlying, as well as for the option payoff. One can now recursively backtrack the tree by starting at the final state nodes and, using the one-period model, calculating the value of the option (i.e. the value of the replicating portfolio) at each node until we obtain the initial value at t=0. For simplicity, the risk-neutral expected payoff formula (\ref{risk-neutral-expectancy}) is often used instead. Figure XYZ visualizes this idea. \cite{cox1979option}
+The CRR model extends the idea of the one-period binomial model into its multi-period counterpart. Again, by assuming discrete time-periods and constant factors u and d, one obtains a larger set of final states for the price of the underlying, as well as for the option payoff. One can now recursively backtrack the tree by starting at the final state nodes and, using the one-period model, calculating the value of the option (i.e. the value of the replicating portfolio) at each node until we obtain the initial price at t=0. For simplicity, the risk-neutral expected payoff formula (\ref{risk-neutral-expectancy}) is used, and the tree thus models the underlying asset price in the risk-neutral world. Figure \ref{fig:combined} visualizes this idea. \cite{cox1979option}
 
-A so far omitted detail has been the choice of the factors $u$ and $d$. The authors of the paper have defined $u = e^{\sigma\sqrt{t/n}}$ and $d = e^{-\sigma\sqrt{t/n}}$, where $\sigma$ is the annualized volatility (standard deviation) of the asset return, $t$ is the time of the entire period, and $n$ is the number of sub-intervals. This is useful for several reasons: firstly, it allows for modeling the underlying asset price as a \emph{geometric Brownian motion} in the limit, which makes the model converge to the famous BSM model. Secondly, the tree recombines for all permutations of the same price path, allowing for feasible computational requirements. Another detail to note is that the discount rate used in the sub-interval calculations must be adjusted such that it yields the same return as the initial risk-free rate used in the one-period example.
+A so far omitted detail has been the choice of the factors $u$ and $d$. The authors of the original paper have defined $u = e^{\sigma\sqrt{t/n}}$ and $d = e^{-\sigma\sqrt{t/n}}$, where $\sigma$ is the annualized volatility (e.g. estimated from historical data) of the (log-return of) the asset, $t$ is the time of the entire period (in years), and $n$ is the number of sub-intervals. This is useful for several reasons: firstly, it allows for modeling the underlying asset price as a \emph{geometric Brownian motion} in the limit, which makes the model converge to the famous BSM model as $n \rightarrow \infty$. Secondly, the tree recombines for all permutations of a price path, allowing for feasible computational requirements. Another detail to note is that the discount rate used in the sub-interval calculations must be adjusted such that it yields the same return as the initial risk-free rate used in the one-period example. A continuous compounding rate $e^{rt/n}$ is often used in lieu of the discrete version. \cite{cox1979option} \cite{hull2013fundamentals}
+
+The implementation of the CRR model for European-style options comprises three steps: first, compute the price of the underlying at all the terminal nodes. Then, calculate the corresponding option payoffs for the terminal nodes. Finally, backtrack the option payoff tree and recursively compute its value at the end of the previous period using the current "final states"\footnote{Note the space-optimization by partially overwriting array $C$ at each iteration of the inner loop in step 3. This reuse of array indices works since each node $C_{i,j}$ can be calculated from its children $C_{i+1,j}$ and $C_{i+1,j+1}$.}. The following pseudocode is based on the Python implementation by TheQuantPy [how to cite GitHub?]. Let $S_0$ be the initial underlying (stock) price and $n$ the number of periods. The nodes of the recombining trees can be expressed in terms of indices $i$ and $j$, where $0 \leq i \leq n$ are points in time ranging from the start to maturity, and $0 \le j \le i$ are the different nodes at time point $i$ based on the number of up-ticks $j$ the stock price has moved. In other words, the stock price at each node is defined as $S_{i,j} = S_0u^jd^{i-j}$. In the same manner, $C_{i,j}$ represents the option price at the corresponding node.
+
+\begin{verbatim}
+# S_0: initial stock price
+# K: strike price 
+# T: time to maturity in years
+# r: annualized risk-free rate
+# n: number of periods
+# v: annualized volatility
+# type ('C' for call, 'P' for put)
+
+
+
+func crr_euro(S_0, K, T, r, n, v, type) {
+    dt := T/n
+    u := exp(v*sqrt(dt))
+    d := 1/u
+    disc := exp(-r*dt)
+    p := (exp(r*dt) - d)/(u-d)
+
+    #1. compute the stock price at all terminal nodes (i=n)
+    S := new array[0...n]
+    S[0] = S_0*d^n
+    for j=1 to n {
+        S[j] = S[j-1]/d*u
+    }
+
+    #2. compute option values at all terminal nodes
+    C := new array[0...n]
+    for j=0 to n {
+        if type = 'C' {
+            C[j] = max(0, S[j]-K)
+        } else {
+            C[j] = max(0, K-S[j])
+        }
+    }
+
+    #3. recursively compute previous option values using risk-neutral expectation
+    for i=n to 0 {
+        for j=0 to i {
+            C[j] = disc * (p*C[j+1] + (1-p)*C[j])
+        }
+    }
+
+    return C[0]
+}
+\end{verbatim}
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=5cm]{two-period-stock.png}
+    \hspace{2}
+    \includegraphics[height=5cm]{two-period-option.png}
+    \caption{A visualization of the two-period example of the CRR model. The upper tree depicts the price paths of the underlying asset, while the lower tree depicts the paths of the (call) option value. FIX LATER WITH OWN NEW IMGS AND BETTER TEXT. IT SHOULD HAVE MORE PERIODS, AND TEXT SHOULD EXPLAIN THAT FOR PUTS YOU JUST CHANGE THE ORDER OF THE MAX. Also, make it explain the pseudocode for the algorithm as well}
+    \label{fig:combined}
+\end{figure}
 
 
 
