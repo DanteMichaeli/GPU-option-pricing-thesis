@@ -565,7 +565,7 @@ A starting point would be to draw inspiration from the arguments used when prici
 
 The \emph{no-arbitrage principle} is the essential assumption for what is to come. Arbitrage describes the act of simultaneous buying and selling the same asset in different markets to make risk-free profit off price differences. Imagine the price of tomatoes being higher in one of two neighboring towns. Perhaps the tomato farmers were really successful in town A this year, and the increased supply dropped the prices somewhat. This information has not yet been priced into the tomatoes in town B. The adroit tradesman could then buy tomatoes in town A and immediately sell them in town B to pocket the difference, without taking any position on future tomato price movements. This, again, assumes ideal conditions, like enough liquidity to always be able to both buy and sell, as well as ignoring friction costs like transportation. The idea behind our assumption is that this situation ultimately is self-eliminating: as the tradesman continues to introduce more tomatoes to the total supply in town B they will drive the price down until an equilibrium has been reached. Other people may take notice, and decide to adopt the same strategy, eliminating the opportunity even faster. The information of the increased supply in town A has now been priced into the tomatoes in town B. This example is not too far-fetched from reality. Modern digital markets, while not perfectly adhering to the assumptions laid out above, form an environment where short-term arbitrage opportunities can exist. Nevertheless, as sophisticated market participants exploit these market inefficiencies they quickly disappear due to subsequent price corrections. Thus, the no-arbitrage principle is a reasonable assumption, at least over longer time periods. If our pricing methodology is based on future cash flows it logically follows that in absence of arbitrage opportunities two assets producing the same cash flows must be priced equally (DO I NEED SRC FOR THIS?????).
 
-If then, it were possible to find an existing asset with identical cash flows as the option itself, whose price is already known, that should theoretically equal the price of the option. Hull et al. \cite{hull2013fundamentals} consider a one-step binomial model as the simplest setup to utilize this assumption. In this discrete-time model we consider the underlying asset price's evolution over one time-step. This will be presented in a slightly different manner.Let $S_0$ be the current price of an asset, and $f$ the current price of an option on this underlying asset, with time $T$ to maturity. The underlying price is restricted to two future states: $S_0u$ or $S_0d$ ($u>1$, $d<1$), each corresponding to the option payoffs $f_u$ and $f_d$. This restriction allows for creating a so-called \emph{replicating portfolio} that fully matches the payoff structure of the option. This portfolio consists of $\Delta$ shares of the underlying asset, as well as $B$ amount of a risk-free asset, for example money in a savings account, appreciating in value by the risk-free rate $r$. After time period $T$ our portfolio can be in two states, depending on if the underlying asset price increased or decreased. Equating these with the corresponding option payoffs obtains two equations with two unknown variables, $\Delta$ and $B$:
+If then, it were possible to find an existing asset with identical cash flows as the option itself, whose price is already known, that should theoretically equal the price of the option. Hull et al. \cite{hull2013fundamentals} consider a one-step binomial model as the simplest setup to utilize this assumption. In this discrete-time model we consider the underlying asset price's evolution over one time-step. This will be presented in a slightly different manner. Let $S_0$ be the current price of an asset, and $f$ the current price of an option on this underlying asset, with time $T$ to maturity. The underlying price is restricted to two future states: $S_0u$ or $S_0d$ ($u>1$, $d<1$), each corresponding to the option payoffs $f_u$ and $f_d$. Figure \ref{fig:oneperiodbinom} visualizes the model setup. This restriction allows for creating a so-called \emph{replicating portfolio} that fully matches the payoff structure of the option. This portfolio consists of $\Delta$ shares of the underlying asset, as well as $B$ amount of a risk-free asset, for example money in a savings account, appreciating in value by the risk-free rate $r$. After time period $T$ our portfolio can be in two states, depending on if the underlying asset price increased or decreased. Equating these with the corresponding option payoffs obtains two equations with two unknown variables, $\Delta$ and $B$:
 
 \begin{equation}
 \begin{cases}
@@ -587,17 +587,27 @@ It is evidently possible to construct a portfolio with identical payoff structur
 
 \begin{equation}
      \frac{f_u - f_d}{S_0(u-d)} S_0 + \frac{f_du-f_ud}{(u-d)(1+r)}
-\end{equation}\label{eq:reppor}
+\label{eq:replicating-portfolio}
+\end{equation}
 
 
-Assuming no-arbitrage, the price of the option must thus equal the price of constructing the replicating portfolio (i.e. buying $\Delta$ shares and investing $B$ in a risk-free asset). Otherwise, one could buy the cheaper alternative while selling the more expensive to obtain a risk-free profit. A negative $\Delta$ implies shorting the underlying asset (do I need footnote for shorting?), and a negative $B$ implies borrowing money at the risk-free rate instead of lending (saving) it.
+Assuming no-arbitrage (along with other assumptions like perfect capital markets, no transaction costs, no taxes, no dividends ? ..., ), the price of the option must thus equal the price of constructing the replicating portfolio (i.e. buying $\Delta$ shares and investing $B$ in a risk-free asset). Otherwise, one could buy the cheaper alternative while selling the more expensive to obtain a risk-free profit. A negative $\Delta$ implies shorting the underlying asset (do I need footnote for shorting?), and a negative $B$ implies borrowing money at the risk-free rate instead of lending (saving) it.
 
-There are several interesting points to note about this result: firstly, note that $\Delta$, representing the amount of shares to hold or short, can also be mathematically thought of as the ratio of the range of option prices at maturity to the range of the underlying prices at maturity. The choice of notation is deliberate, as this is precisely the one-step discrete version of the delta Greek introduced earlier. Secondly, note that the derivation assumed neither call nor put, and functions therefore as a pricing model for any European-style option. Perhaps the most interesting observation, however, is the fact that this pricing approach contains no information about the expected return of the underlying, or the probability with which it will rise/fall in value. The authors motivate this intuitively by the fact that such expectations are already reflected in the price of the underlying, and need not be explicitly accounted for. The option is priced relative to the underlying.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{oneperiodbinom.jpg}
+    \caption{Graphical representation of the one-period binomial option pricing model. REPLACE WITH YOUR OWN VERSION, MAKE TEXT BETTER, ALSO INCLUDE THE CALL OPTION UP AND DOWNS}
+    \label{fig:oneperiodbinom}
+\end{figure}
 
-This also leads to the fundamental concept of \emph{risk-neutral} valuation. Rearrange THE EQUATION ABOVE into
+
+
+There are several interesting points to note about this result: firstly, note that $\Delta$, representing the amount of shares to hold or short, can also be mathematically thought of as the ratio of the range of option prices at maturity to the range of the underlying prices at maturity. The choice of notation is deliberate, as this is precisely the one-step discrete version of the delta Greek introduced earlier. Secondly, note that the derivation assumed neither call nor put, and functions therefore as a pricing model for any European-style option. Perhaps the most interesting observation, however, is the fact that this pricing approach contains no information about the expected return of the underlying, or the probability with which it will rise/fall in value. The authors motivate this intuitively by the fact that such expectations are already reflected in the price of the underlying, and need not be explicitly accounted for. The option is priced relative to the underlying asset.
+
+This also leads to the fundamental concept of \emph{risk-neutral} valuation. Rearrange \ref{eq:replicating-portfolio} into
 
 \begin{equation}
-     \frac{1}{1+r}(f_u(\frac{(1+r)-d}{u-d})+f_d(\frac{u-(1+r)}{u-d}))
+     \frac{1}{1+r}\left(f_u(\frac{(1+r)-d}{u-d})+f_d(\frac{u-(1+r)}{u-d})\right)
 \end{equation}
 
 . Let $\tilde p := \frac{(1+r)-d}{u-d}$ be the probability of an up move, and  $\tilde q := \frac{u-(1+r)}{u-d}$ the probability of a down move. The no-arbitrage assumption imposes $d \leq (1+r) \leq u$, which leads to $0 \leq \tilde p \leq 1$ and  $0 \leq \tilde q \leq 1$ (https://quant.stackexchange.com/questions/55239/explaining-the-risk-neutral-measure) OR (https://web.ma.utexas.edu/users/mcudina/m339d-lecture-17-binomial-option-pricing-one-period.pdf)
@@ -605,13 +615,8 @@ This also leads to the fundamental concept of \emph{risk-neutral} valuation. Rea
 
 \begin{equation}
      \frac{1}{1+r}(f_u\cdot \tilde p + f_d \cdot (1-\tilde p))
+\label{risk-neutral-expectancy}
 \end{equation}
-
-
-
-
-
-(IMAGE  OF THE BINOMIAL ONE STEP THINGY)
 
 
 
@@ -751,9 +756,12 @@ The computational demands become especially intense during market stress when qu
 \clearpage
 
 \section{GPU Acceleration of the Cox-Ross-Rubinstein Binomial Model} \label{sec:gpu-crr}
-\subsection{Binomial}
-\subsection{Trinomial}
-\subsection{???}
+
+The CRR model extends the idea of the one-period binomial model into its multi-period counterpart. Again, by assuming discrete time-periods and constant factors u and d, we now obtain a larger set of final states for the price of the underlying, as well as for the option payoff. One can now recursively backtrack the tree by starting at the final state nodes and, using the one-period model, calculating the value of the option (i.e. the value of the replicating portfolio) at each node until we obtain the initial value at t=0. For simplicity, the risk-neutral expected payoff formula (\ref{risk-neutral-expectancy}) is often used instead. Figure XYZ visualizes this idea. \cite{cox1979option}
+
+A so far omitted detail has been the choice of the factors $u$ and $d$. The authors of the paper have defined $u = e^{\sigma\sqrt{t/n}}$ and $d = e^{-\sigma\sqrt{t/n}}$, where $\sigma$ is the annualized volatility (standard deviation) of the asset return, $t$ is the time of the entire period, and $n$ is the number of sub-intervals. This is useful for several reasons: firstly, it allows for modeling the underlying asset price as a \emph{geometric Brownian motion} in the limit, which makes the model converge to the famous BSM model. Secondly, the tree recombines for all permutations of the same price path, allowing for feasible computational requirements. Another detail to note is that the discount rate used in the sub-interval calculations must be adjusted such that it yields the same return as the initial risk-free rate used in the one-period example.
+
+
 
 \section{GPU Acceleration of the Black-Scholes-Merton Model} \label{sec:gpu-bsm}
 \subsection{Black-Scholes-Merton Model Framework}
