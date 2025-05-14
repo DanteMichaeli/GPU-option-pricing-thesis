@@ -825,7 +825,7 @@ The power of CRR-style lattice models is their ability to handle American-style 
 
 The algorithm \ref{CRR-euro-pseudo} has an asymptotic time complexity of $O(n^2)$ due to the nested loop in step 3. Clearly, processing each node at every timestep becomes intensive as n grows large. There is a clear dependency chain between the nodes of subsequent time steps, as every node is computed using its children. There are, however, no dependencies among nodes within the same time step, and these could at least in theory be computed in parallel. We thus seem to have rather sizable potential speedups for large values of n. 
 
-Kolb and Pharr \cite{pharr2005gpu} implement a GPU-accelerated version of this nature. Similarly to the sequential version, the terminal stock and option values are calculated first, after which the tree backtracking ensues. For each time step, an amount of threads equal to the amount of nodes are spawned, letting each thread compute a single node from its child nodes in the previous iteration. Threads are synchronized in each time step, ensuring no data races occur when moving down the dependency chain (the time steps). Intermediate results are stored in two alternating arrays from which to read and write data. For maximum GPU utilization the algorithm is run in parallel for "a thousand or so independent options". The source code (written in Cg as this was in 2005, before even the existence of CUDA) is found in the original source. Given enough parallelization, the practical time complexity for a fixed n can thus be reduced to O(N) (should I use this terminology???). The authors used $n=1024$ and have plotted the achieved throughput (options/s) a a function of the total amount of options. The sequential CPU version achieves a constant throughput of around 110 (?see graph) options/s. The GPU-accelerated version performs worse at roughly $n < 5$, likely due to the overhead associated with GPU code, but increasingly outperforms the CPU version above this threshold. This throughput then tapers off to a a constant around 1150 options/s, yielding a 10x speedup. The limit can be attributed to maximum utilization of all parallel computing capability, or hitting another bottleneck before reaching this point (e.g. in memory bandwidth). Factors like the latter also likely explain the general S-shape curve, as opposed to a linear function (these are my own conclusions, is this ok?).
+Kolb and Pharr \cite{pharr2005gpu} implement a GPU-accelerated version of this nature. Similarly to the sequential version, the terminal stock and option values are calculated first, after which the tree backtracking ensues. For each time step, an amount of threads equal to the amount of nodes are spawned, letting each thread compute a single node from its child nodes in the previous iteration. Threads are synchronized in each time step, ensuring no data races occur when moving down the dependency chain (the time steps). Intermediate results are stored in two alternating arrays from which to read and write data. For maximum GPU utilization the algorithm is run in parallel for "a thousand or so independent options". The source code (written in Cg as this was in 2005, before even the existence of CUDA) is found in the original source. Given enough parallelization, the practical time complexity for a fixed n can thus be reduced to O(N) (should I use this terminology???). The authors used $n=1024$ and have plotted the achieved throughput (options/s) a a function of the total amount of American-style options. The sequential CPU version achieves a constant throughput of around 110 (?see graph) options/s. The GPU-accelerated version performs worse at roughly $n < 5$, likely due to the overhead associated with GPU code, but increasingly outperforms the CPU version above this threshold. This throughput then tapers off to a a constant around 1150 options/s, yielding a 10x speedup. The limit can be attributed to maximum utilization of all parallel computing capability, or hitting another bottleneck before reaching this point (e.g. in memory bandwidth). Factors like the latter also likely explain the general S-shape curve, as opposed to a linear function (these are my own conclusions, is this ok?).
 
 \begin{figure}[h]
     \centering
@@ -835,7 +835,7 @@ Kolb and Pharr \cite{pharr2005gpu} implement a GPU-accelerated version of this n
     \label{fig:combined}
 \end{figure}
 
-Ganesan, Chamberlain and Buhler \cite{ganesan2009acceleration} present another approach to parallelizing the CRR algorithm. This method focuses more on pricing a single option, and actually achieves parallelism over different time steps by a clever reformulation of the problem that breaks the direct dependencies between time steps. By using equation \eqref{risk-neutral-expectancy} the option values at timestep t are related to the prices at the next time-step t+1. By repeatedly substituting the same formula into itself and expanding, one obtains a general formula that relates the option values at the nodes at a previous time $t-N\Delta t$ with the current time-step $t$:
+Ganesan, Chamberlain and Buhler \cite{ganesan2009acceleration} present another approach that aims to utilize parallelism over the time-steps in addition to within them. This method focuses more on pricing a single option, and achieves parallelism over different time steps by a clever reformulation of the problem that breaks the direct dependencies between time steps. By using equation \eqref{risk-neutral-expectancy} the (European) option values at timestep t are related to the prices at the next time-step t+1. By repeatedly substituting the same formula into itself and expanding, one obtains a general formula that relates the option values at the nodes at a previous time $t-N\Delta t$ with the current time-step $t$:
 
 \begin{equation}
     F_{t-N\Delta t}(j) = e^{-Nr∆t} \sum_{k=0}^N c_kF_t(j+k)
@@ -846,19 +846,37 @@ Ganesan, Chamberlain and Buhler \cite{ganesan2009acceleration} present another a
 
 
 , where $0 \leq j \leq t-N\Delta t$ are the nodes from top to bottom at time-step $t - N\Delta t$, and the coefficients $c_k, 0 \leq k \leq N$ are the corresponding (risk-neutral) probabilities of the different possible price paths from node $j$ at time $t-N\Delta t$ to the nodes $j+k$ at time $t$. Just like the one-step version computes the current value using a weighted sum (risk-neutral expected value) of the values in the future two states, this general formula extends the weighted sum to include all the nodes over several future time steps that affect its value. The coefficients in this formula follow the same recursive pattern as the option values themselves, and can be computed through backward induction. Starting from time step $t$ itself, where each coefficient represents the direct relationship of a node with itself, these coefficients are built up as we move backward in time. With each step backward, they are updated using the risk-neutral probabilities to reflect all possible paths between the two time points.
-
+'
 The key insight is that while the coefficients in this reformulation still exhibits the same sequential dependency chains between sequential time steps, they can be computed independently for different segments of the lattice. Unlike for the actual option values, there is no strict requirement for starting at the terminal nodes when calculating relative option values. Using this, the authors present the following outline of a parallel algorithm:
 
 PSEUDO ALGORITHM
 
 1. Divide the lattice of N time steps into p partitions, each of length N/p
-2. For all partitions except the rightmost one, calculate coefficients recursively in parallel, backtracking from the right edge to the left. Since the rightmost partition already has the option values available at its right edge (terminal nodes) we can simply compute the option prices normally here.
+2. For all partitions except the rightmost one, calculate coefficients that relate the option values at the left boundary to those at the right boundary. This is done recursively and in parallel, backtracking from the right edge to the left. Since the rightmost partition already has the option values available at its right edge (terminal nodes) we can simply compute the option prices normally here.
 3. Once all partition coefficients have been calculated, use equation \eqref{relative-prices} to sequentially calculate the option value at each partition boundary, rapidly propagating towards the initial node while "skipping" many intermediate calculations.
 
+Figure ABC depicts the algorithm.
 
-The key insight is that by dividing the binomial tree into p partitions along the time axis, the algorithm can compute the relationship between partition boundaries in parallel. Each partition independently computes the coefficients that relate option prices at its left boundary to those at its right boundary. Since these coefficient calculations don't depend on each other across partitions, they can be performed simultaneously.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=5cm]{CRRpartitioned.png}
+    \caption{A visualization of the parallelized CRR algorithm using partitioning. BLA BLA BLA lorem ipsum. MAKE YOUR OWN PICTURE OF THIS, OR CHECK IF THE FIGURES ARE OK TO USE UNDER COPYRIGHT}
+    \label{fig:combined}
+\end{figure}
+
+
+\footnote{For what it's worth, the authors state that this can also be applied to American options by "filling in the intermediary nodes". I have been thinking about this for long now, and this still does not make sense to me. I am skeptical to claim that this is doable without having seen a better explanation on the matter. Hence, my performance analysis ignores the contribution of this step.}
+
+Again, asymptotically, we still have $O(n^2)$ as we do computations for every node in the tree, but given enough computing power parallelizing across all nodes within a time-step reduces this in practice to $O(n)$. Now, since we also parallelize over p partitions across the time-steps, we should see a factor $p$ speedup compared with the previous version. This supports the authors' own performance analysis. Furthermore, they derive the optimal number of partitions $p$ for minimal execution time, and show it is directly proportional to the amount of time steps, but inversely proportional to the latency of communication between the partitions. Diving the lattice into more partitions increases parallelism and decreases execution time up to a certain point, where the communication overhead between the partitions exceed the speedups from the gained parallelism. (The authors have a graph showing this, do I mention this, add it in the thesis or what?
+
+we should see a factor $p$ speedup compared to the previous GPU-accelerated versions, as we now parallelize over p partitions across the time steps as well.
+
+
 Once all coefficients are computed, the option prices can be rapidly propagated from the expiration date backward through each partition boundary, requiring only p sequential steps rather than N. With optimal partitioning (p = √(2N/L), where L is the communication latency), the algorithm achieves O(√N) time complexity compared to the O(N) of traditional parallel implementations that only parallelize within individual time steps.
 This approach is particularly valuable for updating prices of "high-stake" assets with minimal latency, as it significantly reduces the critical path of sequential computations while maintaining mathematical equivalence to the original CRR algorithm.
+
+
 
 
 
