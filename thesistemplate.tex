@@ -237,20 +237,19 @@ English bla bla bla
 %% 
 %% Leave first page empty
 \thispagestyle{empty}
-Options are a type of financial contract between two parties that grants the right - but not the obligation - to buy or sell a specific amount of an asset at a predetermined price by a specific future date \cite{hull2016options}. Options are thus considered a financial derivative, as their value is derived from the price of an underlying asset. Advances in both financial mathematics \cite{merton1994influence} and affordable computing power \cite{nordhaus2007two} have contributed to a rapid growth in the derivatives market by improving pricing models and risk management tools. The use of derivatives has increased significantly in the last 50 years, not only among investors and traders, but also among non-financial corporations \cite{bartram2009international}. Options and other derivatives facilitate both leveraged speculation and sophisticated risk management, allowing market participants to achieve more control over exposure to various financial risks.
+Options are a type of financial contract between two parties that grants the right - but not the obligation - to buy or sell a specific amount of an asset at a predetermined price by a specific future date \cite{hull2016options}. Options are thus considered a financial derivative, as their value is derived from the price of an underlying asset. Advances in both financial mathematics \cite{merton1994influence} and affordable computing power \cite{nordhaus2007two} have contributed to a rapid growth in the derivatives market by improving pricing models and risk management tools. The use of derivatives has increased significantly over the last half-century, not only among investors and traders, but also among non-financial corporations \cite{bartram2009international}. Options and other derivatives facilitate both leveraged speculation and sophisticated risk management, allowing market participants to achieve more control over exposure to various financial risks.
 
 There are many option pricing models, each based on different assumptions and with their own advantages and disadvantages. Regardless of the model chosen, computation speed remains a critical factor. In high-frequency trading, where transient market inefficiencies \textbf{(do I have to explain this?)} are quickly exploited over millions of trades, milliseconds can determine whether a strategy is profitable or not. Naturally, faster computation also produces more available data within a given time frame, which aids in risk management practices that often include simulation and analysis of complex portfolios over many different scenarios. This has led to a rising interest in adapting option pricing algorithms to leverage GPU parallel computing capabilities. \textbf{(do I need to define GPU here? CS thesis after all)}
 
 This thesis forms a literature review of common option pricing models' GPU acceleration potential and limitations. The aim is to assess how dependency structures in different models affect their GPU parallelization potential, what models see the greatest performance improvements of a GPU implementation, analyze the scalability of these solutions, and identify related bottlenecks. For simplicity, the following three approaches have been chosen: the Cox-Ross-Rubinstein (CRR) model, the Black-Scholes-Merton (BSM) model, and Monte Carlo (MC) simulation-based methods. Section~\ref{sec:theory} introduces formal definitions and fundamental option pricing theory. Section~\ref{sec:gpu} presents a high-level overview of the GPU, how it differs architecturally from the CPU, and how it can be used for general-purpose computing. Sections ~\ref{sec:gpu-crr}, ~\ref{sec:gpu-bsm}, and ~\ref{sec:gpu-mc} review GPU implementations of each respective approach, considering the aforementioned factors. The results are summarized in Section ~\ref{sec:summary} and conclusions are drawn in section ~\ref{sec:conclusions}.
 
-
 For scope restriction purposes, the following choices have been made:
 \begin{itemize}
-    \item Only European and American options are considered \textbf{(do I need to explain these HERE already?)}, with the exception of the Monte Carlo methods, which are particularly suitable for pricing exotic options with complex payoff structures. The term "vanilla options" refers to both European and American options, whereas "exotic options" denotes more complex contracts. Unless explicitly stated otherwise, all discussions and conclusions apply to options in general. When specific terms are used, the statements pertain strictly to those contract styles. Furthermore, it is assumed that the underlying asset does not pay a dividend.
+\item Only European and American options are considered \textbf{(do I need to explain these HERE already?)}, with the exception of the Monte Carlo methods, which are particularly suitable for pricing exotic options with complex payoff structures. The term \emph{vanilla options} refers to both European and American options, whereas \emph{exotic options} denotes more complex contracts. Unless explicitly stated otherwise, all discussions and conclusions apply to options in general. When specific terms are used, the statements pertain strictly to those contract styles. Furthermore, it is assumed that the underlying asset does not pay a dividend.\textbf{(same question here really)}
     
-    \item The purpose of this paper is to draw general conclusions about the GPU acceleration potential for different option pricing approaches. The referenced research makes use of varying computing architectures and performance metrics. Other differences, like the number of active cores in the baseline CPU implementation, or the extent to which further optimizations have been implemented, also play a role. This makes direct quantitative comparisons difficult. To account for this limitation, the main comparisons of interest are the relative speedups of the GPU-accelerated implementations compared to their respective baseline solutions, and to a smaller extent relative performance comparisons between different GPU-accelerated implementations.
+\item The purpose of this paper is to draw general conclusions about the GPU acceleration potential for different option pricing approaches. The referenced research makes use of varying computing architectures and performance metrics. Other differences, like the number of active cores in the baseline CPU implementation, or the extent to which further optimizations have been implemented, also play a role. This makes direct quantitative comparisons difficult. To account for this limitation, the main comparisons of interest are the relative speedups of the GPU-accelerated implementations compared to their respective baseline solutions, and to a smaller extent relative performance comparisons between different GPU-accelerated implementations.
     
-    \item The models and implementations are studied purely from the perspective of computational efficiency. That is, no interest is taken in the analysis of accuracy, numerical stability, or any other unrelated aspect. The focus remains exclusively on execution time improvements and parallelization potential.
+\item The models and implementations are studied purely from the perspective of computational efficiency. That is, no interest is taken in the analysis of accuracy, numerical stability, or any other unrelated aspect. The focus remains exclusively on execution time improvements and parallelization potential.
 
 \end{itemize}
 
@@ -262,38 +261,30 @@ For scope restriction purposes, the following choices have been made:
 
 \section{Option Pricing Fundamentals} \label{sec:theory}
 
-The following section presents a sufficient theoretical introduction to options. Firstly, general definitions are established, after which 
-vanilla option payoff functions are examined. Next, the risk-neutral valuation framework is presented, (non-rigorously) explaining the mathematical principles that underpin all major pricing models. This is followed by a subsection on the key determinants that influence option prices, and the sensitivity measures, known as "the Greeks", that quantify how prices change in response to these determinants. The section concludes with a discussion on the inherent computational challenges of option pricing, further motivating the exploration of GPU acceleration techniques.
+The following section presents a sufficient theoretical introduction to options. Firstly, general definitions are established along with vanilla option payoff structures \textbf{(if these are two separate subsections, can I use word along here?)}. This is followed by a section \textbf{(do I hyperlink it?)} on the key determinants that influence option prices, and the sensitivity measures, known as \emph{the Greeks}, that quantify how prices change in response to these determinants. Next, the no-arbitrage principle and risk-neutral valuation framework are presented, explaining the theory that underpins all pricing models. The section concludes with a discussion on the inherent computational challenges of option pricing, further motivating the exploration of GPU acceleration techniques. \textbf{either explore the Greeks more in the actual model chapters, OR remove this thing from here? Opinions?} \textbf{have not written yet this inherent computational challenges thing, perhaps not necessary?}
 
 
 \subsection{Definitions}
-Chapter 1.5 in \cite{hull2016options} presents the following useful definitions and related terminology:
+The following terminology is from Chapter 1.5 in Hull's classic book ``Options, Futures, and Other Derivatives'' \cite{hull2016options}:
 
-\paragraph{Call Option:}Grants the holder the right (but not the obligation) to buy the underlying asset by a certain date for a certain price.
+\paragraph{Call Option:}Contract that grants the holder the right (but not the obligation) to buy the underlying asset by a certain date for a certain price.
 
-\paragraph{Put Option:}Grants the holder the right (but not the obligation) to sell the underlying asset by a certain date for a certain price.
+\paragraph{Put Option:}Contract that grants the holder the right (but not the obligation) to sell the underlying asset by a certain date for a certain price.
 
 \paragraph{Strike Price:}The predetermined price at which the underlying asset can be bought (for a call option) or sold (for a put option) upon exercise.
 
 \paragraph{Maturity (date):}The predetermined date on which the option expires, determining the latest point at which it can be exercised.
 \bigskip
 
-Note the ambiguous use of "by", as the specific rules for when an option can be exercised depends on the style of option. For our vanilla options, a European-style option must be exercised on the maturity date, whereas an American-style option can be exercised at any time up to the maturity.
-
-There are always two parties to every option contract: the investor (buyer), who takes the \textbf{long} position, pays an up front premium to the underwriter (seller) for the right to engage in a future trade. Conversely, the underwriter, who takes the \textbf{short} position, now has an obligation to engage in this trade, and thus incurs a risk. A single option contract is considered a zero-sum game between the investor and the underwriter. Thus, we have a pair of mirrored positions for both a call option and a put option. These can be visualized by graphing the profit of each position at the time of exercising as a function of the underlying asset price. Alternatively, one can consider the slightly modified \textbf{payoff} of the position, which adds the premium back to the profit to focus only on the fundamental mechanics of the option itself:
-\begin{equation}
-    \text{profit}=\text{payoff}-\text{premium}
-\end{equation}
+Note the ambiguous use of ``by'' in the definitions above, as the specific rules for when an option can be exercised depends on the style of option. A European option can only be exercised on the maturity date, whereas an American option can be exercised at any time up to maturity. For clarity, the underlying asset will hereinafter be simply referred to as the stock, and the current stock price referred to as the \emph{spot price}. There are always two parties to every option contract: the buyer, who takes the \emph{long} position, pays an upfront premium to the underwriter (seller) for the right to engage in a future trade. Conversely, the underwriter, who takes the \emph{short} position, incurs an obligation to engage in this trade, thus assuming risk. \textbf{(I don't know whether to use emph, bold, or parentheses here for terminology)}
 
 \subsection{Vanilla Option Payoff Structures}\label{payoffs}
 
+An option is a zero-sum game between the buyer and the underwriter, hence we have a pair of mirrored positions for every contract. These can be visualized by graphing the profit at the time of exercising as a function of the spot price. Alternatively, one can consider the slightly modified \emph{payoff} of the position, which excludes the premium paid or received to focus only on the fundamental mechanics of the option itself, regardless of what someone paid for it: $\text{profit} = \text{payoff} - \text{premium}$. Profit diagrams for each vanilla option position are presented below, along with practical examples for intuition. The options are based on one unit of stock, and transaction costs are ignored.
 
-In a similar fashion to \cite[pp. 7-10]{hull2016options}, profit diagrams for each vanilla option position is presented below, along with practical examples for intuition. We consider European-style options for simplicity, but the profit diagrams for American-style options are identical as we only add the choice of exercising earlier than at maturity. The options are based on one unit of the underlying asset. Transaction costs have been ignored. Let $p$ be the premium, or price paid for the option, $K$ the strike price, and $S_T$ the price of the underlying asset at maturity.
+For a call option, the investor is willing to pay a premium upfront in order to fix a purchase price for a later time. In other words, they expect the price of the stock to increase enough to offset this premium. Figure~\ref{fig:long_call_payoff} depicts this position. As long as the spot price is less than the strike price, $S_T < K$, the buyer is at a net loss equal to the premium $p$. The option is said to be \emph{out of the money (OTM)} and has no intrinsic value. When $S_T = K$ the option is considered to be \emph{at the money (ATM)}, after which, when $S_T > K$ it is \emph{in the money (ITM)} and has intrinsic value equal to the payoff \cite{hull2013fundamentals}. Still, the profit remains negative as long as $\text{payoff} < p$. Only  after offsetting the premium does the option truly become profitable for the buyer. Note that the ``moneyness'' terminology is always defined from the perspective of the long position. Assuming liquid markets, the buyer could then exercise the option to buy the stock for the strike price, only to immediately sell for the spot price to profit off the difference. In general, ITM options are exercised, as the intrinsic value helps to offset at least part of the loss from paying the premium.
 
-
-
-\subsubsection{Call Option Positions}
-The investor is willing to pay a premium up front in order to fix a price for buying at a later time. In other words, they expect the price of the underlying asset to increase enough to offset this premium. Figure ~\ref{fig:long_call_payoff} depicts the profit diagram of a long position of a call option:
+To demonstrate options' role in risk management, as opposed to pure speculation, consider a manufacturer heavily reliant on crude oil. If this manufacturer anticipates a significant increase in oil prices a year from now, they might choose to enter a long position in a call option with the oil distributor. Here, the focus shifts from profit towards hedging against price risk, functioning similarly to insurance. The manufacturer willingly pays a premium to establish a price ceiling on future oil prices, and agrees on a strike price in accordance with their risk management strategy.
 
 \begin{center}
 \begin{figure}[H]
@@ -301,14 +292,14 @@ The investor is willing to pay a premium up front in order to fix a price for bu
     \begin{tikzpicture}[scale=1.5, >=stealth]
 
         % Shade area to the right of K (extending fully up to x-axis)
-        \fill[gray!10] (2,-1.5) -- (7,-1.5) -- (7,4) -- (2,4) -- cycle;
+        \fill[gray!10] (2,-1.5) -- (6,-1.5) -- (6,4) -- (2,4) -- cycle;
 
          % Shade area to the left of K (extending fully up to x-axis)
         \fill[gray!20] (0,-1.5) -- (2,-1.5) -- (2,4) -- (0,4) -- cycle;
 
 
         % Define axes (extended x-axis)
-        \draw[->] (0,0) -- (7,0) node[below,xshift=-55,yshift=-2pt, align=center] {\small Underlying asset price \\ at maturity $S_T$ (€)};
+        \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt, align=center] {$S_T$ (€)};
         \draw[->] (0,-1.5) -- (0,4) node[above] {\small Profit (€)};
         
         
@@ -316,7 +307,7 @@ The investor is willing to pay a premium up front in order to fix a price for bu
         \draw[dashed] (2,0) -- (2,-0.8) node[above, yshift=35] {\large$K$};
         
         % Payoff function (thicker blue line)
-        \draw[line width=1.5pt, blue] (0,-0.8) -- (2,-0.8) -- (5,3);
+        \draw[line width=1.5pt, blue] (0,-0.8) -- (2,-0.8) -- (6,4);
         
         % Marking zero level
         \node[left] at (0,0) {0};
@@ -326,68 +317,57 @@ The investor is willing to pay a premium up front in order to fix a price for bu
         \node[left] at (-0.1,-0.8) {\small $-p$};
 
         % Add "ITM" label inside the fully shaded area
-        \node[gray!60] at (5,1.5) {\small \textbf{ITM}};
+        \node[gray!60] at (3,1.5) {\small \textbf{ITM}};
 
         % Add "OTM" label inside the fully shaded area
         \node[gray!60] at (1,1.5) {\small \textbf{OTM}};
 
     \end{tikzpicture}
-    \caption{Profit diagram for a long call option. $K$ = strike price, $p$ = premium}
+    \caption{Profit diagram for the long position in a call option. $K$ = strike price, $S_T$ = spot price, $p$ = premium. The buyer pays a premium to fix a maximum purchase price for the stock at a later point in time. At maturity, as long as $S_T < K$ there is no incentive to exercise the option, and the profit thus equals $-p$. The option is worthless, and is considered out of the money (OTM). When $S_T > K$, the option is in the money (ITM) and is assumed to be exercised as the buyer can now purchase the stock for $K$, immediately sell it for $S_T$, and offset some or all of the premium paid. However, the investment is only profitable once $S_T - K > p$.}
     \label{fig:long_call_payoff}
 \end{figure}
 \end{center}
 
-As long as $S_T$ < $K$ we are at a net loss equal to the paid premium $p$. The option is said to be \textbf{out of the money (OTM)}, and has no intrinsic value. When $S_T = K$ the option is considered to be \textbf{at the money (ATM)}, after which, when $S_T > K$ it is \textbf{in the money (ITM)} and has some intrinsic value, or a positive payoff \cite[p. 209]{hull2013fundamentals}. Still, the profit remains negative as long as payoff < $p$. Only  after offsetting the premium does the option truly become profitable for the investor. Note that the "moneyness" terminology is defined from the perspective of the long (investor's) position. Assuming liquid markets, they could then exercise the option to buy the underlying asset for the strike price, only to immediately sell for the current market price to profit off the difference. In general, ITM options are exercised, as the intrinsic value helps to offset at least some of the loss incurred from paying the premium.  
-
-To demonstrate options' role in risk management as opposed to pure speculation, consider a company that relies heavily on crude oil for their manufacturing. If they expect a sharp increase in oil prices in a year from now they might choose to enter a long position in a call option with the oil distributor. The manufacturer knows it cannot afford the projected oil prices, and is willing to pay a premium in order to hedge against that risk.
-
-At the other side of the contract the underwriter takes the short position, initially receiving the premium. They expect the price of the underlying asset not to rise too high above market value, as they are then obligated to sell the underlying asset at a price lower than market value, potentially offsetting the premium. Figure ~\ref{fig:short_call_payoff} depicts the corresponding profit diagram:
+The short call position exhibits an inverse profit profile compared to the long position: as long as the option remains OTM, the underwriter retains the full premium as profit, since the investor will not exercise the option. Once the option becomes ITM, the buyer will exercise it, forcing the underwriter to sell the stock at the strike price $K$ despite its higher market value $S_T$. The premium initially offsets this adverse price difference until the breakeven point where $S_T-K=p$, after which the position becomes a loss for the underwriter. Continuing with the previous example, this position could be taken by a crude oil producer with conviction that prices will remain below or near the strike price at maturity. The risk borne by the underwriter commands the premium. Figure~\ref{fig:short_call_payoff} illustrates this position.
 
 \begin{center}
 \begin{figure}[H]
 \centering
     \begin{tikzpicture}[scale=1.5, >=stealth]
-
-        % Shifted coordinate system for better x-axis positioning
-        \begin{scope}[shift={(0,2)}]  
-
-            % Shade area to the right of K (ITM for short call)
-            \fill[gray!10] (2,2.5) -- (7,2.5) -- (7,-2) -- (2,-2) -- cycle;
-
-            % Shade area to the left of K (OTM for short call)
-            \fill[gray!20] (0,2.5) -- (2,2.5) -- (2,-2) -- (0,-2) -- cycle;
-
-            % Define axes (extended x-axis, now moved up)
-            \draw[->] (0,0) -- (7,0) node[below,xshift=-55,yshift=-2pt, align=center] {\small Underlying asset price \\ at maturity $S_T$ (€)};
-            \draw[->] (0,-2) -- (0,2.5) node[above] {\small Profit (€)};
+        % Create a more balanced diagram by shifting the origin up
+        % Define y-range from -3 to +2 instead of -4 to +4
         
-            % Strike price line
-            \draw[dashed] (2,1) -- (2,0) node[below, yshift=-5] {\large$K$};
+        % Shade area to the right of K
+        \fill[gray!10] (2,-3) -- (6,-3) -- (6,2) -- (2,2) -- cycle;
+        % Shade area to the left of K
+        \fill[gray!20] (0,-3) -- (2,-3) -- (2,2) -- (0,2) -- cycle;
         
-            % Payoff function (thicker red line for short call)
-            \draw[line width=1.5pt, red] (0,1) -- (2,1) -- (5,-1.5);
-
-            % Marking zero level
-            \node[left] at (0,0) {0};
+        % Define axes with shifted x-axis (moved up)
+        \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt, align=center] {$S_T$ (€)};
+        \draw[->] (0,-3) -- (0,2) node[above] {\small Profit (€)};
         
-            % Adding the premium annotation (shifted higher)
-            \draw (-0.07,1) -- (0,1); % Short tick line
-            \node[left] at (-0.1,1) {\small $+p$};
-
-            % Add "ITM" label inside the shaded area (short call ITM is left of K)
-            \node[gray!60] at (1,0.5) {\small \textbf{OTM}};
-
-            % Add "OTM" label inside the shaded area (short call OTM is right of K)
-            \node[gray!60] at (5,0.5) {\small \textbf{ITM}};
-
-        \end{scope}
+        % Strike price line
+        \draw[dashed] (2,0) -- (2,0.8) node[below, yshift=-35] {\large$K$};
+        
+        % Payoff function (thicker red line for short position)
+        \draw[line width=1.5pt, red] (0,0.8) -- (2,0.8) -- (6,-3);
+        
+        % Marking zero level
+        \node[left] at (0,0) {0};
+        
+        % Adding the premium annotation
+        \draw (-0.07,0.8) -- (0,0.8); % Short tick line
+        \node[left] at (-0.1,0.8) {\small $+p$};
+        
+        % Add labels inside the shaded areas
+        \node[gray!60] at (1,-1.5) {\small \textbf{OTM}};
+        \node[gray!60] at (3,-1.5) {\small \textbf{ITM}};
     \end{tikzpicture}
-    \caption{Profit diagram for a short call option. $K$ = strike price, $p$ = premium}
+    \caption{Profit diagram for the short position in a call option. $K$ = strike price, $S_T$ = spot price, $p$ = premium. The underwriter receives a premium but is obligated to sell the stock for $K$ at a later time point, should the option be exercised. When $S_T < K$, the option is worthless and considered out of the money (OTM), allowing the underwriter to keep the full premium as profit. When $S_T > K$ and the option is exercised in the money (ITM), the underwriter is forced to sell the stock at the strike price $K$ despite its higher market value $S_T$. The profit decreases linearly as $S_T$ increases, becoming negative once $S_T - K > p$.}
     \label{fig:short_call_payoff}
 \end{figure}
 \end{center}
 
-An inverse behavior is observed: as long as the option remains OTM (or at most ATM) the underwriter is guaranteed a profit equal to the premium, as the investor will not exercise the option. Once the option becomes ITM the investor will exercise it, and the underwriter will be forced to sell the underlying asset at a lower price than market value. As long as the loss of this trade is small enough, the premium will offset it, yielding a positive profit. The option truly becomes a loss when the breakeven point is reached. Continuing with the previous example, this could be the position taken by a crude oil producer with confidence that the prices will not greatly exceed the strike price in a year's time.
 
 Ignoring the premium, the payoff from the long position in a call option is defined as
 \begin{equation}
