@@ -282,9 +282,7 @@ Note the ambiguous use of ``by'' in the definitions above, as the specific rules
 
 An option is a zero-sum game between the buyer and the underwriter, hence we have a pair of mirrored positions for every contract. These can be visualized by graphing the profit at the time of exercising as a function of the spot price. Alternatively, one can consider the slightly modified \emph{payoff} of the position, which excludes the premium paid or received to focus only on the fundamental mechanics of the option itself, regardless of what someone paid for it: $\text{profit} = \text{payoff} - \text{premium}$. Profit diagrams for each vanilla option position are presented below, along with practical examples for intuition. The options are based on one unit of stock, and transaction costs are ignored.
 
-For a call option, the investor is willing to pay a premium upfront in order to fix a purchase price for a later time. In other words, they expect the price of the stock to increase enough to offset this premium. Figure~\ref{fig:long_call_payoff} depicts this position. As long as the spot price is less than the strike price, $S_T < K$, the buyer is at a net loss equal to the premium $p$. The option is said to be \emph{out of the money (OTM)} and has no intrinsic value. When $S_T = K$ the option is considered to be \emph{at the money (ATM)}, after which, when $S_T > K$ it is \emph{in the money (ITM)} and has intrinsic value equal to the payoff \cite{hull2013fundamentals}. Still, the profit remains negative as long as $\text{payoff} < p$. Only  after offsetting the premium does the option truly become profitable for the buyer. Note that the ``moneyness'' terminology is always defined from the perspective of the long position. Assuming liquid markets, the buyer could then exercise the option to buy the stock for the strike price, only to immediately sell for the spot price to profit off the difference. In general, ITM options are exercised, as the intrinsic value helps to offset at least part of the loss from paying the premium.
-
-To demonstrate options' role in risk management, as opposed to pure speculation, consider a manufacturer heavily reliant on crude oil. If this manufacturer anticipates a significant increase in oil prices a year from now, they might choose to enter a long position in a call option with the oil distributor. Here, the focus shifts from profit towards hedging against price risk, functioning similarly to insurance. The manufacturer willingly pays a premium to establish a price ceiling on future oil prices, and agrees on a strike price in accordance with their risk management strategy.
+For a call option, the investor is willing to pay a premium upfront in order to fix a purchase price for a later time. In other words, they expect the price of the stock to increase enough to offset this premium. Figure~\ref{fig:long_call_payoff} depicts this position. As long as the spot price is less than the strike price, $S_T < K$, the buyer is at a net loss equal to the premium $p$. The option is said to be \emph{out of the money (OTM)} and has no intrinsic value. When $S_T = K$ the option is considered to be \emph{at the money (ATM)}, after which, when $S_T > K$ it is \emph{in the money (ITM)} and has intrinsic value equal to the payoff \cite{hull2013fundamentals}. Still, the profit remains negative as long as $\text{payoff} < p$. Only  after offsetting the premium does the option truly become profitable for the buyer. Note that the ``moneyness'' terminology is always defined from the perspective of the long position. Assuming liquid markets, the buyer could then exercise the option to buy the stock for the strike price, only to immediately sell for the spot price to profit off the difference. In general, ITM options are exercised, as the intrinsic value helps to offset at least part of the loss from paying the premium.\cite{hull2016options} To demonstrate options' role in risk management, as opposed to pure speculation, consider a manufacturer heavily reliant on crude oil. If this manufacturer anticipates a significant increase in oil prices a year from now, they might choose to enter a long position in a call option with the oil producer. Here, the focus shifts from profit towards hedging against price risk, functioning similarly to insurance. The manufacturer willingly pays a premium to establish a price ceiling on future oil prices, and agrees on a strike price in accordance with their risk management strategy.
 
 \begin{center}
 \begin{figure}[H]
@@ -328,7 +326,13 @@ To demonstrate options' role in risk management, as opposed to pure speculation,
 \end{figure}
 \end{center}
 
-The short call position exhibits an inverse profit profile compared to the long position: as long as the option remains OTM, the underwriter retains the full premium as profit, since the investor will not exercise the option. Once the option becomes ITM, the buyer will exercise it, forcing the underwriter to sell the stock at the strike price $K$ despite its higher market value $S_T$. The premium initially offsets this adverse price difference until the breakeven point where $S_T-K=p$, after which the position becomes a loss for the underwriter. Continuing with the previous example, this position could be taken by a crude oil producer with conviction that prices will remain below or near the strike price at maturity. The risk borne by the underwriter commands the premium. Figure~\ref{fig:short_call_payoff} illustrates this position.
+The short call position exhibits an inverse profit profile compared to the long position: as long as the option remains OTM, the underwriter retains the full premium as profit, since the investor will not exercise the option. Once the option becomes ITM, the buyer will exercise it, forcing the underwriter to sell the stock at the strike price $K$ despite its higher market value $S_T$. The premium initially offsets this adverse price difference until the breakeven point where $S_T-K=p$, after which the position becomes a loss for the underwriter. Figure~\ref{fig:short_call_payoff} illustrates this position. Continuing with the previous example, this position could be taken by a crude oil producer with conviction that prices will remain below or near the strike price at maturity. The risk borne by the underwriter commands the premium.
+
+Ignoring the premium, the payoff from the long position in a call option is defined as
+\begin{equation}
+    \max(S_T-K,0)
+\end{equation}
+as the investor will only exercise when ITM to either profit or offset losses. Consequently, the payoff from the short position is defined as $-\max(S_T-K,0) = \min(K-S_T,0)$ due to the zero-sum nature of the contract.\footnote{For American-style options with the right to early-exercise, the payoff is calculated using $S_\tau$ instead of $S$, where $\tau \le T$ is the chosen exercise time.}\cite{hull2016options}
 
 \begin{center}
 \begin{figure}[H]
@@ -368,101 +372,91 @@ The short call position exhibits an inverse profit profile compared to the long 
 \end{figure}
 \end{center}
 
+For a put option, the investor is willing to pay a premium up front to secure a minimum selling price for the stock at a later time point. They expect the price of the stock to decrease sufficiently to offset this premium. Conversely, the underwriter receives the premium but assumes the obligation to purchase the stock at the strike price $K$, should the option be exercised. Figure ~\ref{fig:put_payoff} depicts the profit diagrams of the long and short positions of a put option.
 
-Ignoring the premium, the payoff from the long position in a call option is defined as
-\begin{equation}
-    \max(S_T-K,0)
-\end{equation}
-as the investor will only exercise when ITM to either profit or offset losses. The payoff from the short position is defined as
-\begin{equation}
-    -\max(S_T-K,0) = \min(K-S_T,0)
-\end{equation}
-due to the zero-sum nature of the contract \cite[p. 9]{hull2016options}.\footnote{For American-style options with the right to early-exercise, the payoff is calculated using $S_\tau$ instead of $S$, where $\tau \le T$ is the chosen exercise time.}
-
-\subsubsection{Put Option Positions}
-The investor is willing to pay a premium up front in order to fix a price for selling a later time. In other words, they expect the price of the underlying asset to decrease enough to offset this premium. Meanwhile, the underwriter receives a premium but is obligated to engage in this potential future trade, and thus expects the price not to decrease too much from the market price. Figure ~\ref{fig:put_payoff} depicts the profit diagrams of the long and short positions of a put option:
-
-
+\begin{center}
 \begin{figure}[H]
-    \makebox[\textwidth][c]{
-    \hspace{-1cm} % Fine-tune centering
-    \begin{tikzpicture}[scale=1, >=stealth]
+\centering
+    \begin{tikzpicture}[scale=1.5, >=stealth]
 
-     % Left Diagram: Long Put
-    \begin{scope}[shift={(-0.5,2)}]  % Shifted slightly left
+        % Shade area to the right of K (extending fully up to x-axis)
+        \fill[gray!20] (4,-1.5) -- (6,-1.5) -- (6,4) -- (4,4) -- cycle;
 
-        % Shade area to the right of K (OTM for long put)
-        \fill[gray!20] (3,2.5) -- (7,2.5) -- (7,-2) -- (3,-2) -- cycle;
+         % Shade area to the left of K (extending fully up to x-axis)
+        \fill[gray!10] (0,-1.5) -- (4,-1.5) -- (4,4) -- (0,4) -- cycle;
 
-        % Shade area to the left of K (ITM for long put)
-        \fill[gray!10] (0,2.5) -- (3,2.5) -- (3,-2) -- (0,-2) -- cycle;
 
-        % Define axes
-        \draw[->] (0,0) -- (7,0) node[below,xshift=-18,yshift=-2pt, align=center] {\small$S_T$ (€)};
-        \draw[->] (0,-2) -- (0,2.5) node[above] {\small Profit (€)};
-    
+        % Define axes (extended x-axis)
+        \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt, align=center] {$S_T$ (€)};
+        \draw[->] (0,-1.5) -- (0,4) node[above] {\small Profit (€)};
+        
+        
         % Strike price line
-        \draw[dashed] (3,0) -- (3,-1) node[above, yshift=27] {$K$};
-    
-        % Payoff function (thicker blue line for long put)
-        \draw[line width=1.5pt, blue] (0,1.5) -- (3,-1) -- (5,-1);%(0,1.5) -- (2,1.5) -- (5,-1);
+        \draw[dashed] (4,0) -- (4,-0.8) node[above, yshift=35] {\large$K$};
+        
+        % Payoff function (thicker blue line)
+        \draw[line width=1.5pt, blue] (0,4) -- (4,-0.8) -- (6,-0.8);
 
+        
+
+        %mirrored line:
+        
         % Marking zero level
         \node[left] at (0,0) {0};
-    
+        
         % Adding the premium annotation
-        \draw (-0.07,-1) -- (0,-1); % Short tick line
-        \node[left] at (-0.1,-1) {\small $-p$};
+        \draw (-0.07,-0.8) -- (0,-0.8); % Short tick line
+        \node[left] at (-0.1,-0.8) {\small $-p$};
 
-        % Add "ITM" label inside the shaded area (long put ITM is left of K)
-        \node[gray!60] at (1.5,1.5) {\small \textbf{ITM}};
+        % Add "ITM" label inside the fully shaded area
+        \node[gray!60] at (3,1.5) {\small \textbf{ITM}};
 
-        % Add "OTM" label inside the shaded area (long put OTM is right of K)
+        % Add "OTM" label inside the fully shaded area
         \node[gray!60] at (5,1.5) {\small \textbf{OTM}};
 
-    \end{scope}
+    \end{tikzpicture}
+    \caption{Profit diagram for the long position in a call option. $K$ = strike price, $S_T$ = spot price, $p$ = premium. The buyer pays a premium to fix a maximum purchase price for the stock at a later point in time. At maturity, as long as $S_T < K$ there is no incentive to exercise the option, and the profit thus equals $-p$. The option is worthless, and is considered out of the money (OTM). When $S_T > K$, the option is in the money (ITM) and is assumed to be exercised as the buyer can now purchase the stock for $K$, immediately sell it for $S_T$, and offset some or all of the premium paid. However, the investment is only profitable once $S_T - K > p$.}
+    \label{fig:long_call_payoff}
+\end{figure}
+\end{center}
 
-    % Right Diagram: Short Put (Shifted slightly left from 9 to 8)
-    \begin{scope}[shift={(7.5,2)}]  
-
-        % Shade area to the right of K (ITM for short put)
-        \fill[gray!20] (2,2.5) -- (7,2.5) -- (7,-2) -- (2,-2) -- cycle;
-
-        % Shade area to the left of K (OTM for short put)
-        \fill[gray!10] (0,2.5) -- (3,2.5) -- (3,-2) -- (0,-2) -- cycle;
-
-        % Define axes
-        \draw[->] (0,0) -- (7,0) node[below,xshift=-18,yshift=-2pt, align=center] {\small$S_T$ (€)};
-        \draw[->] (0,-2) -- (0,2.5) node[above] {\small Profit (€)};
-    
+\begin{center}
+\begin{figure}[H]
+\centering
+    \begin{tikzpicture}[scale=1.5, >=stealth]
+        % Create a more balanced diagram by shifting the origin up
+        % Define y-range from -3 to +2 instead of -4 to +4
+        
+        % Shade area to the right of K
+        \fill[gray!20] (4,-3) -- (6,-3) -- (6,2) -- (2,2) -- cycle;
+        % Shade area to the left of K
+        \fill[gray!10] (0,-3) -- (4,-3) -- (4,2) -- (0,2) -- cycle;
+        
+        % Define axes with shifted x-axis (moved up)
+        \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt, align=center] {$S_T$ (€)};
+        \draw[->] (0,-3) -- (0,2) node[above] {\small Profit (€)};
+        
         % Strike price line
-        \draw[dashed] (3,0) -- (3,1.5) node[below,yshift=-45] {$K$};
-    
-        % Payoff function (thicker red line for short put)
-        \draw[line width=1.5pt, red] (0,-1) -- (3,1.5) -- (5,1.5);
-
+        \draw[dashed] (4,0) -- (4,0.8) node[below, yshift=-35] {\large$K$};
+        
+        % Payoff function (thicker red line for short position)
+        \draw[line width=1.5pt, red] (0,-3) -- (4,0.8) -- (6,0.8);
+        
         % Marking zero level
         \node[left] at (0,0) {0};
-    
+        
         % Adding the premium annotation
-        \draw (-0.07,1.5) -- (0,1.5); % Short tick line
-        \node[left] at (-0.1,1.5) {\small $+p$};
-
-        % Add "OTM" label inside the shaded area (short put OTM is right of K)
-        \node[gray!60] at (5,1) {\small \textbf{OTM}};
-
-        % Add "ITM" label inside the shaded area (short put ITM is left of K)
-        \node[gray!60] at (1,1) {\small \textbf{ITM}};
-
-    \end{scope}
-
+        \draw (-0.07,0.8) -- (0,0.8); % Short tick line
+        \node[left] at (-0.1,0.8) {\small $+p$};
+        
+        % Add labels inside the shaded areas
+        \node[gray!60] at (5,-1.5) {\small \textbf{OTM}};
+        \node[gray!60] at (3,-1.5) {\small \textbf{ITM}};
     \end{tikzpicture}
-
-    
-}
-\caption{Profit diagrams: (Left) Long put option, (Right) Short put option.}
-\label{fig:put_payoff}
+    \caption{Profit diagram for the short position in a call option. $K$ = strike price, $S_T$ = spot price, $p$ = premium. The underwriter receives a premium but is obligated to sell the stock for $K$ at a later time point, should the option be exercised. When $S_T < K$, the option is worthless and considered out of the money (OTM), allowing the underwriter to keep the full premium as profit. When $S_T > K$ and the option is exercised in the money (ITM), the underwriter is forced to sell the stock at the strike price $K$ despite its higher market value $S_T$. The profit decreases linearly as $S_T$ increases, becoming negative once $S_T - K > p$.}
+    \label{fig:short_call_payoff}
 \end{figure}
+\end{center}
 
 A put option is worthless (OTM) when $S_T > K$ as the investor will not exercise it to sell for a lower price than market value. By the same token, the option is ITM when  $S_T < K$, as the investor can then buy the underlying asset at market value and sell it for the strike price \cite[p. 209]{hull2013fundamentals}. Again, being ITM is not sufficient to be profitable - the price difference must be large enough to offset the paid premium.
 
