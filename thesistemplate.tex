@@ -62,7 +62,10 @@
 \usepackage{graphicx}
 \usepackage[inkscapelatex=false]{svg}
 \usepackage{tikz}
+\usepackage{caption}
 \usepackage{subcaption}
+\usepackage{float} % For [H]
+
 
 
 %% Use this if you write hard core mathematics, these are usually needed
@@ -374,91 +377,73 @@ as the investor will only exercise when ITM to either profit or offset losses. C
 
 For a put option, the investor is willing to pay a premium up front to secure a minimum selling price for the stock at a later time point. They expect the price of the stock to decrease sufficiently to offset this premium. Conversely, the underwriter receives the premium but assumes the obligation to purchase the stock at the strike price $K$, should the option be exercised. Figure ~\ref{fig:put_payoff} depicts the profit diagrams of the long and short positions of a put option.
 
-\begin{center}
 \begin{figure}[H]
 \centering
-    \begin{tikzpicture}[scale=1.5, >=stealth]
 
-        % Shade area to the right of K (extending fully up to x-axis)
-        \fill[gray!20] (4,-1.5) -- (6,-1.5) -- (6,4) -- (4,4) -- cycle;
-
-         % Shade area to the left of K (extending fully up to x-axis)
-        \fill[gray!10] (0,-1.5) -- (4,-1.5) -- (4,4) -- (0,4) -- cycle;
-
-
-        % Define axes (extended x-axis)
-        \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt, align=center] {$S_T$ (€)};
-        \draw[->] (0,-1.5) -- (0,4) node[above] {\small Profit (€)};
-        
-        
-        % Strike price line
-        \draw[dashed] (4,0) -- (4,-0.8) node[above, yshift=35] {\large$K$};
-        
-        % Payoff function (thicker blue line)
-        \draw[line width=1.5pt, blue] (0,4) -- (4,-0.8) -- (6,-0.8);
-
-        
-
-        %mirrored line:
-        
-        % Marking zero level
-        \node[left] at (0,0) {0};
-        
-        % Adding the premium annotation
-        \draw (-0.07,-0.8) -- (0,-0.8); % Short tick line
-        \node[left] at (-0.1,-0.8) {\small $-p$};
-
-        % Add "ITM" label inside the fully shaded area
-        \node[gray!60] at (3,1.5) {\small \textbf{ITM}};
-
-        % Add "OTM" label inside the fully shaded area
-        \node[gray!60] at (5,1.5) {\small \textbf{OTM}};
-
-    \end{tikzpicture}
-    \caption{Profit diagram for the long position in a call option. $K$ = strike price, $S_T$ = spot price, $p$ = premium. The buyer pays a premium to fix a maximum purchase price for the stock at a later point in time. At maturity, as long as $S_T < K$ there is no incentive to exercise the option, and the profit thus equals $-p$. The option is worthless, and is considered out of the money (OTM). When $S_T > K$, the option is in the money (ITM) and is assumed to be exercised as the buyer can now purchase the stock for $K$, immediately sell it for $S_T$, and offset some or all of the premium paid. However, the investment is only profitable once $S_T - K > p$.}
-    \label{fig:long_call_payoff}
-\end{figure}
-\end{center}
-
-\begin{center}
-\begin{figure}[H]
+\begin{subfigure}[t]{0.48\textwidth}
 \centering
-    \begin{tikzpicture}[scale=1.5, >=stealth]
-        % Create a more balanced diagram by shifting the origin up
-        % Define y-range from -3 to +2 instead of -4 to +4
-        
-        % Shade area to the right of K
-        \fill[gray!20] (4,-3) -- (6,-3) -- (6,2) -- (2,2) -- cycle;
-        % Shade area to the left of K
-        \fill[gray!10] (0,-3) -- (4,-3) -- (4,2) -- (0,2) -- cycle;
-        
-        % Define axes with shifted x-axis (moved up)
-        \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt, align=center] {$S_T$ (€)};
-        \draw[->] (0,-3) -- (0,2) node[above] {\small Profit (€)};
-        
-        % Strike price line
-        \draw[dashed] (4,0) -- (4,0.8) node[below, yshift=-35] {\large$K$};
-        
-        % Payoff function (thicker red line for short position)
-        \draw[line width=1.5pt, red] (0,-3) -- (4,0.8) -- (6,0.8);
-        
-        % Marking zero level
-        \node[left] at (0,0) {0};
-        
-        % Adding the premium annotation
-        \draw (-0.07,0.8) -- (0,0.8); % Short tick line
-        \node[left] at (-0.1,0.8) {\small $+p$};
-        
-        % Add labels inside the shaded areas
-        \node[gray!60] at (5,-1.5) {\small \textbf{OTM}};
-        \node[gray!60] at (3,-1.5) {\small \textbf{ITM}};
-    \end{tikzpicture}
-    \caption{Profit diagram for the short position in a call option. $K$ = strike price, $S_T$ = spot price, $p$ = premium. The underwriter receives a premium but is obligated to sell the stock for $K$ at a later time point, should the option be exercised. When $S_T < K$, the option is worthless and considered out of the money (OTM), allowing the underwriter to keep the full premium as profit. When $S_T > K$ and the option is exercised in the money (ITM), the underwriter is forced to sell the stock at the strike price $K$ despite its higher market value $S_T$. The profit decreases linearly as $S_T$ increases, becoming negative once $S_T - K > p$.}
-    \label{fig:short_call_payoff}
-\end{figure}
-\end{center}
+\begin{tikzpicture}[scale=1.1, >=stealth]
 
-A put option is worthless (OTM) when $S_T > K$ as the investor will not exercise it to sell for a lower price than market value. By the same token, the option is ITM when  $S_T < K$, as the investor can then buy the underlying asset at market value and sell it for the strike price \cite[p. 209]{hull2013fundamentals}. Again, being ITM is not sufficient to be profitable - the price difference must be large enough to offset the paid premium.
+    % Background shading (ITM/OTM)
+    \fill[gray!20] (4,-3) -- (6,-3) -- (6,4) -- (4,4) -- cycle;
+    \fill[gray!10] (0,-3) -- (4,-3) -- (4,4) -- (0,4) -- cycle;
+
+    % Axes
+    \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt] {$S_T$ (€)};
+    \draw[->] (0,-3) -- (0,4) node[above] {Profit (€)};
+
+    % Strike price line
+    \draw[dashed] (4,0) -- (4,-0.8) node[above,yshift=35] {\large$K$};
+
+    % Payoff line
+    \draw[line width=1.5pt, blue] (0,4) -- (4,-0.8) -- (6,-0.8);
+
+    % Labels
+    \node[left] at (0,0) {0};
+    \draw (-0.07,-0.8) -- (0,-0.8);
+    \node[left] at (-0.1,-0.8) {\small $-p$};
+    \node[gray!60] at (3,2.2) {\small \textbf{ITM}};
+    \node[gray!60] at (5,2.2) {\small \textbf{OTM}};
+
+\end{tikzpicture}
+\caption{Long call option payoff}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.48\textwidth}
+\centering
+\begin{tikzpicture}[scale=1.1, >=stealth]
+
+    % Background shading
+    \fill[gray!20] (4,-3) -- (6,-3) -- (6,4) -- (4,4) -- cycle;
+    \fill[gray!10] (0,-3) -- (4,-3) -- (4,4) -- (0,4) -- cycle;
+
+    % Axes
+    \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt] {$S_T$ (€)};
+    \draw[->] (0,-3) -- (0,4) node[above] {Profit (€)};
+
+    % Strike price line
+    \draw[dashed] (4,0) -- (4,0.8) node[below,yshift=-35] {\large$K$};
+
+    % Payoff line
+    \draw[line width=1.5pt, red] (0,-3) -- (4,0.8) -- (6,0.8);
+
+    % Labels
+    \node[left] at (0,0) {0};
+    \draw (-0.07,0.8) -- (0,0.8);
+    \node[left] at (-0.1,0.8) {\small $+p$};
+    \node[gray!60] at (3,-1.5) {\small \textbf{ITM}};
+    \node[gray!60] at (5,-1.5) {\small \textbf{OTM}};
+
+\end{tikzpicture}
+\caption{Short call option payoff}
+\end{subfigure}
+
+\caption{Profit diagrams for call options. The left shows a long call position (buyer), and the right shows the corresponding short call position (writer).}
+\label{fig:call_option_diagrams}
+\end{figure}
+
+
+A put option is OTM when $S_T > K$ as the investor will not exercise it to sell for a lower price than market value. By the same token, the option is ITM when  $S_T < K$, as the investor can then buy the underlying asset at market value and sell it for the strike price \cite[p. 209]{hull2013fundamentals}. Again, being ITM is not sufficient to be profitable - the price difference must be large enough to offset the paid premium.
 
 An example use case would be a crude oil supplier forecasting low prices in a year's time and entering the long position to secure a minimum revenue. Again, a premium is paid to hedge against a risk of price swings. The short side would be taken by a market participant who expects crude oil prices not to fall enough to offset the received premium.
 \bigskip
