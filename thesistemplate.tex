@@ -747,7 +747,7 @@ The Cox-Ross-Rubinstein (CRR) model extends the single-period framework into a m
 
 A detail not yet discussed is the choice of the factors $u$ and $d$. The authors of the original paper have defined $u = e^{\sigma\sqrt{T/n}}$ and $d = e^{-\sigma\sqrt{T/n}}$, where $\sigma$ is the annualized volatility (e.g. estimated from historical data) of the log-return of the asset, $T$ is the total time in years, and $n$ is the number of time periods. This is useful for several reasons: firstly, it allows for the model to converge to the famous Black-Scholes-Merton (BSM) model as $n \rightarrow \infty$. Secondly, the lattice recombines for all permutations of a price path. This ensures computational feasibility as the number of states grows linearly instead of exponentially. Another detail to note is that the discount rate used in the period calculations must be adjusted such that it yields the same return as the initial risk-free rate used in the one-period example. A continuous compounding rate $e^{rT/n}$ is often used in lieu of the discrete version. \cite{cox1979option} \cite{hull2013fundamentals}
 
-The implementation of the CRR model comprises three steps: first, compute the price of the underlying at all the terminal nodes. Then, calculate the corresponding option payoffs for the terminal nodes. Finally, backtrack the lattice to compute the option values at nodes in the previous period, working towards the initial node. The following pseudocode is based on the Python implementation by Jonathon Emerick \cite{thequantpy2024github}. Let $S_0$ be the initial stock price and $n$ the number of periods. The nodes of the recombining lattice can be expressed in terms of indices $i$ and $j$, where $0 \leq i \leq n$ are points in time, ranging from the start to maturity, and $0 \le j \le i$ are the nodes at time point $i$ based on the number of up-ticks $j$ the stock price has moved. In other words, the stock price at each node is defined as $S_{i,j} = S_0u^jd^{i-j}$. In the same manner, $C_{i,j}$ represents the option price at the corresponding node.
+The implementation of the CRR model comprises three steps: first, compute the price of the underlying at all the terminal nodes. Then, calculate the corresponding option payoffs for the terminal nodes. Finally, backtrack the lattice to compute the option values at nodes in the previous period, working towards the initial node. The following pseudocode is based on the Python implementation by Jonathon Emerick \cite{thequantpy2024github}. Let $S_0$ be the initial stock price and $n$ the number of periods. The nodes of the recombining lattice can be expressed in terms of indices $i$ and $j$, where $0 \leq i \leq n$ are points in time, ranging from the start to maturity, and $0 \le j \le i$ are the nodes at time point $i$ based on the number of up-ticks $j$ the stock price has moved. In other words, the stock price at each node is defined as $S_{i,j} = S_0u^jd^{i-j}$. In the same manner, $C_{i,j}$ represents the option price at the corresponding node. The option price  $C_{0,0}$ is calculated according to \cref{alg:crr-european}.
 
 \begin{algorithm}
 \caption{CRR European Option Pricing}
@@ -785,7 +785,7 @@ Initialize $C[0..n]$\;
 \Return{$C[0]$}\;
 \end{algorithm}
 
-A key advantage of the CRR and other lattice-based models is their natural ability to price American options, which generally cannot be valued using closed-form solutions like the BSM model \cite{wilmott2013paul}. For European options, the backward induction step in Algorithm~\ref{alg:crr-european} calculates the option value as
+A key advantage of the CRR and other lattice-based models is their natural ability to price American options, which generally cannot be valued using closed-form solutions like the BSM model \cite{wilmott2013paul}. For European options, the backward induction step in ~\cref{alg:crr-european} calculates the option value as
 \begin{equation*}
 C[j] \gets disc \cdot (p \cdot C[j+1] + (1-p) \cdot C[j]).
 \end{equation*}
@@ -840,9 +840,51 @@ Again, asymptotically, we still have $O(n^2)$ as we do computations for every no
 \subsection{Monte Carlo Methods}
 Monte Carlo (MC) methods are a class of computational algorithms that approximate solutions to problems through random sampling. Unlike analytical and deterministic numerical methods that rely heavily on domain-specific mathematical theory, MC methods are relatively simple and model-agnostic. They depend primarily on the \emph{law of large numbers}, which states that the sample average tends toward the true expected value with increasing sample size \cite{Ross2020prob}. Hence, with a well-chosen sampling distribution whose expectation matches the target quantity, the average of a large number of simulated outcomes provides a reliable approximation of the solution. While true random number generation is difficult, there exist many so called pseudorandom number generation algorithms, whose deterministic sequences are statistically indistinguishable from true randomness. To achieve sampling from a specific probability distribution, the general approach is to first use a \emph{linear congruential generator} that samples numbers from a uniform distribution $U(0,1)$, and then apply a transformation to map these to the desired distribution. A common example is the Box-Muller transform for a standard normal mapping $U(0,1) \rightarrow N(0,1)$. \cite{gentle2003random}
 
-Many software libraries contain easy-to-use random number generators from various distributions. This, coupled with the availability of affordable computing power, has made MC methods hugely popular for brute force problem solving across different domains. Their generality, however, still comes at a significant computational cost. While analytical and other numerical methods exploit problem-specific structure for a faster convergence, MC methods typically require a large number of iterations to produce accurate results. Consequently, MC methods are often employed for high-dimensional problems where traditional approaches fail or become exceedingly slow \cite{gentle2003random}. In derivatives pricing, MC methods are mostly used for exotic options with complex payoff structures, e.g. multi-asset options whose payoff depend on more than one underlying asset \cite{hull2016options,wilmott2013paul}.
+Many software libraries contain easy-to-use random number generators from various distributions. This, coupled with the availability of affordable computing power, has made MC methods hugely popular for brute force problem solving across different domains. Their generality, however, still comes at a significant computational cost. While analytical and other numerical methods exploit problem-specific structure for a faster convergence, MC methods typically require a large number of iterations to produce accurate results. Consequently, MC methods are often employed for high-dimensional problems where traditional approaches fail or become exceedingly slow \cite{gentle2003random}. In derivatives pricing, MC methods are mostly used for exotic options with complex payoff structures, e.g. multi-asset options whose payoff depend on numerous underlying assets \cite{hull2016options,wilmott2013paul}.
 
-Option pricing by MC simulation relies on the same risk-neutral valuation framework presented earlier in \cref{sec:risk-neutral-theory}. The construction and dynamic maintenance of a replicating portfolio naturally extends to continuous-time models. While the BSM model provides an analytical solution to a stochastic differential equation for the expected discounted payoff, the MC approach instead estimates this value numerically by computing the discounted average of many simulated option payoffs, each obtained from a risk-neutral stock price path \cite{boyle1977options}. The result is always an approximation, but converges toward the theoretical value as the number of simulated paths increases. The stock price dynamics used for MC simulations are typically a discretized version of the \emph{geometric Brownian motion} process used in the BSM model -- the same continuous-time limit to which the CRR model also converges.
+Option pricing by MC simulation relies on the same risk-neutral valuation framework presented earlier in \cref{sec:risk-neutral-theory}. While the BSM model provides an analytical solution to a stochastic differential equation for the expected discounted payoff, the MC approach instead estimates this value numerically by computing the discounted average of many simulated option payoffs, each obtained from a risk-neutral stock price path \cite{boyle1977options}. The result is always an approximation, but converges toward the theoretical value as the number of simulated paths increases. The construction and dynamic maintenance of a replicating portfolio naturally extends to continuous-time models. The stock price dynamics used for MC simulations are often a discretized version of the \emph{geometric Brownian motion} process used in the continuous BSM model, which is also the behavior of the CRR model in the limit as $n \rightarrow \infty$. Under these assumptions, one can solve for the exact distribution of the stock price at a future time point $t$, and thus the discretization does not introduce an error \cite{clelow1998implementing}. At each point in time, the stock price is updated according to
+\begin{equation*}
+S_{t+\Delta t} = S_t \cdot \exp \left( \nu \Delta t + \sigma \sqrt{\Delta t} \cdot \epsilon_i \right),
+\label{eq:GBM-price}
+\end{equation*}
+where $\nu=r-\frac{1}{2}\sigma^2$ and $\epsilon_i \sim N(0,1)$. Hence, there is no need to use more than one time period unless the payoff function is path dependent, as for e.g. Asian or barrier options. In this case, much like the CRR algorithm, we get a better approximation with larger values of $n$ and smaller time steps. \cref{alg:MC-algo}, based on the implementation by Clelow and Strickland, demonstrates a generic MC implementation \cite{clelow1998implementing}.
+
+\begin{algorithm}
+\caption{Monte Carlo Option Pricing}
+\label{alg:MC-algo}
+\textbf{Data:} $S_0$ (initial stock price), $K$ (strike price), $T$ (time to maturity), $r$ (risk-free rate), $n$ (time steps), $\sigma$ (volatility), $M$ (simulated paths), $\text{payoff}(\cdot)$ (payoff function)\\
+\textbf{Result:} Option price at $t=0$\\
+
+$\Delta t \gets T/n$\;
+$\nu \gets r - 0.5 \cdot \sigma^2$\;
+$\text{nudt} \gets \nu \cdot \Delta t$\;
+$\text{sigsqrt} \gets \sigma \cdot \sqrt{\Delta t}$\;
+
+Initialize $C_{\text{sum}} \gets 0$\;
+
+/* Simulate $M$ stock price paths */\\
+\For{$j \gets 1$ \KwTo $M$}{
+    Initialize $S[0] \gets S_0$\;
+    /* Simulate stock price path through $n$ time steps */\\
+    \For{$i \gets 1$ \KwTo $n$}{
+        Sample $\epsilon \sim \mathcal{N}(0,1)$\;
+        $\ln S[i] \gets \ln S[i-1] + \text{nudt} + \text{sigsqrt} \cdot \epsilon$\;
+        $S[i] \gets \exp(\ln S[i])$\;
+    }
+    /* Compute option payoff for the simulated path */\\
+    Compute $C_j \gets \text{payoff}(S[0..n])$\;
+    $C_{\text{sum}} \gets C_{\text{sum}} + C_j$\;
+}
+
+/* Discount and average the payoffs */\\
+$C_0 \gets \exp(-r \cdot T) \cdot \frac{C_{\text{sum}}}{M}$\;
+
+\Return{$C_0$}\;
+\end{algorithm}
+
+
+
+
 
 
 
