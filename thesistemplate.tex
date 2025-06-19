@@ -62,6 +62,7 @@
 \usepackage{graphicx}
 \usepackage[inkscapelatex=false]{svg}
 \usepackage{tikz}
+\usetikzlibrary{positioning}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{float} % For [H]
@@ -469,7 +470,7 @@ Volatility, a statistical measure of the variation in asset prices over a specif
 
 Time to maturity has a more complex relationship with the price, and depends on both the option style and the context. For American options with possibility of early exercise, it makes sense that an expiration date further in the future leads to more opportunity for favorable movements in the stock price, thereby commanding a higher price. This time value argument is similar to that made for volatility, where the asymmetric payoff structure means additional potential for gain typically outweighs the risk of further losses. While this time value argument also holds for European options, the lack of early-exercise ability introduces complications. Hull et al. \cite{hull2013fundamentals} identify specific scenarios where American options derive significant additional value from the early exercise privilege. One example is when a future dividend payment to shareholders is expected, which theoretically decreases the share price and thereby the value of the corresponding call option. Similarly, a put option might be more valuable with a shorter time to maturity in the case of a very deep ITM position, such as when the underlying company has filed for bankruptcy. The option will almost certainly expire ITM, and thus by the \emph{time value of money} \textbf{(should I explain this in a footnote in greater detail?)} principle this cash flow is worth more the earlier it is received \cite{berk2007corporate}.
 
-The risk-free rate represents the return on investment one can expect from a so called risk-free investment, typically government-backed treasury securities. It serves as a benchmark against which investors compare expected returns of riskier investments. An increase in the risk-free rate typically leads to investors demanding higher returns across all risk levels. In option pricing, the risk-free rate primarily affects the time value component through the discounting of future cash flows. For a call option, a higher risk-free rate reduces the present value of the strike price that will be paid in the future\footnote{The present value of a future cash flow is calculated by discounting it using an appropriate rate. This rate reflects both the time value of money and opportunity cost. The risk-free rate represents the minimum discount rate, as it corresponds to the return available from risk-free investments. For risky cash flows, an additional risk premium is added to this base rate.}. This economic advantage for the buyer is reflected in the market through a higher option price. Conversely, for put options, a higher risk-free rate decreases the present value of the strike price to be received in the future, reducing the economic benefit to the holder and thereby decreasing the option's price. In practice, however, interest rates impact stock prices as well, making this relationship more complex when applied to actual markets.
+The risk-free rate represents the return on investment one can expect from a so-called risk-free investment, typically government-backed treasury securities. It serves as a benchmark against which investors compare expected returns of riskier investments. An increase in the risk-free rate typically leads to investors demanding higher returns across all risk levels. In option pricing, the risk-free rate primarily affects the time value component through the discounting of future cash flows. For a call option, a higher risk-free rate reduces the present value of the strike price that will be paid in the future\footnote{The present value of a future cash flow is calculated by discounting it using an appropriate rate. This rate reflects both the time value of money and opportunity cost. The risk-free rate represents the minimum discount rate, as it corresponds to the return available from risk-free investments. For risky cash flows, an additional risk premium is added to this base rate.}. This economic advantage for the buyer is reflected in the market through a higher option price. Conversely, for put options, a higher risk-free rate decreases the present value of the strike price to be received in the future, reducing the economic benefit to the holder and thereby decreasing the option's price. In practice, however, interest rates impact stock prices as well, making this relationship more complex when applied to actual markets.
 
 The final determinant considers the dividend policy of the underlying company. Theoretically, a company's share price is reduced by the dividend amount on the ex-dividend date, as this cash is directly distributed from the company's assets to shareholders \cite{modigliani1958cost}. For call options, expected dividends decrease value because they reduce the expected future price of the stock without providing any benefit to the option buyer. Conversely, put options increase in value with higher expected dividends, as they decrease the value of the stock. This dividend effect is particularly significant for longer-dated options, where multiple dividend payments may occur before expiration, and for options near the money, where the dividend-induced price movement can meaningfully change the moneyness of the option.
 
@@ -559,7 +560,7 @@ The graphics processing unit (GPU) is a processor specified for graphics-related
 
 Hennessy and Patterson \cite{hennessy2011computer} loosely define \emph{latency} as the time between the start and completion of a single event, and \emph{throughput} as the total amount of work performed in a given time. These metrics (and specific variants thereof) are widely used in computing performance contexts. While both central processing units (CPUs) and GPUs have seen performance improvements on both ends, the authors show that relative throughput improvements tend to outweigh relative latency improvements. This is not unreasonable - increasing throughput is (within limits) mostly a manner of providing more of the same resources already available. Latency improvements have, on the other hand, already reached closer to the theoretical limits imposed by the laws of physics \cite{hennessy2011computer} \cite{sanders2010cuda}. Suomela's summary of statistics on trends for both clock speed and instruction latencies corroborate these claims (cite PPC website?).
 
-This, in combination with the fact that graphics-related calculations are well-structured for concurrency exploitation (covered in \cref{subsec:parallell}), led to the evolution towards the exceptionally throughput-optimized GPU architectures of today's age. At the same time, there grew an increasing interest in the utilization of these parallel computing capabilities for other purposes. However, these advances alone were insufficient in unlocking the potential for so called general-purpose GPU (GPGPU) programming, as the hardware lacked the flexibility needed for general-purpose computing, and no GPGPU programming models and tools were readily available. The initial graphics-intended hardware and software ecosystems effectively forced developers to mask their problems as those found in the graphics domain. Only after advances in these areas could GPGPU programming truly flourish. In 2007, NVIDIA released the compute unified device architecture \emph{CUDA} and corresponding software tools that greatly removed earlier restrictions in favor of GPGPU-programming. The hardware was now directly accessible without considering graphics-related interfaces, and the software tool for writing CUDA applications was a simple extension layer on top of familiar C/C++. Today, GPGPU applications are found in a wide variety of fields, including computational finance. \cite{sanders2010cuda} \cite{kirk2016programming}
+This, in combination with the fact that graphics-related calculations are well-structured for concurrency exploitation (covered in \cref{subsec:parallell}), led to the evolution towards the exceptionally throughput-optimized GPU architectures of today's age. At the same time, there grew an increasing interest in the utilization of these parallel computing capabilities for other purposes. However, these advances alone were insufficient in unlocking the potential for so-called general-purpose GPU (GPGPU) programming, as the hardware lacked the flexibility needed for general-purpose computing, and no GPGPU programming models and tools were readily available. The initial graphics-intended hardware and software ecosystems effectively forced developers to mask their problems as those found in the graphics domain. Only after advances in these areas could GPGPU programming truly flourish. In 2007, NVIDIA released the compute unified device architecture \emph{CUDA} and corresponding software tools that greatly removed earlier restrictions in favor of GPGPU-programming. The hardware was now directly accessible without considering graphics-related interfaces, and the software tool for writing CUDA applications was a simple extension layer on top of familiar C/C++. Today, GPGPU applications are found in a wide variety of fields, including computational finance. \cite{sanders2010cuda} \cite{kirk2016programming}
 
 \subsection{CPU and GPU Architecture}
 
@@ -838,7 +839,7 @@ Again, asymptotically, we still have $O(n^2)$ as we do computations for every no
 
 \section{GPU Acceleration of Monte Carlo Methods} \label{sec:gpu-mc}
 \subsection{Monte Carlo Methods}
-Monte Carlo (MC) methods are a class of computational algorithms that approximate solutions to problems through random sampling. Unlike analytical and deterministic numerical methods that rely heavily on domain-specific mathematical theory, MC methods are relatively simple and model-agnostic. They depend primarily on the \emph{law of large numbers}, which states that the sample average tends toward the true expected value with increasing sample size \cite{Ross2020prob}. Hence, with a well-chosen sampling distribution whose expectation matches the target quantity, the average of a large number of simulated outcomes provides a reliable approximation of the solution. While true random number generation is difficult, there exist many so called pseudorandom number generation algorithms, whose deterministic sequences are statistically indistinguishable from true randomness. To achieve sampling from a specific probability distribution, the general approach is to first use a \emph{linear congruential generator} that samples numbers from a uniform distribution $U(0,1)$, and then apply a transformation to map these to the desired distribution. A common example is the Box-Muller transform for a standard normal mapping $U(0,1) \rightarrow N(0,1)$. \cite{gentle2003random}
+Monte Carlo (MC) methods are a class of computational algorithms that approximate solutions to problems through random sampling. Unlike analytical and deterministic numerical methods that rely heavily on domain-specific mathematical theory, MC methods are relatively simple and model-agnostic. They depend primarily on the \emph{law of large numbers}, which states that the sample average tends toward the true expected value with increasing sample size \cite{Ross2020prob}. Therefore, with a well-chosen sampling distribution whose expectation matches the target quantity, the average of a large number of simulated outcomes provides a reliable approximation of the solution. While true random number generation is difficult, there exist many so-called pseudorandom number generation algorithms, whose deterministic sequences are statistically indistinguishable from true randomness. To achieve sampling from a specific probability distribution, the general approach is to first use a \emph{linear congruential generator} that samples numbers from a uniform distribution $U(0,1)$, and then apply a transformation to map these to the desired distribution. A common example is the Box-Muller transform for a standard normal mapping $U(0,1) \rightarrow N(0,1)$. \cite{gentle2003random}
 
 Many software libraries contain easy-to-use random number generators from various distributions. This, coupled with the availability of affordable computing power, has made MC methods hugely popular for brute force problem solving across different domains. Their generality, however, still comes at a significant computational cost. While analytical and other numerical methods exploit problem-specific structure for a faster convergence, MC methods typically require a large number of iterations to produce accurate results. Consequently, MC methods are often employed for high-dimensional problems where traditional approaches fail or become exceedingly slow \cite{gentle2003random}. In derivatives pricing, MC methods are mostly used for exotic options with complex payoff structures, e.g. multi-asset options whose payoff depend on numerous underlying assets \cite{hull2016options,wilmott2013paul}.
 
@@ -891,9 +892,97 @@ Given the resources to run $m$ simulations in parallel, the time complexity coul
 \subsection{Further Hardware Optimization}
 Unlike the CRR model, where algorithmic reformulation was necessary to expose hidden parallelism, Monte Carlo simulation presents a fundamentally different optimization challenge. The parallelism is already fully exposed at the algorithmic level -- each simulation path is completely independent, requiring no communication or synchronization with other paths. This embarrassingly parallel structure means that further speedups must come not from mathematical reformulation, but from efficiently mapping this abundant parallelism onto GPU hardware constraints. While techniques such as variance reduction methods and the use of quasi-random numbers can improve convergence rates \cite{clelow1998implementing}, they benefit any implementation equally and are thus not relevant to the scope of this thesis. Instead, further GPU acceleration requires addressing hardware-specific challenges, such as efficient random number generation, optimizing memory access patterns, and resource utilization. 
 
-Liu et al. demonstrate several optimization strategies for further speeding up parallel MC option pricing. The identified problems were mostly forms of inefficient memory access patterns and use of resources. The simplest optimization was to decompress the \emph{working set} \textbf{(do I need to emph or explain this term further?)} of the simulation to reduce the need for fetching from slow, global memory. The extent to which this is achievable heavily depends on the option type and choice of RNG \textbf{(if this sentence is MY thoughts, how do I separate it from citation?)}. Another common bottleneck is the memory bandwidth, for which reorganizing for coalesced accesses serves as a solution. The fixed amount of registers per streaming multiprocessor (SM) can also lead to sub-optimal parallelism if the implementation requires a high amount of registers in use per thread, leading to "leaving parallelism on the table". A proposed solution is to split the process into smaller GPU kernels, each responsible for sub-tasks (e.g. one for RNG, another for simulation). While this enables more efficient processor utilization, it comes at a cost of more global memory accesses between kernels. These techniques enabled a 43x speedup for exotic MC option pricing on an Nvidia Tesla C1060 GPU compared to an Intel 8-core Xeon 2.0 GHz CPU. \cite{liu2010efficient}
+Liu et al. demonstrate several optimization strategies for further speeding up parallel MC option pricing. The identified problems were mostly forms of inefficient memory access patterns and use of resources. The simplest optimization was to compress the working set -— that is, the amount of memory each thread must keep track of during simulation -- reducing reliance on slow global memory. The extent to which this is achievable heavily depends on the option type and choice of RNG \textbf{(if this sentence is MY thoughts, how do I separate it from citation?)}. Another common bottleneck is the memory bandwidth, for which reorganizing for coalesced accesses serves as a solution. The fixed amount of registers per streaming multiprocessor (SM) can also lead to sub-optimal parallelism if the implementation requires a high amount of registers in use per thread, leading to "leaving parallelism on the table". A proposed solution is to split the process into smaller GPU kernels, each responsible for sub-tasks (e.g. one for RNG, another for simulation). While this enables more efficient processor utilization, it comes at a cost of more global memory accesses between kernels. These techniques enabled a 43x speedup for exotic MC option pricing on an Nvidia Tesla C1060 GPU compared to an Intel 8-core Xeon 2.0 GHz CPU. \cite{liu2010efficient}
 
-The paper also explores the practical case of large workloads where the threads compute multiple price paths, and the tradeoff between two such execution strategies. In ``path mode'' a thread computes its paths sequentially from start to finish. This minimizes memory usage and is well suited for homogeneous workloads like the paths for the same option. In contrast, ``slice mode'' divides the computations across time steps, and computes the corresponding simulation step for all paths. This is naturally more memory intensive as intermediary data is required for all the paths. On the other hand, slice mode handles heterogeneous workloads better, e.g. the case of distributing calculations for multiple options over the threads. If these options have different maturities, some path simulations will finish earlier than others, leading to control-flow \emph{warp divergence}\textbf{(mention this in GPU chapter first time, and no need to emph it here)}. Slice mode alleviates this by structuring the computations to minimize the cost of such divergence. \cref{fig:combined} depicts the different execution modes and their effect on divergence. While these techniques were introduced in 2010 and GPU architectures have evolved significantly since then (e.g., with better warp scheduling and memory handling), the core tradeoffs between memory usage and workload synchronization remain relevant in designing efficient Monte Carlo implementations today. \cite{liu2010efficient}
+The paper also explores the practical case of large workloads where the threads compute multiple price paths, and the tradeoff between two such execution strategies. In ``path mode'' a thread computes its paths sequentially from start to finish. This minimizes memory usage and is well suited for homogeneous workloads like the paths for the same option. In contrast, ``slice mode'' divides the computations across time steps, and computes the corresponding simulation step for all paths. This is naturally more memory intensive as intermediary data is required for all the paths. On the other hand, slice mode handles heterogeneous workloads better, e.g. the case of distributing calculations for multiple options over the threads. If these options have different maturities, some path simulations will finish earlier than others, leading to control-flow \emph{warp divergence}\textbf{(mention this in GPU chapter first time, and no need to emph it here)}. Slice mode alleviates this by structuring the computations to minimize the cost of such divergence. \cref{fig:combined} depicts the different execution modes and their effect on divergence. While these techniques were introduced in 2010 and GPU architectures have evolved significantly since then (e.g., with better warp scheduling and memory handling), the underlying tradeoffs between memory usage, synchronization, and parallel efficiency remain central to high-performance Monte Carlo implementations, even on modern GPUs. \cite{liu2010efficient}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=0.7cm,
+    every node/.style={minimum size=0.6cm, font=\footnotesize, thick, draw=black!70}
+]
+
+% Path Mode Title
+\node[draw=none, font=\bfseries] at (5, 6.5) {Path Mode};
+
+% PATH MODE
+% Thread 1 (Blue) - Path 1
+\node[rectangle, fill=blue!90, text=white] (b11) at (0, 5) {1.1};
+\node[circle, fill=blue!90, text=white, right=of b11] (b12) {1.2};
+\node[circle, fill=blue!90, text=white, right=of b12] (b13) {1.3};
+
+% Thread 2 (Red) - Path 1  
+\node[rectangle, fill=red!80, text=white] (g11) at (0, 4) {1.1};
+\node[circle, fill=red!80, text=white, right=of g11] (g12) {1.2};
+\node[circle, fill=red!80, text=white, right=of g12] (g13) {1.3};
+\node[circle, fill=red!80, text=white, right=of g13] (g14) {1.4};
+\node[circle, fill=red!80, text=white, right=of g14] (g15) {1.5};
+
+% Dotted line and DIVERGENCE text after path 1
+\draw[dotted, line width=1.5pt] (b13.east) -- ++(1.5,0);
+\node[draw=none, font=\scriptsize] at (4.8, 5) {DIVERGENCE};
+
+
+
+% Thread 1 (Blue) - Path 2 (lighter)
+\node[rectangle, fill=blue!40, text=white] (b21) at (6, 5) {2.1};
+\node[circle, fill=blue!40, text=white, right=of b21] (b22) {2.2};
+\node[circle, fill=blue!40, text=white, right=of b22] (b23) {2.3};
+
+% Thread 2 (Red) - Path 2 (lighter)
+\node[rectangle, fill=red!40, text=white] (g21) at (6, 4) {2.1};
+\node[circle, fill=red!40, text=white, right=of g21] (g22) {2.2};
+\node[circle, fill=red!40, text=white, right=of g22] (g23) {2.3};
+\node[circle, fill=red!40, text=white, right=of g23] (g24) {2.4};
+\node[circle, fill=red!40, text=white, right=of g24] (g25) {2.5};
+
+% Dotted line and DIVERGENCE text after path 2
+\draw[dotted, line width=1.5pt] (b23.east) -- ++(1.5,0);
+\node[draw=none, font=\scriptsize] at (10.3, 5) {DIVERGENCE};
+
+% Arrows
+\foreach \i/\j in {b11/b12, b12/b13, g11/g12, g12/g13, g13/g14, g14/g15,
+                   b21/b22, b22/b23, g21/g22, g22/g23, g23/g24, g24/g25}
+    \draw[->, thick] (\i) -- (\j);
+
+% SLICE MODE
+\node[draw=none, font=\bfseries] at (5, 2) {Slice Mode};
+
+% Thread 1 (Blue) - alternating colors
+\node[rectangle, fill=blue!90, text=white] (sb11) at (0, 0.5) {1.1};
+\node[circle, fill=blue!40, text=white, right=of sb11] (sb21) {2.1};
+\node[circle, fill=blue!90, text=white, right=of sb21] (sb12) {1.2};
+\node[circle, fill=blue!40, text=white, right=of sb12] (sb22) {2.2};
+\node[circle, fill=blue!90, text=white, right=of sb22] (sb13) {1.3};
+\node[circle, fill=blue!40, text=white, right=of sb13] (sb23) {2.3};
+
+% Thread 2 (Red) - alternating colors
+\node[rectangle, fill=red!80, text=white] (sg11) at (0, -0.5) {1.1};
+\node[circle, fill=red!40, text=white, right=of sg11] (sg21) {2.1};
+\node[circle, fill=red!80, text=white, right=of sg21] (sg12) {1.2};
+\node[circle, fill=red!40, text=white, right=of sg12] (sg22) {2.2};
+\node[circle, fill=red!80, text=white, right=of sg22] (sg13) {1.3};
+\node[circle, fill=red!40, text=white, right=of sg13] (sg23) {2.3};
+\node[circle, fill=red!80, text=white, right=of sg23] (sg14) {1.4};
+\node[circle, fill=red!40, text=white, right=of sg14] (sg24) {2.4};
+\node[circle, fill=red!80, text=white, right=of sg24] (sg15) {1.5};
+\node[circle, fill=red!40, text=white, right=of sg15] (sg25) {2.5};
+
+% Arrows
+\foreach \i/\j in {sb11/sb21, sb21/sb12, sb12/sb22, sb22/sb13, sb13/sb23,
+                   sg11/sg21, sg21/sg12, sg12/sg22, sg22/sg13, sg13/sg23,
+                   sg23/sg14, sg14/sg24, sg24/sg15, sg15/sg25}
+    \draw[->, thick] (\i) -- (\j);
+
+% Single divergence - dotted horizontal line
+\draw[dotted, line width=1.5pt] (sb23.east) -- ++(4.5,0);
+\node[draw=none, font=\scriptsize] at (8, 0.5) {DIVERGENCE};
+
+\end{tikzpicture}
+\caption{GPU warp divergence in path mode versus slice mode execution. In path mode (top), threads complete entire paths sequentially, causing divergence at each path boundary when threads have different numbers of steps. In slice mode (bottom), threads process steps in parallel across paths, resulting in only a single divergence point when shorter options complete. Blue represents thread 1 (3 steps), red represents thread 2 (5 steps), with darker shades for path 1 and lighter shades for path 2.}
+\label{fig:gpu-divergence}
+\end{figure}
 
 
 
