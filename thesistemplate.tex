@@ -895,6 +895,7 @@ Unlike the CRR model, where algorithmic reformulation was necessary to expose hi
 Liu et al. demonstrate several optimization strategies for further speeding up parallel MC option pricing. The identified problems were mostly forms of inefficient memory access patterns and use of resources. The simplest optimization was to compress the working set -— that is, the amount of memory each thread must keep track of during simulation -- reducing reliance on slow global memory. The extent to which this is achievable heavily depends on the option type and choice of RNG \textbf{(if this sentence is MY thoughts, how do I separate it from citation?)}. Another common bottleneck is the memory bandwidth, for which reorganizing for coalesced accesses serves as a solution. The fixed amount of registers per streaming multiprocessor (SM) can also lead to sub-optimal parallelism if the implementation requires a high amount of registers in use per thread, leading to "leaving parallelism on the table". A proposed solution is to split the process into smaller GPU kernels, each responsible for sub-tasks (e.g. one for RNG, another for simulation). While this enables more efficient processor utilization, it comes at a cost of more global memory accesses between kernels. These techniques enabled a 43x speedup for exotic MC option pricing on an Nvidia Tesla C1060 GPU compared to an Intel 8-core Xeon 2.0 GHz CPU. \cite{liu2010efficient}
 
 The paper also explores the practical case of large workloads where the threads compute multiple price paths, and the tradeoff between two such execution strategies. In ``path mode'' a thread computes its paths sequentially from start to finish. This minimizes memory usage and is well suited for homogeneous workloads like the paths for the same option. In contrast, ``slice mode'' divides the computations across time steps, and computes the corresponding simulation step for all paths. This is naturally more memory intensive as intermediary data is required for all the paths. On the other hand, slice mode handles heterogeneous workloads better, e.g. the case of distributing calculations for multiple options over the threads. If these options have different maturities, some path simulations will finish earlier than others, leading to control-flow \emph{warp divergence}\textbf{(mention this in GPU chapter first time, and no need to emph it here)}. Slice mode alleviates this by structuring the computations to minimize the cost of such divergence. \cref{fig:combined} depicts the different execution modes and their effect on divergence. While these techniques were introduced in 2010 and GPU architectures have evolved significantly since then (e.g., with better warp scheduling and memory handling), the underlying tradeoffs between memory usage, synchronization, and parallel efficiency remain central to high-performance Monte Carlo implementations, even on modern GPUs. \cite{liu2010efficient}
+
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
@@ -902,32 +903,40 @@ The paper also explores the practical case of large workloads where the threads 
     every node/.style={minimum size=0.8cm, font=\footnotesize, thick, draw=black!70, inner sep=0pt}
 ]
 % Path Mode Title
-\node[draw=none, font=\bfseries] at (5.5, 6.5) {Path Mode};
+\node[draw=none, font=\bfseries] at (6.5, 9.5) {Path Mode};
+% Path Mode Pseudocode
+\node[draw=black!30, fill=gray!10, text width=3.5cm, align=left, font=\ttfamily\scriptsize, inner sep=8pt, rounded corners=3pt] at (6.5, 7.5) {
+for p = 1 to numPaths \{\\
+\hspace{0.3cm}for s = 1 to numSteps \{\\
+\hspace{0.6cm}simulate(p, s)\\
+\hspace{0.3cm}\}\\
+\}
+};
 % PATH MODE
 % Thread 1 (Blue) - Path 1
-\node[rectangle, fill=blue!90, text=white] (b11) at (0, 5) {1.1};
+\node[rectangle, fill=blue!90, text=white] (b11) at (0, 5.5) {1.1};
 \node[circle, fill=blue!90, text=white, right=of b11] (b12) {1.2};
 \node[circle, fill=blue!90, text=white, right=of b12] (b13) {1.3};
 % Thread 2 (Red) - Path 1  
-\node[rectangle, fill=red!80, text=white] (g11) at (0, 4) {1.1};
+\node[rectangle, fill=red!80, text=white] (g11) at (0, 4.5) {1.1};
 \node[circle, fill=red!80, text=white, right=of g11] (g12) {1.2};
 \node[circle, fill=red!80, text=white, right=of g12] (g13) {1.3};
 \node[circle, fill=red!80, text=white, right=of g13] (g14) {1.4};
 % Dotted line and DIVERGENCE text after path 1
 \draw[dotted, line width=1.5pt] (b13.east) -- ++(1.4,0) coordinate (b_dotted_end);
-\node[draw=none, font=\normalsize] at (4.5, 5.4) {D*};
+\node[draw=none, font=\normalsize] at (4.5, 5.9) {D*};
 % Thread 1 (Blue) - Path 2 (lighter)
-\node[rectangle, fill=blue!40, text=white] (b21) at (7, 5) {2.1};
+\node[rectangle, fill=blue!40, text=white] (b21) at (7, 5.5) {2.1};
 \node[circle, fill=blue!40, text=white, right=of b21] (b22) {2.2};
 \node[circle, fill=blue!40, text=white, right=of b22] (b23) {2.3};
 % Thread 2 (Red) - Path 2 (lighter)
-\node[rectangle, fill=red!40, text=white] (g21) at (7, 4) {2.1};
+\node[rectangle, fill=red!40, text=white] (g21) at (7, 4.5) {2.1};
 \node[circle, fill=red!40, text=white, right=of g21] (g22) {2.2};
 \node[circle, fill=red!40, text=white, right=of g22] (g23) {2.3};
 \node[circle, fill=red!40, text=white, right=of g23] (g24) {2.4};
 % Dotted line and DIVERGENCE text after path 2
 \draw[dotted, line width=1.5pt] (b23.east) -- ++(1.3,0);
-\node[draw=none, font=\normalsize] at (11.5, 5.4) {D*};
+\node[draw=none, font=\normalsize] at (11.5, 5.9) {D*};
 % Arrows
 \foreach \i/\j in {b11/b12, b12/b13, g11/g12, g12/g13, g13/g14,
                    b21/b22, b22/b23, g21/g22, g22/g23, g23/g24}
@@ -936,16 +945,24 @@ The paper also explores the practical case of large workloads where the threads 
 \draw[->, thick] (g14) -- (g21);
 \draw[->, thick] (b_dotted_end) -- (b21);
 % SLICE MODE
-\node[draw=none, font=\bfseries] at (5.5, 2) {Slice Mode};
+\node[draw=none, font=\bfseries] at (6.5, 3) {Slice Mode};
+% Slice Mode Pseudocode  
+\node[draw=black!30, fill=gray!10, text width=3.5cm, align=left, font=\ttfamily\scriptsize, inner sep=8pt, rounded corners=3pt] at (6.5, 1.5) {
+for s = 1 to numSteps \{\\
+\hspace{0.3cm}for p = 1 to numPaths \{\\
+\hspace{0.6cm}simulate(p, s)\\
+\hspace{0.3cm}\}\\
+\}
+};
 % Thread 1 (Blue) - alternating colors
-\node[rectangle, fill=blue!90, text=white] (sb11) at (0, 0.5) {1.1};
+\node[rectangle, fill=blue!90, text=white] (sb11) at (0, -0.5) {1.1};
 \node[circle, fill=blue!40, text=white, right=of sb11] (sb21) {2.1};
 \node[circle, fill=blue!90, text=white, right=of sb21] (sb12) {1.2};
 \node[circle, fill=blue!40, text=white, right=of sb12] (sb22) {2.2};
 \node[circle, fill=blue!90, text=white, right=of sb22] (sb13) {1.3};
 \node[circle, fill=blue!40, text=white, right=of sb13] (sb23) {2.3};
 % Thread 2 (Red) - alternating colors
-\node[rectangle, fill=red!80, text=white] (sg11) at (0, -0.5) {1.1};
+\node[rectangle, fill=red!80, text=white] (sg11) at (0, -1.5) {1.1};
 \node[circle, fill=red!40, text=white, right=of sg11] (sg21) {2.1};
 \node[circle, fill=red!80, text=white, right=of sg21] (sg12) {1.2};
 \node[circle, fill=red!40, text=white, right=of sg12] (sg22) {2.2};
@@ -960,7 +977,7 @@ The paper also explores the practical case of large workloads where the threads 
     \draw[->, thick] (\i) -- (\j);
 % Single divergence - dotted horizontal line
 \draw[dotted, line width=1.5pt] (sb23.east) -- ++(3,0);
-\node[draw=none, font=\normalsize] at (10.4, 0.9) {D*};
+\node[draw=none, font=\normalsize] at (10.4, -0.1) {D*};
 \end{tikzpicture}
 \caption{GPU warp divergence in path mode versus slice mode execution. In path mode (top), threads complete entire paths sequentially, causing divergence at each path boundary when threads have different numbers of steps. In slice mode (bottom), threads process steps in parallel across paths, resulting in only a single divergence point when shorter options complete. Blue represents thread 1 (3 steps), red represents thread 2 (4 steps), with darker shades for path 1 and lighter shades for path 2.}
 \label{fig:gpu-divergence}
