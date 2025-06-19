@@ -902,51 +902,42 @@ The paper also explores the practical case of large workloads where the threads 
     node distance=0.9cm,
     every node/.style={minimum size=0.8cm, font=\footnotesize, thick, draw=black!70, inner sep=0pt}
 ]
-
 % Path Mode Title
 \node[draw=none, font=\bfseries] at (5, 6.5) {Path Mode};
-
 % PATH MODE
 % Thread 1 (Blue) - Path 1
 \node[rectangle, fill=blue!90, text=white] (b11) at (0, 5) {1.1};
 \node[circle, fill=blue!90, text=white, right=of b11] (b12) {1.2};
 \node[circle, fill=blue!90, text=white, right=of b12] (b13) {1.3};
-
 % Thread 2 (Red) - Path 1  
 \node[rectangle, fill=red!80, text=white] (g11) at (0, 4) {1.1};
 \node[circle, fill=red!80, text=white, right=of g11] (g12) {1.2};
 \node[circle, fill=red!80, text=white, right=of g12] (g13) {1.3};
 \node[circle, fill=red!80, text=white, right=of g13] (g14) {1.4};
-
 % Dotted line and DIVERGENCE text after path 1
-\draw[dotted, line width=1.5pt] (b13.east) -- ++(1.4,0);
+\draw[dotted, line width=1.5pt] (b13.east) -- ++(1.4,0) coordinate (b_dotted_end);
 \node[draw=none, font=\scriptsize] at (4.7, 5.5) {DIVERGENCE};
-
-
-
 % Thread 1 (Blue) - Path 2 (lighter)
 \node[rectangle, fill=blue!40, text=white] (b21) at (7, 5) {2.1};
 \node[circle, fill=blue!40, text=white, right=of b21] (b22) {2.2};
 \node[circle, fill=blue!40, text=white, right=of b22] (b23) {2.3};
-
 % Thread 2 (Red) - Path 2 (lighter)
 \node[rectangle, fill=red!40, text=white] (g21) at (7, 4) {2.1};
 \node[circle, fill=red!40, text=white, right=of g21] (g22) {2.2};
 \node[circle, fill=red!40, text=white, right=of g22] (g23) {2.3};
 \node[circle, fill=red!40, text=white, right=of g23] (g24) {2.4};
-
 % Dotted line and DIVERGENCE text after path 2
 \draw[dotted, line width=1.5pt] (b23.east) -- ++(1.4,0);
 \node[draw=none, font=\scriptsize] at (11.2, 5.5) {DIVERGENCE};
-
 % Arrows
 \foreach \i/\j in {b11/b12, b12/b13, g11/g12, g12/g13, g13/g14,
                    b21/b22, b22/b23, g21/g22, g22/g23, g23/g24}
     \draw[->, thick] (\i) -- (\j);
-
+% New arrows from path 1 to path 2
+\draw[->, thick] (g14) -- (g21);
+\draw[->, thick] (b_dotted_end) -- (b21);
 % SLICE MODE
 \node[draw=none, font=\bfseries] at (5, 2) {Slice Mode};
-
 % Thread 1 (Blue) - alternating colors
 \node[rectangle, fill=blue!90, text=white] (sb11) at (0, 0.5) {1.1};
 \node[circle, fill=blue!40, text=white, right=of sb11] (sb21) {2.1};
@@ -954,7 +945,6 @@ The paper also explores the practical case of large workloads where the threads 
 \node[circle, fill=blue!40, text=white, right=of sb12] (sb22) {2.2};
 \node[circle, fill=blue!90, text=white, right=of sb22] (sb13) {1.3};
 \node[circle, fill=blue!40, text=white, right=of sb13] (sb23) {2.3};
-
 % Thread 2 (Red) - alternating colors
 \node[rectangle, fill=red!80, text=white] (sg11) at (0, -0.5) {1.1};
 \node[circle, fill=red!40, text=white, right=of sg11] (sg21) {2.1};
@@ -964,23 +954,18 @@ The paper also explores the practical case of large workloads where the threads 
 \node[circle, fill=red!40, text=white, right=of sg13] (sg23) {2.3};
 \node[circle, fill=red!80, text=white, right=of sg23] (sg14) {1.4};
 \node[circle, fill=red!40, text=white, right=of sg14] (sg24) {2.4};
-
 % Arrows
 \foreach \i/\j in {sb11/sb21, sb21/sb12, sb12/sb22, sb22/sb13, sb13/sb23,
                    sg11/sg21, sg21/sg12, sg12/sg22, sg22/sg13, sg13/sg23,
                    sg23/sg14, sg14/sg24}
     \draw[->, thick] (\i) -- (\j);
-
 % Single divergence - dotted horizontal line
 \draw[dotted, line width=1.5pt] (sb23.east) -- ++(2.5,0);
 \node[draw=none, font=\scriptsize] at (7, 1) {DIVERGENCE};
-
 \end{tikzpicture}
 \caption{GPU warp divergence in path mode versus slice mode execution. In path mode (top), threads complete entire paths sequentially, causing divergence at each path boundary when threads have different numbers of steps. In slice mode (bottom), threads process steps in parallel across paths, resulting in only a single divergence point when shorter options complete. Blue represents thread 1 (3 steps), red represents thread 2 (4 steps), with darker shades for path 1 and lighter shades for path 2.}
 \label{fig:gpu-divergence}
 \end{figure}
-
-
 
 
 
