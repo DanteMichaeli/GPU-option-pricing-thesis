@@ -67,6 +67,7 @@
 \usepackage{subcaption}
 \usepackage{float} % For [H]
 \usepackage[ruled]{algorithm2e}
+\usepackage{threeparttable}
 \SetKwComment{Comment}{/* }{ */}
 
 
@@ -1006,9 +1007,37 @@ for s = 1 to numSteps \{\\
 
 
 
-\section{Summary}  \label{sec:summary}
+\section{Summary and Conclusions}  \label{sec:summary}
 
-\section{Conclusions}  \label{sec:conclusions}
+\begin{table}[h]
+\centering
+\begin{threeparttable}
+\caption{Summary of GPU acceleration results for option pricing models}
+\label{tab:gpu-summary}
+\begin{tabular}{|l|c|p{5cm}|p{5cm}|}
+\hline
+\textbf{Algorithm} & \textbf{Reported Speedup} & \textbf{Strategy} & \textbf{Bottleneck} \\
+\hline
+CRR Naive & 10x\tnote{1} & Parallelization within time periods & Synchronization latency between time steps \\
+\hline
+CRR Partitioned & 2x\tnote{2} & Additional parallelization across time periods & Inter-partition communication \\
+\hline
+MC Basic & 23–59x\tnote{3} & Parallel simulation paths & Parallel random number generation \\
+\hline
+MC Optimized & 43x\tnote{4} & Memory coalescing, register reuse, warp divergence minimization & Memory bandwidth and register pressure \\
+\hline
+\end{tabular}
+\begin{tablenotes}
+\footnotesize
+\item[1] NVIDIA GeForce 6800 Ultra vs single-core 2.0GHz CPU (2005). \cite{pharr2005gpu}
+\item[2] NVIDIA Tesla C1060 vs CRR Naive on the same architecture (2009) \cite{ganesan2009acceleration}.
+\item[3] NVIDIA GeForce 8800 vs 4-core 2.2GHz CPU (2007). \cite{nguyen2007gpu}
+\item[4] NVIDIA Tesla C1060 vs 8-core 2.0GHz CPU (2010). \cite{liu2010efficient}
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+
 
 
 Opinn\"aytteen tekij\"a vastaa siit\"a, ett\"a opinn\"ayte on t\"ass\"a dokumentissa
@@ -1040,6 +1069,8 @@ In this appendix, we derive the risk-neutral probability form of the one-period 
 This final form reveals the risk-neutral probabilities: $\tilde p = \frac{(1+r) - d}{u-d}$ and $\tilde q = 1-\tilde p = \frac{u - (1+r)}{u-d}$.
 
 The no-arbitrage condition ensures $\tilde p$ and $\tilde q$ are correctly bounded by 0 and 1. If $1+r > u$, investors could profit by shorting the stock and investing in the risk-free asset. Conversely, if $d > 1+r$, they could earn guaranteed profits. Therefore, $d \leq 1+r \leq u$ must hold, which leads to $0\leq \tilde p, \tilde q \leq 1$. Furthermore, $\tilde p + \tilde q = 1$. Thus, our risk-neutral probabilities form a valid probability distribution over the two possible outcomes.
+
+
 
 
 
