@@ -1008,12 +1008,32 @@ for s = 1 to numSteps \{\\
 
 
 \section{Summary and Conclusions}  \label{sec:summary}
+This thesis analyzes the GPU acceleration potential for the CRR and MC option pricing algorithms. The results of the analyzed research are summarized in \cref{tab:results-table}. Due to differences in the experimental setup, including option types, GPU and CPU architectures, and used metrics, direct performance comparisons are inherently difficult. Nevertheless, one can make broader, qualitative comparisons between the methods, as well as draw general conclusions on GPU accelerated option pricing.
+
+An algorithm's inherent dependency structure dictates both its parallelization potential and the nature of such optimizations. The CRR algorithm, which aggregates multiple price paths through a recombining lattice, exhibits rigid dependencies between nodes across time steps. This limits parallelization to computations within each time step. On the other hand, MC methods simulate completely independent price paths, allowing for easier parallelization. This is supported by the data: the naive CRR-GPU implementation achieved an approximately 10x speedup over a single-core CPU \cite{pharr2005gpu}, while the MC-GPU version achieved 23-59x speedups despite being benchmarked against a quad-core CPU \cite{nguyen2007gpu}. Regardless of the method chosen, these straightforward GPU versions yield substantial gains relative to implementation effort, making them a clear improvement over sequential CPU versions. Scalability is eventually limited by bottlenecks -- thread communication latency for CRR and memory constraints for MC, particularly in RNG selection for memory-intensive option types.
+
+Given these distinct characteristics, the algorithms present different optimization opportunities. For CRR, the dependency chains motivate algorithmic reformulation to expose additional parallelism. MC methods already expose parallelism to a high degree, hence optimization efforts are more focused on better utilization of the hardware. Ganesan et al. \cite{ganesan2009acceleration} exemplify the algorithmic reformulation approach for CRR by partitioning the time axis and computing relationship coefficients in parallel, effectively working around the sequential dependencies. They achieved a 2x speedup over a naive GPU version. For MC methods, Liu et al. \cite{liu2010efficient} implement hardware-conscious optimizations, including memory coalescing and minimizing warp divergence, for a 43x total speedup over a sequential version. These examples illustrate the key principle that the algorithm's inherent structure determines which optimization strategies are available. However, practical considerations of implementation difficulty and expected gains ultimately decide which path to pursue.
+
+While the results indicate that MC methods tend to benefit more from GPU acceleration, they should not dictate algorithm choice. In practice, algorithm selection depends on multiple factors: option type, available hardware, and other individual requirements and constraints. For example, vanilla options are rarely priced using MC methods, as these are generally outperformed by analytical or lattice-based models. A general approach would thus be to first select an appropriate model that fits the requirements, and then to consider GPU acceleration. The critical insight is that GPU acceleration benefits many option pricing models, as they involve a 
+
+
+
+
+
+
+
+
+
+
+
 
 \begin{table}[h]
 \centering
 \begin{threeparttable}
-\caption{Summary of GPU acceleration results for option pricing models}
-\label{tab:gpu-summary}
+\caption{Empirically measured GPU speedups for selected option pricing models. Reported results are based on real implementations and vary in terms of baseline architecture and research methodology. While not directly comparable, they provide indicative insight into practical performance improvements when interpreted with appropriate caution.}
+
+
+\label{tab:results-table}
 \begin{tabular}{|l|c|p{5cm}|p{5cm}|}
 \hline
 \textbf{Algorithm} & \textbf{Reported Speedup} & \textbf{Strategy} & \textbf{Bottleneck} \\
@@ -1022,7 +1042,7 @@ CRR Naive & 10x\tnote{1} & Parallelization within time periods & Synchronization
 \hline
 CRR Partitioned & 2x\tnote{2} & Additional parallelization across time periods & Inter-partition communication \\
 \hline
-MC Basic & 23–59x\tnote{3} & Parallel simulation paths & Parallel random number generation \\
+MC Basic & 23–59x\tnote{3} & Parallel simulation paths & random number generation, memory bandwidth \\
 \hline
 MC Optimized & 43x\tnote{4} & Memory coalescing, register reuse, warp divergence minimization & Memory bandwidth and register pressure \\
 \hline
@@ -1036,15 +1056,6 @@ MC Optimized & 43x\tnote{4} & Memory coalescing, register reuse, warp divergence
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
-
-
-
-
-Opinn\"aytteen tekij\"a vastaa siit\"a, ett\"a opinn\"ayte on t\"ass\"a dokumentissa
-ja opinn\"aytteen tekemist\"a k\"asittelevill\"a luennoilla sek\"a
-harjoituksissa annettujen ohjeiden mukainen muotoseikoiltaan,
-rakenteeltaan ja ulkoasultaan.\cite{grochowski2004best}
-
 
 \cleardoublepage
 
