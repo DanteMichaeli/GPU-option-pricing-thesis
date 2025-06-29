@@ -1005,8 +1005,6 @@ for s = 1 to numSteps \{\\
 \label{fig:gpu-divergence}
 \end{figure}
 
-
-
 \section{Summary and Conclusions}  \label{sec:summary}
 This thesis analyzes the GPU acceleration potential for the CRR and MC option pricing algorithms. The results of the analyzed research are summarized in \cref{tab:results-table}. Due to differences in the experimental setup, including option types, GPU and CPU architectures, and used metrics, direct performance comparisons are inherently difficult. Nevertheless, one can make broader, qualitative comparisons between the methods, as well as draw general conclusions on GPU accelerated option pricing.
 
@@ -1014,17 +1012,9 @@ An algorithm's inherent dependency structure dictates both its parallelization p
 
 Given these distinct characteristics, the algorithms present different optimization opportunities. For CRR, the dependency chains motivate algorithmic reformulation to expose additional parallelism. MC methods already expose parallelism to a high degree, hence optimization efforts are more focused on better utilization of the hardware. Ganesan et al. \cite{ganesan2009acceleration} exemplify the algorithmic reformulation approach for CRR by partitioning the time axis and computing relationship coefficients in parallel, effectively working around the sequential dependencies. They achieved a 2x speedup over a naive GPU version. For MC methods, Liu et al. \cite{liu2010efficient} implement hardware-conscious optimizations, including memory coalescing and minimizing warp divergence, for a 43x total speedup over a sequential version. These examples illustrate the key principle that the algorithm's inherent structure determines which optimization strategies are available. However, practical considerations of implementation difficulty and expected gains ultimately decide which path to pursue.
 
-While the results indicate that MC methods tend to benefit more from GPU acceleration, they should not dictate algorithm choice. In practice, algorithm selection depends on multiple factors: option type, available hardware, and other individual requirements and constraints. For example, vanilla options are rarely priced using MC methods, as these are generally outperformed by analytical or lattice-based models. A general approach would thus be to first select an appropriate model that fits the requirements, and then to consider GPU acceleration. The critical insight is that GPU acceleration benefits many option pricing models, as they involve a 
+While the results indicate that MC methods tend to benefit more from GPU acceleration, they should not dictate algorithm choice. In practice, algorithm selection depends on multiple factors: option type, available hardware, and other individual requirements and constraints. For example, vanilla options are rarely priced using MC methods, as these are generally outperformed by analytical or lattice-based models. A general approach would thus be to first select an appropriate model that fits the requirements, and then to attempt GPU acceleration. As per the results, significant speedups can be achieved even with simpler implementations, and thus leveraging GPU capabilities should always be considered (along with other potential optimization strategies) in algorithmic option pricing. This becomes especially relevant for high-throughput tasks, such as bulk pricing or risk calculations across large portfolios.
 
-
-
-
-
-
-
-
-
-
+An important caveat is that the analyzed research spans 2005-2010. Much of the cutting-edge research often remains proprietary within financial institutions that guard their competitive advantages, making it difficult to review the most recent developments in the field. GPU architectures have also evolved dramatically since then, largely driven by the massive demand for AI computing. Modern GPUs feature improved memory hierarchies, better divergence handling, and enhanced support for general-purpose computing, mitigating several of the mentioned bottlenecks and perhaps revealing new ones. Similarly, modern multi-core CPUs certainly enable faster baseline solutions than those in the original studies. While details change, the fundamental principle remains -- maximal GPU utilization is achieved both through algorithmic design and optimizing on the hardware level. Future work could examine these algorithms on modern architectures, and perform more direct comparisons. Expansive research could also be done on GPU acceleration of other models, such as finite difference or machine learning methods.
 
 
 \begin{table}[h]
