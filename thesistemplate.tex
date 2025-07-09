@@ -62,7 +62,7 @@
 \usepackage{graphicx}
 \usepackage[inkscapelatex=false]{svg}
 \usepackage{tikz}
-\usetikzlibrary{positioning}
+\usetikzlibrary{arrows.meta, positioning}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{float} % For [H]
@@ -554,21 +554,23 @@ where the weights $\tilde{p} := \frac{(1+r)-d}{u-d}$ and $\tilde{q} := \frac{u-(
 \label{eq:risk-neutral-expectancy}
 \end{equation}
 
-While there exist many misconceptions about risk-neutral valuation, it can simply be thought of as an algebraic reformulation of the problem into a more familiar version of discounting expected future cash flows. The risk-neutral probabilities are not predictions of any real-life events. They are mathematical weights that look and behave like probabilities, and produce the same price as the replicating portfolio while maintaining the no-arbitrage assumption. The term risk-neutral probability stems from the fact that the reformulation discounts by the risk-free rate, resembling how a risk-neutral investor would discount cash flows. This elegant reformulation enables the use of more tools from probability theory, and elements of it will be found in all of the models to be introduced later. The full derivation of this reformulation is provided in \cref{appendix:risk_neutral_derivation}. \cite{gisiger2010risk} \cite{tham2001risk}
+While there exist many misconceptions about risk-neutral valuation, it can simply be thought of as an algebraic reformulation of the problem into a more familiar version of discounting expected future cash flows. The risk-neutral probabilities are not predictions of any real-life events. They are mathematical weights that look and behave like probabilities, and produce the same price as the replicating portfolio while maintaining the no-arbitrage assumption. The term risk-neutral probability stems from the fact that the reformulation discounts by the risk-free rate, resembling how a risk-neutral investor would discount cash flows. This elegant reformulation enables the use of more tools from probability theory, and elements of it will be found in all of the models to be introduced later. The full derivation of this reformulation is provided in \cref{appendix:risk_neutral_derivation}. \cite{gisiger2010risk, tham2001risk}
 
+\section{GPU and Parallel Computing}
+The graphics processing unit (GPU) is a processor specifically tailored for graphics-related computation. Starting in the 1980s, the demand for 2D and 3D graphics-based consumer software, mainly driven by video games, surged. The computations entailed performing a large amount of floating-point operations per seconds (FLOPS) associated with graphics, like shading and rasterization~\cite{sanders2010cuda, kirk2016programming}. Front-runners of delivering affordable graphics computing capabilities included NVIDIA and ATI Technologies (later acquired by AMD)~\cite{sanders2010cuda}.
 
-\section{The GPU and Parallel Computing} \label{sec:gpu}
-The graphics processing unit (GPU) is a processor specified for graphics-related processing. Starting in the 1980s, the demand for 2D and 3D graphically based consumer software, mainly driven by video games, surged. In practice, this entailed performing a large amount of floating-point operations per seconds (FLOPS) associated with graphical operations like shading and rasterization. Front-runners of delivering affordable graphics computing capabilities included NVIDIA and ATI Technologies (later acquired by Advanced Micro Devices (AMD)).\cite{sanders2010cuda} \cite{kirk2016programming}
+Hennessy and Patterson \cite{hennessy2011computer} loosely define \emph{latency} as the time between the start and completion of a single event, and \emph{throughput} as the total amount of work performed in a given time. These metrics (and specific variants thereof) are widely used in computing performance contexts. While both central processing units (CPUs) and GPUs have seen performance improvements in both metrics, the authors show that relative throughput improvements have surpassed relative latency improvements. This is not unreasonable: Increasing throughput is mainly a matter of providing more of the same already available resource. Latency improvements have, on the other hand, already reached closer to the theoretical limits imposed by the laws of physics \cite{hennessy2011computer} \cite{sanders2010cuda}. Suomela's summary of statistics on trends for both clock speed and instruction latencies corroborate these claims \cite{suomela_ppc}.
 
-Hennessy and Patterson \cite{hennessy2011computer} loosely define \emph{latency} as the time between the start and completion of a single event, and \emph{throughput} as the total amount of work performed in a given time. These metrics (and specific variants thereof) are widely used in computing performance contexts. While both central processing units (CPUs) and GPUs have seen performance improvements on both ends, the authors show that relative throughput improvements tend to outweigh relative latency improvements. This is not unreasonable - increasing throughput is (within limits) mostly a manner of providing more of the same resources already available. Latency improvements have, on the other hand, already reached closer to the theoretical limits imposed by the laws of physics \cite{hennessy2011computer} \cite{sanders2010cuda}. Suomela's summary of statistics on trends for both clock speed and instruction latencies corroborate these claims (cite PPC website?).
-
-This, in combination with the fact that graphics-related calculations are well-structured for concurrency exploitation (covered in \cref{subsec:parallell}), led to the evolution towards the exceptionally throughput-optimized GPU architectures of today's age. At the same time, there grew an increasing interest in the utilization of these parallel computing capabilities for other purposes. However, these advances alone were insufficient in unlocking the potential for so-called general-purpose GPU (GPGPU) programming, as the hardware lacked the flexibility needed for general-purpose computing, and no GPGPU programming models and tools were readily available. The initial graphics-intended hardware and software ecosystems effectively forced developers to mask their problems as those found in the graphics domain. Only after advances in these areas could GPGPU programming truly flourish. In 2007, NVIDIA released the compute unified device architecture \emph{CUDA} and corresponding software tools that greatly removed earlier restrictions in favor of GPGPU-programming. The hardware was now directly accessible without considering graphics-related interfaces, and the software tool for writing CUDA applications was a simple extension layer on top of familiar C/C++. Today, GPGPU applications are found in a wide variety of fields, including computational finance. \cite{sanders2010cuda} \cite{kirk2016programming}
+This, in combination with the fact that graphics-related calculations are well-structured for concurrency exploitation (covered in \cref{subsec:parallell}), led to the evolution towards the exceptionally throughput-optimized GPU architectures of the modern age. At the same time, there grew an increasing interest in the utilization of these parallel computing capabilities for other purposes. However, these advances alone were insufficient in unlocking the potential for so-called general-purpose GPU (GPGPU) programming, as the hardware lacked the flexibility needed for general-purpose computing, and no GPGPU programming models and tools were readily available. The initial graphics-intended hardware and software ecosystems effectively forced developers to mask their problems as those found in the graphics domain \cite{sanders2010cuda, kirk2016programming}. Only after advances in these areas could GPGPU programming truly flourish. In 2007, NVIDIA released \emph{CUDA (Compute Unified Device Architecture)}, a software abstraction layer that greatly removed earlier restrictions in favor of GPGPU-programming. The hardware was now directly accessible without considering graphics-related interfaces, and writing CUDA applications was possible as a simple extension layer on top of familiar C/C++. Today, GPGPU applications are found in a wide variety of fields, including computational finance \cite{sanders2010cuda, kirk2016programming}.
 
 \subsection{CPU and GPU Architecture}
+ \cref{fig:CPUandGPU} represents a simple model of a modern CPU and GPU. The CPU portion is based on the writings of Stallings~\cite{stallings2011operating}, while the GPU portion is derived from both the work of Kirk and Hwu~\cite{kirk2016programming} and the CUDA C++ Programming Guide by NVIDIA~\cite{cuda2025guide}. 
 
- \cref{fig:CPUandGPU} represents a very simple model of a modern CPU and GPU. The \emph{arithmetic logic unit} (ALU) is responsible for performing bitwise operations on data, \emph{registers} (not explicitly visible in figure) for storing memory addresses, instructions, and data to operate on, as well as additional supporting components, e.g. for control of flow, or communication with the external environment. The CPU operates in a loop of two-staged fetch-execute instruction cycles, where an instruction is first loaded into the so-called instruction register. After this, the instruction is decoded and executed, which in practice means either data processing, data transfer, or control logic related to the instruction sequence. This loop continues until the program halts due to either finishing or due to an interruption by another module.\cite{stallings2011operating}
+ The arithmetic logic unit (ALU) is responsible for performing bitwise operations on data, registers (not visible in figure) store memory addresses, instructions, and data to operate on, and additional support components for control of flow and communication with the external environment. The CPU operates in a loop of two-staged fetch-execute instruction cycles, where an instruction is first loaded into a register. After this, the instruction is executed, which in practice means either data processing, data transfer, or control logic related to the instruction sequence. This loop continues until the program terminates, e.g. from finishing or halting due to an error, or due to an interruption by another module~\cite{stallings2011operating}.
 
-CPUs have with time adapted to improve performance by utilizing various parallelism mechanisms. Instruction-level parallelism (ILP) refers to a set of techniques the processor uses for executing multiple instructions, either in part or fully, simultaneously. Common examples of these are pipelining, branch prediction and speculative execution. Processor architectures often contain \emph{single instruction multiple data} (SIMD) capabilities through large vector registers capable of storing multiples of the same data type, and instructions that can operate on these at once. And to top it off, most modern processors are multi-core, meaning they literally contain multiple instances of the main aforementioned components for use. This enables a higher thread-level parallelism (TLP), where a \emph{thread} — informally defined as an independent sequence of instructions that can be scheduled and executed as a separate unit of work \textbf{do I need src??} — can run on each core simultaneously. Despite this, the CPU remains primarily latency-optimized, and does not hold a candle to the typical GPU throughput. \cite{hennessy2011computer}
+CPUs have evolved to improve performance by leveraging various forms of parallelism. Instruction-level parallelism (ILP) refers to a set of techniques that allow a processor to execute multiple independent instructions simultaneously or in overlapping stages. Examples include instruction pipelining, superscalar execution, and out-of-order execution. Additional techniques like branch prediction and speculative execution support ILP by keeping the pipeline filled \cite{hennessy2011computer, suomela_ppc}.
+
+Modern CPUs also possess \emph{single instruction multiple data} (SIMD) capabilities through large vector registers capable of storing multiples of the same data type, and instructions that can operate on these at once. And to top it off, most modern processors are multi-core, meaning they literally contain multiple instances of the main aforementioned components for use. This enables a higher, thread-level parallelism (TLP), where a \emph{thread} -- an independent sequence of instructions that can be scheduled and executed \cite{stallings2011operating} -- can run on each core simultaneously \cite{hennessy2011computer, suomela_ppc}. Nonetheless, CPUs remain fundamentally optimized for low-latency sequential execution and control flow, rather than for maximizing throughput.
 
 \begin{figure}[h]
     \centering
@@ -577,13 +579,62 @@ CPUs have with time adapted to improve performance by utilizing various parallel
     \label{fig:CPUandGPU}
 \end{figure}
 
-In contrast, while lacking many of the sophistication that makes the CPU excel at sequential and "control-complex" tasks, the GPU fits in more raw computation power for a massively throughput-optimized architecture that excels at the specialized task of parallel numerical computation. The term single instruction multiple thread (SIMT) is often used to describe GPU computation, as the concurrency is enabled on thread-level by a massive amount of threads running scalar computations in parallel, as opposed to single-threaded computation using SIMD and ILP methods (or multi-threaded on a comparatively few cores). Suomela (cite PPC) has nicely summarized these differing parallelism paradigms. A modern CUDA-based GPU containing many independent \emph{streaming multiprocessors} (SM), which can be considered as a group of many \emph{streaming processors} (SP) (read: ALUs) sharing some control units and instruction memory registers. Threads are grouped in to groups of 32, called \emph{warps}, which always execute in lock-step, i.e. simultaneous execution on their respective data. The threads in a warp are thus dispatched to a corresponding amount of SPs using these shared resources. Similarly to a multi-core CPU, all SMs share a higher-latency global memory (akin to RAM), and are individually allocated a small but fast on-chip cache for minimizing data transfer bottlenecks, among other things (to be discussed later). \cite{sanders2010cuda} \cite{kirk2016programming} (cite PPC)
-
-
+In contrast, while lacking many of the sophistication that makes the CPU excel at sequential and control-heavy tasks, the GPU fits in more raw computation power for a massively throughput-optimized architecture that excels at parallel numerical computation. The term single instruction multiple thread (SIMT) is often used to describe GPU computation, as the concurrency is enabled on thread-level by a massive amount of threads executing the same instruction in parallel, as opposed to single-threaded computation using SIMD, ILP, or multi-threading on a comparatively few cores \cite{cuda2025guide}. A modern GPU contains independent \emph{streaming multiprocessors} (SM), which can be considered as a group of many processing units sharing some control units and memory. Threads are grouped into units of 32, called \emph{warps}, which generally execute in lock-step on a single SM.\footnote{Since the release of the NVIDIA Volta architecture in 2017, GPUs support individual threads within a warp to follow divergent control flow. This allows greater flexibility for algorithms with complex control flow or thread-level synchronization \cite{cuda2025guide}. However, full parallelism is only maintained when threads execute the same instruction. Divergence still reduces efficiency as execution becomes serialized across paths.}, i.e. simultaneous execution on their respective data. Similarly to a multi-core CPU, all SMs share a higher-latency global memory (akin to RAM), and are individually allocated smaller but faster cache memory for minimizing data transfer bottlenecks. Additionally, each SM contains \emph{shared memory}, a low-latency programmer-controlled memory region for inter-thread communication within a streaming multiprocessor \cite{sanders2010cuda, cuda2025guide, kirk2016programming}.
 
 \subsection{Parallel Computing Fundamentals and GPU suitability}\label{subsec:parallell}
 
-Types of parallelism (data, task, instruction)
+A theoretical framework is greatly helpful in analyzing parallelism opportunities and limitations. This chapter introduces key concepts for assessing algorithm structure, theoretical speedup limits, and common pitfalls.
+
+Kirk et al. \cite{kirk2016programming} denote two forms of parallelism: data parallelism and task parallelism. The former denotes performing the same operations in parallel on different data, while the latter means performing multiple different tasks simultaneously. A simple example of data parallelism is vector addition, where each respective component in vector A is added to its corresponding component in vector B. As per the authors, data parallelism is more abundant, especially in the modern age as programs make use of increasingly large data sets. The SIMT architecture of GPUs also favors data parallelism over task parallelism, as it is precisely optimized for lock-step execution of a single instruction on different data elements, as opposed to fine-grain control flow. This stems from the nature of graphics-related computation, the GPUs original purpose, where color values quickly had to be updated on many thousands of pixels at the same time \cite{sanders2010cuda}. The authors do not dismiss task parallelism completely, suggesting it often can be exploited by partitioning and identifying smaller independent sub-tasks of a program \cite{kirk2016programming}.
+
+Acar \cite{acar2016parallel} provides a framework for a more formal analysis of parallel algorithms. The algorithm is depicted as a directed acyclic graph (DAG), whose nodes represent executions of individual instructions, and whose edges represent instruction dependencies. The DAG can be thought of as a Hasse diagram that depicts a partial ordering of these instructions under the relation "must execute before". Acar sets the maximum node \emph{out-degree} and \emph{in-degree}\footnote{The number of edges extending from a node.} to two, representing the cases of spawning a new thread and synchronizing the result from two threads. \cref{fig:DAG-algo} depicts a DAG representation of an algorithm.
+
+
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm and 1.5cm,
+    every node/.style={draw, circle, minimum size=8mm},
+    every edge/.style={draw, -{Latex[width=2mm]}},
+    threadlabel/.style={font=\sffamily\small, draw=none, fill=none},
+]
+
+% Nodes
+\node (A1) {A1};
+\node[right=of A1] (A2) {A2};
+\node[right=1.5cm and 1.5cm of A2, yshift=1.5cm] (B1) {B1};
+\node[right=of A2] (A3) {A3};
+\node[right=of B1] (B2) {B2};
+\node[right=of A3] (A4) {A4};
+\node[right=of A4] (A5) {A5};
+\node[right=of B2] (B3) {B3};
+\node[right=of A5] (A6) {A6};
+
+% Edges
+\draw (A1) edge (A2);
+\draw (A2) edge (B1);
+\draw (A2) edge (A3);
+\draw (B1) edge (B2);
+\draw (A3) edge (A4);
+\draw (A4) edge (A5);
+\draw (B2) edge (A5);
+\draw (B2) edge (B3);
+\draw (A5) edge (A6);
+\draw (B3) edge (A6);
+
+% Plain text thread labels (no bubbles)
+\node[threadlabel, above=-0.5cm of B1] {Thread B};
+\node[threadlabel, above=-0.5cm of A1] {Thread A};
+
+\end{tikzpicture}
+\caption{Directed acyclic graph (DAG) representation of a parallel algorithm. The nodes represent individual instructions and the edges represent instruction dependencies that form the order of execution. At node A2, a new thread is spawned, after which both execute independent instruction sequences in parallel. The thread results synchronize at nodes A5 and A6, but thread B terminates only at the latter. DAG representations help visualize the algorithm structure and where parallelism can be utilized on independent computation paths.}
+\label{fig:DAG-algo}
+\end{figure}
+
+
+
+
 Amdahl's Law and theoretical speedup limits
 Dependency chains and their impact
 Synchronization requirements
@@ -592,13 +643,6 @@ Identifying parallelizable components
 MAKE POINT THAT GRAPHICS CALCULATIONS ON PIXESL ETC WERE LARGELY PARALLELIZABLE DUE TO LOW DEPENDENCY CHAINS  
 Common computation patterns in finance
 Performance metrics and evaluation
-
-
-
-
-
-
-\subsection{(GP)GPU Programming Model}
 
 
 
@@ -635,7 +679,7 @@ Maximizing occupancy (concurrent warps)
 Synchronization between threads when needed
 Decomposing problem into parallel components
 
-The key insight is that programmers think in terms of the problem structure (blocks/grids), while the hardware manages the execution details (warps/SMs). This separation of concerns is what makes CUDA both powerful and accessible.RetryClaude can make mistakes. Please double-check responses.
+The key insight is that programmers think in terms of the problem structure (blocks/grids), while the hardware manages the execution details (warps/SMs). This separation of concerns is what makes CUDA both powerful and accessible.
 
 
 
@@ -643,51 +687,6 @@ The key insight is that programmers think in terms of the problem structure (blo
 
 Execution model and scheduling
 CUDA programming paradigm
-
-\subsection{WHY GPU?} the need for computational power:
-
-This is a crucial question that gets to the heart of why GPU acceleration is valuable in option pricing. The justification comes from several real-world financial applications:
-
-Risk Management: Financial institutions need to calculate Value-at-Risk (VaR) and other risk metrics for portfolios containing thousands of options. This often requires:
-
-Recalculating all option prices under multiple scenarios
-Computing Greeks to understand sensitivity to market movements
-Running these calculations daily or even intraday
-
-
-Regulatory Requirements: Banking regulations like Basel III require comprehensive stress testing of portfolios, involving:
-
-Calculating option values under hundreds of different market scenarios
-Reporting results within strict timeframes
-
-
-Electronic Market Making: Firms that provide liquidity in options markets need to:
-
-Continuously update prices for hundreds or thousands of options
-Adjust their quotes as market conditions change
-Maintain accurate hedging calculations (based on Greeks)
-
-
-Portfolio Optimization: Investment firms need to:
-
-Evaluate complex trading strategies across multiple options
-Test different portfolio compositions
-Optimize hedging positions using sensitivity metrics
-
-
-
-This computational demand is documented in various sources:
-
-Academic papers like "GPU Computing in Finance: Recent Applications and Developments" by Giles \& Xiaosong (2014) discuss these requirements
-Financial industry whitepapers from firms like NVIDIA and JP Morgan
-Case studies from banks that have implemented GPU solutions for options pricing
-
-The computational demands become especially intense during market stress when quick recalculation is critical, making the case for GPU acceleration even stronger.
-
-
-
-- why GPU, why optimize for throughput vs latency
-
 
 \clearpage
 
