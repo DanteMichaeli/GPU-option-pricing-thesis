@@ -587,9 +587,7 @@ A theoretical framework is greatly helpful in analyzing parallelism opportunitie
 
 Kirk et al. \cite{kirk2016programming} denote two forms of parallelism: data parallelism and task parallelism. The former denotes performing the same operations in parallel on different data, while the latter means performing multiple different tasks simultaneously. A simple example of data parallelism is vector addition, where each respective component in vector A is added to its corresponding component in vector B. As per the authors, data parallelism is more abundant, especially in the modern age as programs make use of increasingly large data sets. The SIMT architecture of GPUs also favors data parallelism over task parallelism, as it is precisely optimized for lock-step execution of a single instruction on different data elements, as opposed to fine-grain control flow. This stems from the nature of graphics-related computation, the GPUs original purpose, where color values quickly had to be updated on many thousands of pixels at the same time \cite{sanders2010cuda}. The authors do not dismiss task parallelism completely, suggesting it often can be exploited by partitioning and identifying smaller independent sub-tasks of a program \cite{kirk2016programming}.
 
-Acar \cite{acar2016parallel} provides a framework for a more formal analysis of parallel algorithms. The algorithm is depicted as a directed acyclic graph (DAG), whose nodes represent executions of individual instructions, and whose edges represent instruction dependencies. The DAG can be thought of as a Hasse diagram that depicts a partial ordering of these instructions under the relation "must execute before". Acar sets the maximum node \emph{out-degree} and \emph{in-degree}\footnote{The number of edges extending from a node.} to two, representing the cases of spawning a new thread and synchronizing the result from two threads. \cref{fig:DAG-algo} depicts a DAG representation of an algorithm.
-
-
+Acar \cite{acar2016parallel} provides a framework for a more formal analysis of parallel algorithms. The algorithm is depicted as a directed acyclic graph (DAG), whose nodes represent executions of individual instructions, and whose edges represent instruction dependencies. The DAG can be thought of as a Hasse diagram that depicts a partial ordering of these instructions under the relation "must execute before". Acar sets the maximum node \emph{out-degree} and \emph{in-degree}\footnote{The number of edges extending out from or into a node.} to two, representing the cases of spawning a new thread and synchronizing the result from two threads. \cref{fig:DAG-algo} depicts a DAG representation of an algorithm.
 
 \begin{figure}[h]
 \centering
@@ -632,61 +630,14 @@ Acar \cite{acar2016parallel} provides a framework for a more formal analysis of 
 \label{fig:DAG-algo}
 \end{figure}
 
+Using these graphs, Acar \cite{acar2016parallel} defines the \emph{work} of an algorithm as the total number of nodes in the DAG, and \emph{span} as the length of its longest path. Alternatively, assuming each instruction takes a unit of time and no overhead cost of thread management, one can think of the work as the sequential run-time on a single processor $T_1$, and span as the run-time on an idealized infinite-processor machine $T_{\infty}$. For instance, the DAG presented in \cref{fig:DAG-algo} contains nine units of work but the span only six units. It is now possible to define two lower bounds on algorithm run-time on a p-processor machine $T_p$:
 
+\paragraph{Span-limited lower bound $T_p \geq T_\infty$}: No matter the number of processors available, the execution cannot be faster than the longest dependency chain in the DAG. This illustrates the role of algorithm structure in parallelization potential, and motivates the effort to restructure algorithms to minimize span and other dependency chains.
 
+\paragraph{Work-limited lower bound $T_p \geq T_1/p$}: $p$ processors can perform at most $p$ operations in parallel, even if there are no dependencies. This highlights hardware constraints.
 
-Amdahl's Law and theoretical speedup limits
-Dependency chains and their impact
-Synchronization requirements
-Characteristics of "GPU-friendly" algorithms
-Identifying parallelizable components
-MAKE POINT THAT GRAPHICS CALCULATIONS ON PIXESL ETC WERE LARGELY PARALLELIZABLE DUE TO LOW DEPENDENCY CHAINS  
-Common computation patterns in finance
-Performance metrics and evaluation
+Furthermore, the author demonstrates how an upper bound on the runtime can be obtained based on \emph{Brent's theorem}. For both level-by-level and greedy scheduling\footnote{level-by-level scheduling assigns nodes to processors by a level-order traversal of the DAG. This can leave processors idle if the amount of nodes per level does not evenly divide the amount of processors. In contrast, greedy scheduling minimizes processor idling by immediately assigning available nodes to them.}, the upper bound is within a factor 2 of the lower bound, underlining once more the importance of minimizing span and providing enough resources to divide the work \cite{acar2016parallel}. In practice, runtime analysis is often more complex due to factors such as varying instruction latencies, parallelization overhead, and synchronization and shared resource contention.
 
-
-
-add * footnote explaining warps vs blocks, link to Suomela PPC
-Thread hierarchy (threads, blocks, grids)
-Memory spaces (global, shared, constant, texture)
-
--> WHY THIS? difference between logical view vs hardware view. Logical for structuring problem (indexing) according to its "natural dimensions" better, and hardware independence no matter how many SMs available et.c. + shared memory constructs for synching work!
-
-
-
-
-Hardware-Level Concerns (Managed by GPU)
-
-Warp formation and execution (32 threads in lockstep)
-Warp scheduling on available SMs
-Thread masking during branch divergence
-Memory coalescing at warp level
-Register allocation per thread
-L1/L2 cache management
-SM resource allocation
-Load balancing across SMs
-
-Programmer-Level Concerns (Your Focus)
-
-Block and grid dimensions that match problem structure
-Thread indexing within problem domain
-Shared memory allocation and usage
-Managing data transfers between CPU and GPU
-Minimizing thread divergence
-Optimizing memory access patterns
-Balancing resources per thread/block
-Maximizing occupancy (concurrent warps)
-Synchronization between threads when needed
-Decomposing problem into parallel components
-
-The key insight is that programmers think in terms of the problem structure (blocks/grids), while the hardware manages the execution details (warps/SMs). This separation of concerns is what makes CUDA both powerful and accessible.
-
-
-
-
-
-Execution model and scheduling
-CUDA programming paradigm
 
 \clearpage
 
