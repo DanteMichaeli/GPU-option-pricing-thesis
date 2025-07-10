@@ -62,6 +62,7 @@
 \usepackage{graphicx}
 \usepackage[inkscapelatex=false]{svg}
 \usepackage{tikz}
+\usepackage[absolute,overlay]{textpos}
 \usetikzlibrary{arrows.meta, positioning}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -572,14 +573,24 @@ CPUs have evolved to improve performance by leveraging various forms of parallel
 
 Modern CPUs also possess \emph{single instruction multiple data} (SIMD) capabilities through large vector registers capable of storing multiples of the same data type, and instructions that can operate on these at once. And to top it off, most modern processors are multi-core, meaning they literally contain multiple instances of the main aforementioned components for use. This enables a higher, thread-level parallelism (TLP), where a \emph{thread} -- an independent sequence of instructions that can be scheduled and executed \cite{stallings2011operating} -- can run on each core simultaneously \cite{hennessy2011computer, suomela_ppc}. Nonetheless, CPUs remain fundamentally optimized for low-latency sequential execution and control flow, rather than for maximizing throughput.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{CPUAndGPU.png}
-    \caption{Simple diagrams of modern multi-core CPU and GPU architectures, showcasing their main respective components. Each CPU core contains an arithmetic logic unit (ALU) for performing bitwise operations and a control unit for handling program flow. Hierarchical (L1-L3) on-chip cache memory minimizes data transfer bottlenecks between the (D)RAM and the cores. On the GPU, streaming multiprocessors correspond to cores. The design clearly emphasizes parallel computing power over control and latency optimization. The PCI-Express serves as a data transfer interface between the processors. source: https://enccs.github.io/gpu-programming/2-gpu-ecosystem/ OK TO DO THIS??}
-    \label{fig:CPUandGPU}
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \node[anchor=south west, inner sep=0] (image) at (0,0) {\includegraphics[width=\textwidth]{External Images/CPUandGPU.png}};
+    \begin{scope}[x={(image.south east)}, y={(image.north west)}]
+      % Adjusted positions for the Shared Memory blocks
+      \foreach \y in {0.806, 0.676, 0.545, 0.413} {
+        \draw[fill=orange!80!black] (0.692,\y-0.047) rectangle (0.74,\y+0.035);
+        \node[font=\sffamily\tiny, align=center, scale=0.9] at (0.716, \y-0.006) {Shared\\Memory};
+      }
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Simple diagrams of modern multi-core CPU and GPU architectures, showcasing their main respective components. Each CPU core contains an arithmetic logic unit (ALU) for performing bitwise operations and a control unit for handling program flow. Hierarchical (L1-L3) on-chip cache memory minimizes data transfer bottlenecks between the RAM and the cores. On the GPU, streaming multiprocessors correspond to cores, and their design clearly emphasizes parallel computing power over control and latency optimization. The PCI-Express serves as a communication interface between the processors. Adapted from material by ENCCS, licensed under CC-BY 4.0 \cite{enccs2025gpu}.}
+  \label{fig:cpu-gpu-architecture}
 \end{figure}
 
-In contrast, while lacking many of the sophistication that makes the CPU excel at sequential and control-heavy tasks, the GPU fits in more raw computation power for a massively throughput-optimized architecture that excels at parallel numerical computation. The term single instruction multiple thread (SIMT) is often used to describe GPU computation, as the concurrency is enabled on thread-level by a massive amount of threads executing the same instruction in parallel, as opposed to single-threaded computation using SIMD, ILP, or multi-threading on a comparatively few cores \cite{cuda2025guide}. A modern GPU contains independent \emph{streaming multiprocessors} (SM), which can be considered as a group of many processing units sharing some control units and memory. Threads are grouped into units of 32, called \emph{warps}, which generally execute in lock-step on a single SM.\footnote{Since the release of the NVIDIA Volta architecture in 2017, GPUs support individual threads within a warp to follow divergent control flow. This allows greater flexibility for algorithms with complex control flow or thread-level synchronization \cite{cuda2025guide}. However, full parallelism is only maintained when threads execute the same instruction. Divergence still reduces efficiency as execution becomes serialized across paths.}, i.e. simultaneous execution on their respective data. Similarly to a multi-core CPU, all SMs share a higher-latency global memory (akin to RAM), and are individually allocated smaller but faster cache memory for minimizing data transfer bottlenecks. Additionally, each SM contains \emph{shared memory}, a low-latency programmer-controlled memory region for inter-thread communication within a streaming multiprocessor \cite{sanders2010cuda, cuda2025guide, kirk2016programming}.
+
+In contrast, while lacking many of the sophistication that makes the CPU excel at sequential and control-heavy tasks, the GPU fits in more raw computation power for a massively throughput-optimized architecture that excels at parallel numerical computation. The term single instruction multiple thread (SIMT) is often used to describe GPU computation, as the concurrency is enabled on thread-level by a massive amount of threads executing the same instruction in parallel, as opposed to single-threaded computation using SIMD, ILP, or multi-threading on a comparatively few cores \cite{cuda2025guide}. A modern GPU contains independent \emph{streaming multiprocessors} (SM), which can be considered as a group of many processing units sharing some control units and memory. Threads are grouped into units of 32, called \emph{warps}, which generally execute in lock-step on a single SM.\footnote{Since the release of the NVIDIA Volta architecture in 2017, GPUs support individual threads within a warp to follow divergent control flow. This allows greater flexibility for algorithms with complex control flow or thread-level synchronization \cite{cuda2025guide}. However, full parallelism is only maintained when threads execute the same instruction. Divergence still reduces efficiency as execution becomes serialized across paths.}, i.e. simultaneous execution on their respective data. Similarly to a multi-core CPU, all SMs share a higher-latency RAM, and are individually allocated smaller but faster cache memory for minimizing data transfer bottlenecks . Additionally, each SM contains \emph{shared memory}, a low-latency programmer-controlled memory region for inter-thread communication within a streaming multiprocessor \cite{sanders2010cuda, cuda2025guide, kirk2016programming}.
 
 \subsection{Parallel Computing Fundamentals and GPU suitability}\label{subsec:parallell}
 
