@@ -242,32 +242,28 @@ English bla bla bla
 %% this text will possibly be translated to English.
 %%
 \section{Introduction}
-
-%% Ensimm\"ainen sivu tyhj\"aksi
-%% 
 %% Leave first page empty
 \thispagestyle{empty}
 Options are financial contracts between two parties that grant the holder the right, but not the obligation, to buy or sell an underlying asset at a predetermined price by a future date \cite{hull2016options}. Options belong to a broader class of financial instruments known as derivatives, which derive their value from the price of the underlying asset. These instruments enable both speculative trading and risk management strategies, making them attractive even to non-financial institutions \cite{bartram2009international}. The derivatives market has experienced substantial growth over the past half-century, driven by advances in financial mathematics \cite{merton1994influence} and exponential increases in affordable computing power \cite{nordhaus2007two}.
 
-Modern option pricing employs various models with different theoretical foundations and computational requirements. Execution speed is often critical. High-frequency trading strategies exploit transient market inefficiencies \footnote{A market inefficiency occurs when an asset price deviates from its theoretical fair value} through millions of rapid transactions, where millisecond delays can determine profitability. Faster computation also benefits risk management practices that rely on extensive portfolio simulations across multiple market scenarios. These performance requirements have motivated research into adapting option pricing algorithms to leverage the GPU's parallel computing capabilities.
+Modern option pricing employs various models with different theoretical foundations and computational requirements. Execution speed is often critical. For example, high-frequency trading strategies exploit transient pricing anomalies through millions of rapid transactions, where millisecond delays can determine profitability. Faster computation also benefits risk management practices that rely on extensive portfolio simulations across multiple market scenarios. These performance requirements have motivated research into adapting option pricing algorithms to leverage the GPU's parallel computing capabilities.
 
-This thesis presents a literature review 
-examining GPU acceleration potential for common option pricing algorithms. The objectives are to assess how algorithm dependency structures affect parallelization potential, determine which algorithms achieve the greatest performance improvements, and identify bottlenecks. The analysis considers the Cox-Ross-Rubinstein (CRR) binomial model and Monte Carlo (MC) option pricing. The Black-Scholes-Merton (BSM) model is omitted as it is an analytical formula rather than an algorithm, providing no meaningful parallelization opportunities beyond arithmetic operations. PDE-based numerical methods, while offering substantial parallelization challenges, require mathematical foundations beyond the scope of this thesis.
+This thesis reviews GPU acceleration techniques for common option pricing algorithms. The objectives are to assess how algorithm dependency structures affect parallelization potential, determine which algorithms achieve the greatest performance improvements, and identify bottlenecks. The analysis considers the Cox-Ross-Rubinstein (CRR) binomial model and Monte Carlo (MC) option pricing. The Black-Scholes-Merton (BSM) model is omitted as it is an analytical formula rather than an algorithm, providing no meaningful parallelization opportunities beyond arithmetic operations. PDE-based numerical methods, while offering substantial parallelization challenges, require mathematical foundations beyond the scope of this thesis.
 
 ~\cref{sec:theory} establishes formal definitions and fundamental option pricing theory. ~\cref{sec:gpu} examines GPU architecture and introduces parallel computing concepts for algorithm analysis. ~\cref{sec:gpu-crr} and~\cref{sec:gpu-mc} analyze GPU implementations of the CRR and MC algorithms, respectively. ~\cref{sec:summary-conclusions} summarizes the findings and presents conclusions.
 
 For scope restriction purposes, the following choices have been made:
 \begin{itemize}
-\item This analysis focuses mainly on European and American options, collectively termed \emph{vanilla options}, with the exception of Monte Carlo methods that naturally handle \emph{exotic options} with complex payoff structures. All underlying assets are assumed to be non-dividend-paying.
+\item The analysis focuses mainly on European and American options, collectively termed \emph{vanilla options}, with the exception of Monte Carlo methods that naturally handle \emph{exotic options} with complex payoff structures. All underlying assets are assumed to be non-dividend-paying.
     
-\item The implementations are evaluated solely on computational performance -- specifically execution time and parallelization efficiency. Accuracy, numerical stability, and other properties are not considered.
+\item The implementations are evaluated solely on computational performance --- specifically execution time and parallelization efficiency. Accuracy, numerical stability, and other properties are not considered.
 
 \item The reviewed research employs varying architectures, optimization levels, and performance metrics, making direct quantitative comparison infeasible. Analysis therefore focuses on relative speedup of GPU implementations over their respective CPU baselines.
 \end{itemize}
 
+\item The reviewed research employs varying architectures, optimization levels, and performance metrics, making direct quantitative comparison infeasible. Analysis therefore focuses on relative speedup of GPU implementations over their respective CPU baselines, though these speedup factors remain indicative rather than directly comparable due to differences in baseline configurations, core counts, and optimization strategies across studies.
 
-%% Opinn\"aytteess\"a jokainen osa alkaa uudelta sivulta, joten \clearpage
-%%
+
 %% In a thesis, every section starts a new page, hence \clearpage
 \clearpage
 
@@ -556,6 +552,8 @@ where the weights $\tilde{p} := \frac{(1+r)-d}{u-d}$ and $\tilde{q} := \frac{u-(
 \end{equation}
 
 While there exist many misconceptions about risk-neutral valuation, it can simply be thought of as an algebraic reformulation of the problem into a more familiar version of discounting expected future cash flows. The risk-neutral probabilities are not predictions of any real-life events. They are mathematical weights that look and behave like probabilities, and produce the same price as the replicating portfolio while maintaining the no-arbitrage assumption. The term risk-neutral probability stems from the fact that the reformulation discounts by the risk-free rate, resembling how a risk-neutral investor would discount cash flows. This elegant reformulation enables the use of more tools from probability theory, and elements of it will be found in all of the models to be introduced later. The full derivation of this reformulation is provided in \cref{appendix:risk_neutral_derivation}. \cite{gisiger2010risk, tham2001risk}
+
+\clearpage
 
 \section{GPU and Parallel Computing}\label{sec:gpu}
 The graphics processing unit (GPU) is a processor specifically tailored for graphics-related computation. Starting in the 1980s, the demand for 2D and 3D graphics-based consumer software, mainly driven by video games, surged. The computations entailed performing a large amount of floating-point operations per seconds (FLOPS) associated with graphics, like shading and rasterization~\cite{sanders2010cuda, kirk2016programming}. Front-runners of delivering affordable graphics computing capabilities included NVIDIA and ATI Technologies (later acquired by AMD)~\cite{sanders2010cuda}.
