@@ -261,30 +261,28 @@ For scope restriction purposes, the following choices have been made:
 \item The reviewed research employs varying architectures, optimization levels, and performance metrics, making direct quantitative comparison infeasible. Analysis therefore focuses on relative speedup of GPU implementations over their respective CPU baselines.
 \end{itemize}
 
-\item The reviewed research employs varying architectures, optimization levels, and performance metrics, making direct quantitative comparison infeasible. Analysis therefore focuses on relative speedup of GPU implementations over their respective CPU baselines, though these speedup factors remain indicative rather than directly comparable due to differences in baseline configurations, core counts, and optimization strategies across studies.
-
-
 %% In a thesis, every section starts a new page, hence \clearpage
 \clearpage
 
-\section{Option Pricing Fundamentals} \label{sec:theory}
+\section{Fundamentals of Option Pricing} \label{sec:theory}
 
-In the following section, I present a sufficient theoretical foundation for understanding and pricing options. Firstly, general definitions are established along with vanilla option payoff structures \textbf{(if these are two separate subsections, can I use word along here?)}. This is followed by a section \textbf{(do I hyperlink it?)} on the key determinants that influence option prices. Next, the no-arbitrage principle and risk-neutral valuation framework are presented, explaining the theory that underpins all pricing models. The section concludes with a discussion on the inherent computational challenges of option pricing, further motivating the exploration of GPU acceleration techniques. \textbf{have not written yet this inherent computational challenges thing, perhaps not necessary?} \
-
+The following section provides the theoretical background necessary to understand option pricing and the algorithms that will be GPU-accelerated. Firstly, general definitions are established along with vanilla option payoffs. The section then covers the key determinants of option prices. Two essential principles anchor the theoretical framework: \emph{no-arbitrage pricing} and \emph{risk-neutral valuation}. Together, these concepts form the mathematical foundation underlying modern option pricing models.
 
 \subsection{Definitions}\label{subsec:definitions}
-The following terminology is from Chapter 1.5 in Hull's classic book ``Options, Futures, and Other Derivatives'' \cite{hull2016options}:
+The following terminology is adapted from Hull's ``Options, Futures, and Other Derivatives'' \cite{hull2016options}:
 
-\paragraph{Call Option:}Contract that grants the holder the right (but not the obligation) to buy the underlying asset by a certain date for a certain price.
+\paragraph{Call Option:} A contract granting the holder the right, but not the obligation, to purchase an underlying asset at a predetermined price by a specified date.
 
-\paragraph{Put Option:}Contract that grants the holder the right (but not the obligation) to sell the underlying asset by a certain date for a certain price.
+\paragraph{Put Option:} A contract granting the holder the right, but not the obligation, to sell an underlying asset at a predetermined price by a specified date.
 
-\paragraph{Strike Price:}The predetermined price at which the underlying asset can be bought (for a call option) or sold (for a put option) upon exercise.
+\paragraph{Strike Price:} The predetermined price at which the underlying asset may be bought (call) or sold (put) when the option is exercised.
 
-\paragraph{Maturity (date):}The predetermined date on which the option expires, determining the latest point at which it can be exercised.
+\paragraph{Maturity:} The expiration date of the option contract, after which it becomes worthless if not exercised.
 \bigskip
 
-Note the ambiguous use of ``by'' in the definitions above, as the specific rules for when an option can be exercised depends on the style of option. A European option can only be exercised on the maturity date, whereas an American option can be exercised at any time up to maturity. For clarity, the underlying asset will hereinafter be simply referred to as the stock, and the current stock price referred to as the \emph{spot price}. There are always two parties to every option contract: the buyer, who takes the \emph{long} position, pays an upfront premium to the underwriter (seller) for the right to engage in a future trade. Conversely, the underwriter, who takes the \emph{short} position, incurs an obligation to engage in this trade, thus assuming risk. \textbf{(I don't know whether to use emph, bold, or parentheses here for terminology)}
+The phrase ``by a specified date'' warrants clarification, as exercise rules vary by option style. \emph{European options} may be exercised only at maturity, while \emph{American options} can be exercised at any time before expiration. Throughout this thesis, the underlying asset is referred to simply as ``the stock,'' with its current market value denoted as the \emph{spot price}.
+
+Every option contract involves two parties with opposing positions. The buyer assumes the \emph{long position}, paying an upfront \emph{premium} for the right to exercise the option. The seller --- also known as the option writer --- takes the corresponding \emph{short position}, receiving the premium in exchange for accepting the obligation to fulfill the contract if exercised.
 
 \subsection{Vanilla Option Payoff Structures}\label{subsec:payoffs}
 
