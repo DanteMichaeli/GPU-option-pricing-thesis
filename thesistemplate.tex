@@ -291,7 +291,7 @@ Options are zero-sum contracts: gains to one party exactly offset losses to the 
 
 The following analysis of option payoffs draws from Hull \cite{hull2016options} and Hull et al. \cite{hull2013fundamentals}. It presents diagrams that visualize how profit varies with the spot price at exercise. Each vanilla option type is examined through both long and short positions, supplemented by practical examples. For simplicity, all options are written on one share of the underlying stock, transaction costs and taxes are ignored, and markets are assumed sufficiently liquid to permit instantaneous trading.
 
-A call option buyer pays a premium upfront to secure the right to purchase stock at the strike price. This position profits when the stock price rises sufficiently to offset the premium paid. Figure~\ref{fig:long_call_payoff} illustrates this long position. Let $S_T$ denote the spot price at exercise and $K$ the strike price. When $S_T < K$, the option is said to be \emph{out of the money (OTM)} and has no payoff. At $S_T = K$, the option is \emph{at the money (ATM)}, and when $S_T > K$, the option becomes \emph{in the money (ITM)} with payoff $S_T - K$ \cite{hull2013fundamentals}. However, the position only becomes profitable once the payoff offsets the premium paid. The ``moneyness'' terminology always reflects the perspective of the long position. Rational investors only exercise ITM options to capture the payoff, even if it only partially offsets the premium paid. In liquid markets, this involves buying stock at the strike price and immediately selling at the higher spot price.
+A call option buyer pays a premium upfront to secure the right to purchase stock at the strike price. This position profits when the stock price rises sufficiently to offset the premium paid. Figure~\ref{fig:long_call_payoff} illustrates this long position. Let $S_T$ denote the spot price at exercise and $K$ the strike price. When $S_T < K$, the option is said to be \emph{out of the money (OTM)} and has zero payoff. At $S_T = K$, the option is \emph{at the money (ATM)}, and when $S_T > K$, the option becomes \emph{in the money (ITM)} with payoff $S_T - K$ \cite{hull2013fundamentals}. However, the position only becomes profitable once the payoff offsets the premium paid. The ``moneyness'' terminology always reflects the perspective of the long position. Rational investors only exercise ITM options to capture the payoff, even if it only partially offsets the premium paid. In liquid markets, this involves buying stock at the strike price and immediately selling at the higher spot price.
 
 To demonstrate the use of options for risk management, consider a manufacturer dependent on crude oil who anticipates price increases. By purchasing call options, they fix a price ceiling for future oil purchases, effectively buying insurance against adverse price movements. The premium represents the cost of this protection, with the strike price chosen to align with their risk tolerance and budget constraints.
 
@@ -339,6 +339,20 @@ To demonstrate the use of options for risk management, consider a manufacturer d
 \end{figure}
 \end{center}
 
+The short call position has an inverse profit diagram. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to sell the stock at the strike price $K$ despite the higher spot price $S_T$ \cite{hull2013fundamentals}. The position remains profitable as long as the premium offsets this loss, with break-even at $S_T - K = p$. ~\cref{fig:short_call_payoff} illustrates the corresponding profit diagram. Continuing with the previous example, this position could be taken by a crude oil producer expecting prices to remain below or near the strike price at maturity. The risk taken by the writer commands the premium.
+
+The payoff from the long position in a call option is defined as
+\begin{equation}
+    \max(S_T-K,0)
+\label{eq:long_call_payoff}
+\end{equation}
+as the buyer will only exercise when ITM to either profit or offset losses. Consequently, the payoff from the short position is defined as 
+\begin{equation*}
+    -\max(S_T-K,0) = \min(K-S_T,0)
+\end{equation*}
+due to the zero-sum nature of the contract \cite{hull2016options}.\footnote{For American options with the right to early-exercise, the payoff is calculated using $S_\tau$ instead of $S_T$, where $\tau \le T$ is the chosen point of exercise.}
+
+\begin{center}
 \begin{figure}[H]
 \centering
     \begin{tikzpicture}[scale=1.5, >=stealth]
@@ -376,23 +390,11 @@ To demonstrate the use of options for risk management, consider a manufacturer d
 
     \label{fig:short_call_payoff}
 \end{figure}
+\end{center}
 
-The short call position has an inverse profit diagram. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to sell the stock at the strike price $K$ despite the higher spot price $S_T$ \cite{hull2013fundamentals}. The position remains profitable as long as the premium offsets this loss, with break-even at $S_T - K = p$. ~\cref{fig:short_call_payoff} illustrates the corresponding profit diagram. Continuing with the previous example, this position could be taken by a crude oil producer expecting prices to remain below or near the strike price at maturity. The risk taken by the writer commands the premium.
+A put option buyer pays a premium upfront to secure the right to sell stock at the strike price. This position profits when the stock price falls sufficiently to offset the premium paid. Figure~\ref{fig:put_option_payoffs} illustrates both long and short positions. When $S_T > K$, the put option is OTM and expires worthless --- no rational investor would sell at the strike price $K$ when they could sell at the higher spot price $S_T$. When $S_T < K$, the option becomes ITM with payoff $K - S_T$ \cite{hull2013fundamentals}. The buyer profits only when this payoff exceeds the premium paid. At exercise, the buyer can buy stock at the spot price and immediately sell it at the higher strike price.
 
-The payoff from the long position in a call option is defined as
-\begin{equation}
-    \max(S_T-K,0)
-\label{eq:long_call_payoff}
-\end{equation}
-as the investor will only exercise when ITM to either profit or offset losses. Consequently, the payoff from the short position is defined as 
-\begin{equation*}
-    -\max(S_T-K,0) = \min(K-S_T,0)
-\end{equation*}
-due to the zero-sum nature of the contract \cite{hull2016options}.\footnote{For American options with the right to early-exercise, the payoff is calculated using $S_\tau$ instead of $S_T$, where $\tau \le T$ is the chosen point of exercise.}
-
-A put option buyer pays a premium upfront to secure the right to sell stock at the strike price. This position profits when the stock price falls sufficiently to offset the premium paid. Figure~\ref{fig:put_option_payoffs} illustrates both long and short positions. When $S_T > K$, the put option is OTM and expires worthless --- no rational investor would sell at the strike price $K$ when they could sell at the higher spot price $S_T$. When $S_T < K$, the option becomes ITM with payoff $K - S_T$ \cite{hull2013fundamentals}. The position profits only when this payoff exceeds the premium paid. At exercise, the investor can buy stock at the spot price and immediately sell it at the higher strike price.
-
-The short put position profits under opposite conditions. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to purchase stock at the strike price $K$ despite the lower spot price $S_T$. The position remains profitable as long as the premium offsets this loss, with break-even at $K - S_T = p$.
+The short put position profits under opposite conditions. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to purchase stock at the strike price $K$ despite the lower spot price $S_T$ \cite{hull2013fundamentals}. The position remains profitable as long as the premium offsets this loss, with break-even at $K - S_T = p$.
 
 An example use case would be a crude oil supplier forecasting low prices in a year's time and taking the long position to secure a minimum revenue. A premium is paid to hedge against unfavorable price movements. The short position would be taken by a market participant who anticipates crude oil prices not to fall enough to offset the premium.
 
@@ -417,7 +419,7 @@ An example use case would be a crude oil supplier forecasting low prices in a ye
     \node[gray!60] at (5,1.5) {\small \textbf{OTM}};
 \end{tikzpicture}%
 }
-\caption{Long put option payoff}
+\caption{Long put position}
 \end{subfigure}
 \hfill
 \begin{subfigure}[t]{0.45\textwidth}
@@ -437,10 +439,11 @@ An example use case would be a crude oil supplier forecasting low prices in a ye
     \node[gray!60] at (3,-1.5) {\small \textbf{ITM}};
 \end{tikzpicture}%
 }
-\caption{Short put option payoff}
+\caption{Short put position}
 \end{subfigure}
 
-\caption{Profit diagrams for long (a) and short (b) positions in a put option. $K$ = strike price, $S_T$ = spot price, $p$ = premium. For the long position, the buyer pays a premium to secure a minimum selling price for the stock at a future time point. When $S_T < K$ the option is in the money (ITM) and would be exercised, as the underwriter is forced to buy the stock for $K$ despite its lower market value $S_T$. When $S_T > K$ the option is out of the money (OTM) with no incentive to exercise, resulting in a loss $-p$. For the short position, the underwriter receives the premium but assumes the obligation to purchase the stock at $K$, should the option be exercised. The underwriter profits fully when the option remains OTM, but faces decreasing profits when ITM as the spot price decreases. The position becomes unprofitable once $K-S_T > p$.}
+\caption{Profit diagrams for long (a) and short (b) positions in a put option. \mbox{$K$ = strike price}, $S_T$ = spot price at exercise, $p$ = premium. (a) The buyer pays the premium $p$ for the right to sell stock at strike price $K$. When $S_T < K$, the option is in the money (ITM) and is exercised. The position profits when $K - S_T > p$. When $S_T > K$, the option is out of the money (OTM) and expires worthless with \mbox{loss $-p$}. (b) The writer receives premium $p$ for the obligation to buy at price $K$. When ITM, the writer must purchase at the strike price $K$ despite the lower spot price $S_T$. When OTM, the option expires worthless and the writer keeps the premium $p$. The position becomes unprofitable when $K - S_T > p$.}
+
 \label{fig:put_option_payoffs}
 \end{figure}
 
@@ -449,13 +452,17 @@ The payoff from the long position in a put option is defined as
     \max(K-S_T,0)
 \label{eq:long_put_payoff}
 \end{equation}
-as being ITM now means $K > S_T$. Conversely, the payoff in the corresponding short position is $-\max(K-S_T,0) = \min(S_T-K,0)$ \cite{hull2016options}.
+as being ITM now means $K > S_T$ \cite{hull2016options}. Conversely, the payoff in the corresponding short position is defined as
+\begin{equation*}
+    -\max(K-S_T,0) = \min(S_T-K,0).
+\end{equation*}
 
-The long position in any option contract is never obligated to exercise, and the loss is therefore limited to the premium paid. On the other hand, the underwriter is always obligated to engage in a disadvantageous trade with the buyer. Additionally, since underlying asset prices have no theoretical upper bound but are limited to non-negative values, the short call position faces potentially unlimited losses. \cref{tab:options_table} aggregates information about the extreme-case profit and loss incurred from the different option types and positions.
+
+The buyer of an option is never obligated to exercise, and the loss is therefore limited to the premium paid. On the other hand, the writer is always obligated to potentially engage in a disadvantageous trade with the buyer. Additionally, since underlying asset prices have no theoretical upper bound but are limited to non-negative values, the short call position faces potentially unlimited losses. \cref{tab:options_table} aggregates information about the extreme-case profit and loss incurred from the different option types and positions.
 
 \begin{table}[!htb]
 \centering
-\caption{Extreme-case upside and downside potential for different option positions. $p$ = premium paid or received, $K$ = strike price. The long position in a call option has unlimited upside potential due to theoretically unbounded underlying asset prices, with losses limited to the premium paid. The corresponding short position mirrors this behavior with unlimited downside risk. Put options have bounded payoffs as asset prices cannot fall below zero. The maximum gain for a long put position is $K-p$ when the spot price reaches zero, and the maximum loss for the corresponding short position is $-(K-p)$.}\label{tab:options_table}
+\caption{Extreme-case upside and downside potential for different option positions. \mbox{$p$ = premium}, $K$ = strike price. The long position in a call option has unlimited upside potential due to theoretically unbounded underlying asset prices, with losses limited to the premium paid. The corresponding short position inverts this behavior with unlimited downside risk. Put options have bounded payoffs as asset prices cannot fall below zero. The maximum gain for a long put position is $K-p$ when the spot price reaches zero, and the maximum loss for the corresponding short position is $-(K-p)$.}\label{tab:options_table}
 \begin{tabular}{|l|p{5cm}|p{5cm}|}
 \hline
 \textbf{} & \textbf{Call Option} & \textbf{Put Option} \\
@@ -471,7 +478,9 @@ The long position in any option contract is never obligated to exercise, and the
 \end{tabular}
 \end{table}
 
-The objective of pricing models is to find the so-called fair value of the option~$p$. Although market prices form through the dynamic interaction of buyers and sellers, they are still largely anchored by theoretical pricing frameworks. These models provide a rational foundation for valuing derivatives based on mathematical and economic theory. While real-world prices may show short-term deviations, markets tend to converge toward theoretically justified values over time, as persistent mispricing creates exploitable opportunities. The theoretical fair value serves as a crucial reference point that informs trading decisions and risk management strategies.
+Pricing models aim to determine the theoretical fair value of the option \mbox{premium $p$.} While market prices form through supply and demand dynamics, they remain anchored by mathematical and economic principles. Short-term deviations occur, but market prices tend to converge toward theoretically justified values over time as mispricing creates self-correcting trading opportunities.
+
+\clearpage
 
 \subsection{Price Determinants}
 
