@@ -500,36 +500,38 @@ Hull et al.\ \cite{hull2013fundamentals} define the following primary factors th
 
 \subsection{No-Arbitrage Pricing and Risk-Neutral Valuation}\label{sec:risk-neutral-theory}
 
-This section introduces ideas from the work of Fischer Black, Myron Scholes, and Robert Merton that revolutionized option pricing and led to the 1997 Nobel Prize in Economic Sciences\footnote{The prize was awarded to Scholes and Merton; Black had passed away in 1995.}. Their breakthrough insight was showing how a portfolio could be constructed to replicate and thus price the option. This replicating portfolio approach, and its elegant reformulation using risk-neutral probabilities, form the foundation for all modern option pricing models, including the CRR binomial model and MC simulation methods. The presentation emphasizes intuition over rigor, and avid readers are encouraged to explore the references in greater detail \cite{hull2016options, gisiger2010risk, tham2001risk}. The assumptions presented in \cref{subsec:payoffs} continue to hold.
+This section introduces ideas from the work of Fischer Black, Myron Scholes, and Robert Merton that revolutionized option pricing and led to the 1997 Nobel Prize in Economic Sciences\footnote{The prize was awarded to Scholes and Merton; Black had passed away in 1995.}. Their breakthrough insight was showing how a portfolio could be constructed to replicate and thus price an option. This replicating portfolio approach, and its elegant reformulation using risk-neutral probabilities, form the foundation for all modern option pricing models, including the CRR binomial model and MC simulation methods. The presentation emphasizes intuition over rigor, and avid readers are encouraged to explore the references in greater detail \cite{hull2016options, gisiger2010risk, tham2001risk}. The assumptions presented in \cref{subsec:payoffs} continue to hold.
 
-Traditional asset valuation discounts expected future cash flows to present value. For options, this approach faced fundamental problems: calculating the expected payoff required assigning probabilities to future stock prices --- an inherently difficult and at least partially subjective task. Even if the expected payoff were somehow known, there was no consistent way to determine the appropriate discount rate, as investors naturally have differing risk preferences \cite{nobel1997}. The key insight was recognizing that these subjective estimates could be circumvented entirely by making a reasonable assumption about market behavior.
+Traditional asset valuation discounts expected future cash flows to present value. For options, this approach faced fundamental problems: calculating the expected payoff required assigning probabilities to future stock prices --- an inherently difficult and at least partially subjective task. Even if the expected payoff were somehow known, there was no consistent way to determine the appropriate discount rate, as investors naturally have differing risk preferences \cite{nobel1997}. The key insight was recognizing that these subjective estimates could be circumvented entirely by making a reasonable assumption about market behavior --- the absence of arbitrage.
 
-The \emph{no-arbitrage principle} is the essential assumption for what is to come. Arbitrage describes the act of simultaneous buying and selling of the same asset in different markets to make risk-free profit off price differences. Imagine the price of tomatoes being higher in one of two neighboring towns. Perhaps the tomato farmers were really successful in town A this year, and the increased supply dropped the prices somewhat. This information has not yet been priced into the tomatoes in town B. The astute tradesman could then buy tomatoes in town A and immediately sell them in town B to pocket the difference, without taking any position on future tomato price movements. This, again, assumes ideal conditions, like enough liquidity to always be able to both buy and sell, as well as ignoring friction costs like transportation. The idea behind our assumption is that this strategy ultimately is self-eliminating: as the tradesman continues to introduce more tomatoes to the total supply in town B they will drive the price down until an equilibrium has been reached. Other people may take notice and decide to adopt the same strategy, eliminating the opportunity even faster. The information about the larger supply in town A has now been priced into the tomatoes in town B. This example is not too far-fetched from reality. Modern digital markets do not perfectly adhere to the assumptions laid out above, and short-term arbitrage opportunities can exist. Nevertheless, as sophisticated market participants exploit these inefficiencies they quickly disappear due to subsequent price corrections. Thus, the no-arbitrage principle is a reasonable assumption, at least over longer time periods. If our pricing methodology is based on summing future cash flows, it logically follows that in absence of arbitrage opportunities two assets producing the same cash flows must be priced equally \cite{hull2016options,wilmott2013paul}.
+\emph{Arbitrage} denotes simultaneous buying and selling of an asset at different prices to make risk-free profit. Imagine tomato prices being lower in town A than town B due to an exceptionally good harvest. An astute tradesman could buy tomatoes in town A and immediately sell them in town B, pocketing the difference without taking any position on future price movements. This opportunity is self-eliminating: as the tradesman introduces more tomatoes from town A into town B, the corresponding prices adjust to the changes in supply until an equilibrium is reached \cite{hull2016options, wilmott2013paul}. Other traders observing this opportunity might adopt the same strategy, eliminating it even faster. While arbitrage opportunities do arise, they are typically rare and short-lived in modern markets, as sophisticated traders quickly eliminate them. Hence, the no-arbitrage assumption is reasonable, at least over longer time periods.
 
-If it is possible to find an existing asset with identical future cash flows to those of the option, and whose price is already known, then by the no-arbitrage principle, the price of that asset should theoretically equal the price of the option. Hull~et~al.~\cite{hull2013fundamentals} consider a one-step model as the simplest framework to apply this idea. In this discrete-time model, we consider the stock price evolution over a single period. Let $S_0$ denote the current stock price, and let $f$ be the current price of an option on one share, with time $T$ to maturity. The stock price is assumed to move to one of two possible future values: $S_0u$ or $S_0d$ ($u>1$, $d<1$). These correspond to the option payoffs $f_u$ and $f_d$, respectively. \cref{fig:oneperiodbinom} visualizes the model setup. This restriction makes it possible to construct a so-called \emph{replicating portfolio} that perfectly matches the option's payoff in both states. This portfolio consists of $\Delta$ shares of the stock, as well as $B$ amount of a risk-free asset (e.g., a savings account) growing at the risk-free rate $r$. After time $T$, the portfolio will take on one of two values, depending on whether the stock price increased or decreased. By equating the value of the portfolio in each case with the corresponding option payoff, one obtains a system of two equations and two unknowns, $\Delta$ and $B$.
+It logically follows that in absence of arbitrage opportunities, two assets producing identical cash flows must be equally priced \cite{hull2016options, wilmott2013paul}. This conclusion suggests a new approach: construct a portfolio that matches the option payoff in all scenarios. The option price must then equal the price of constructing such a portfolio.
+
+Hull~et~al.~\cite{hull2013fundamentals} demonstrate this approach using a one-period binomial model. The current stock price $S_0$ can move to either $S_0u$ or $S_0d$ ($u>1,d<1$) after time~$T$. These prices result in option payoffs $f_u$ and $f_d$ respectively. \cref{fig:oneperiodbinom} illustrates the setup. Restricting the stock price to two future outcomes makes it possible to construct a \emph{replicating portfolio}, consisting of $\Delta$ shares of the stock and $B$ amount of a risk-free asset growing at the risk-free rate $r$. Equating the portfolio value with the option payoff in each future state gives:
 
 \begin{equation*}
 \begin{cases}
     \Delta (S_0u) + B(1+r) = f_u\\
     \Delta (S_0d) + B(1+r) = f_d
-\end{cases}
+\end{cases}.
 \end{equation*}
-Solving for these variables yields
+Solving for $\Delta$ and $B$ yields
 \begin{equation*}
 \begin{cases}
     \Delta = \frac{f_u - f_d}{S_0(u-d)}\\
     B = \frac{f_du-f_ud}{(u-d)(1+r)}
-\end{cases}
+\end{cases}.
 \end{equation*}
 
-It is evidently possible to construct a portfolio with identical payoff structure as the option itself, according to
+It is evidently possible to construct a portfolio with identical payoff as the option itself, according to
 
 \begin{equation}
      \frac{f_u - f_d}{S_0(u-d)} S_0 + \frac{f_du-f_ud}{(u-d)(1+r)}
-\label{eq:replicating-portfolio}
+\label{eq:replicating-portfolio}.
 \end{equation}
 
-Under the no-arbitrage principle, the price of the option must thus equal the price of constructing the replicating portfolio, i.e., buying $\Delta$ shares and investing $B$ in a risk-free asset. Otherwise, one could buy the cheaper alternative while selling the more expensive to obtain a risk-free profit. A negative $\Delta$ implies shorting the underlying asset, and a negative $B$ implies borrowing money at the risk-free rate instead of lending (saving) it.
+Under the no-arbitrage assumption, the price of the option must equal the price of constructing the this portfolio, that is buying $\Delta$ shares and investing $B$ in a risk-free asset. A negative $\Delta$ implies shorting the stock\footnote{Short selling involves borrowing shares from a broker, selling them immediately at the current price, and later repurchasing them to return to the lender. If the price falls, the short seller profits from the difference.}, and a negative $B$ implies borrowing money at the risk-free rate instead of lending it.
 \begin{figure}[htbp]
     \centering
     \begin{tikzpicture}[
@@ -558,11 +560,11 @@ Under the no-arbitrage principle, the price of the option must thus equal the pr
     \node at (4,-3) [below] {$t=T$};
     
     \end{tikzpicture}
-    \caption{One-period binomial model showing stock price evolution and corresponding option payoffs. The stock price moves from $S_0$ to either $S_0u$ or $S_0d$, with corresponding option values $f_u$ and $f_d$. The replicating portfolio approach determines the option price $f$ without requiring knowledge of the actual probabilities of up or down movements.}
+    \caption{One-period binomial model. The stock price moves from $S_0$ to either $S_0u$ or $S_0d$ over time period $T$, with corresponding option values $f$, $f_u$ and $f_d$.}
     \label{fig:oneperiodbinom}
 \end{figure}
 
-The derivation assumed neither a call nor a put option, and works therefore as a pricing model for any European option. A more interesting observation, however, is the fact that this pricing approach contains no information about the expected return of the stock, or the probability with which it will increase or decrease in value. The authors motivate this intuitively by the fact that such expectations are already reflected in the stock price itself, and need not be explicitly accounted for when pricing the derivative. The option is priced relative to the underlying stock.
+The derivation assumed neither a call nor a put option, and works therefore as a pricing model for any European (and in a one-period setting, American) option. An interesting observation is that this approach made no use of information about the expected return of the stock, or the probability with which it will increase or decrease in value. The authors motivate this intuitively by the fact that such expectations are already reflected in the stock price itself, and need not be explicitly accounted for when pricing the derivative. The option is priced relative to the underlying stock \cite{hull2016options}.
 
 This also leads to the fundamental concept of \emph{risk-neutral} valuation. \cref{eq:replicating-portfolio} can be rewritten as
 
