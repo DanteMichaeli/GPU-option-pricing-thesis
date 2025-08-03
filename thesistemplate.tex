@@ -531,7 +531,7 @@ It is evidently possible to construct a portfolio with identical payoff as the o
 \label{eq:replicating-portfolio}.
 \end{equation}
 
-Under the no-arbitrage assumption, the price of the option must equal the price of constructing the this portfolio, that is buying $\Delta$ shares and investing $B$ in a risk-free asset. A negative $\Delta$ implies shorting the stock\footnote{Short selling involves borrowing shares from a broker, selling them immediately at the current price, and later repurchasing them to return to the lender. If the price falls, the short seller profits from the difference.}, and a negative $B$ implies borrowing money at the risk-free rate instead of lending it.
+Under the no-arbitrage assumption, the price of the option must equal the price of constructing this portfolio, that is buying $\Delta$ shares and investing $B$ in a risk-free asset. A negative $\Delta$ implies shorting the stock\footnote{Short selling involves borrowing shares from a broker, selling them immediately at the current price, and later repurchasing them to return to the lender. If the price falls, the short seller profits from the difference.}, and a negative $B$ implies borrowing money at the risk-free rate instead of investing it.
 \begin{figure}[htbp]
     \centering
     \begin{tikzpicture}[
@@ -564,22 +564,22 @@ Under the no-arbitrage assumption, the price of the option must equal the price 
     \label{fig:oneperiodbinom}
 \end{figure}
 
-The derivation assumed neither a call nor a put option, and works therefore as a pricing model for any European (and in a one-period setting, American) option. An interesting observation is that this approach made no use of information about the expected return of the stock, or the probability with which it will increase or decrease in value. The authors motivate this intuitively by the fact that such expectations are already reflected in the stock price itself, and need not be explicitly accounted for when pricing the derivative. The option is priced relative to the underlying stock \cite{hull2016options}.
+The derivation assumed neither a call nor a put option, and therefore works as a pricing model for any European (and in a one-period setting, American) option. An interesting observation is that the approach utilized no information about the expected return of the stock, or the probability of its price movements. The authors motivate this intuitively by the fact that such expectations are already reflected in the stock price itself, and need not be explicitly accounted for when pricing the derivative. The option is priced relative to the underlying stock \cite{hull2016options}.\clearpage
 
-This also leads to the fundamental concept of \emph{risk-neutral} valuation. \cref{eq:replicating-portfolio} can be rewritten as
+\cref{eq:replicating-portfolio} can be rewritten as
 
 \begin{equation*}
-     \frac{1}{1+r}\left(f_u\frac{(1+r)-d}{u-d}+f_d\frac{u-(1+r)}{u-d}\right),
+     \frac{1}{1+r}\left(f_u\frac{(1+r)-d}{u-d}+f_d\frac{u-(1+r)}{u-d}\right).
 \end{equation*}
 
-where the weights $\tilde{p} := \frac{(1+r)-d}{u-d}$ and $\tilde{q} := \frac{u-(1+r)}{u-d}$ sum to one and lie between 0 and 1 under the no-arbitrage condition $d \leq 1+r \leq u$. These are called risk-neutral probabilities, and the option price can thus be calculated as the expected value of its payoff using the risk-neutral probabilities, discounted at the risk-free rate
+Defining $\tilde{p} := \frac{(1+r)-d}{u-d}$, this weight and its complement $1-\tilde{p} = \frac{u-(1+r)}{u-d}$ sum to one and lie in $[0,1]$ under the no-arbitrage condition $d \leq 1+r \leq u$, thus behaving like probabilities. The calculation can therefore be interpreted as an expected value of the option payoff, discounted at the risk-free rate:
 
 \begin{equation}
      \frac{1}{1+r}(f_u\cdot \tilde p + f_d \cdot (1-\tilde p)).
 \label{eq:risk-neutral-expectancy}
 \end{equation}
 
-While there exist many misconceptions about risk-neutral valuation, it can simply be thought of as an algebraic reformulation of the problem into a more familiar version of discounting expected future cash flows. The risk-neutral probabilities are not predictions of any real-life events. They are mathematical weights that look and behave like probabilities, and produce the same price as the replicating portfolio while maintaining the no-arbitrage assumption. The term risk-neutral probability stems from the fact that the reformulation discounts by the risk-free rate, resembling how a risk-neutral investor would discount cash flows. This elegant reformulation enables the use of more tools from probability theory, and elements of it will be found in all of the models to be introduced later. The full derivation of this reformulation is provided in \cref{appendix:risk_neutral_derivation}. \cite{gisiger2010risk, tham2001risk}
+While risk-neutral probabilities often cause confusion, they can simply be understood as a mathematical reformulation into a more familiar approach for pricing assets --- discounting future cash flows. They do not reflect actual stock price movements, but rather form an artificial probability measure that yields the same price as the replicating portfolio. The term risk-neutral stems from the fact that the risk-free rate is used for discounting, resembling how a risk-neutral investor would not demand a premium for uncertain cash flows. This elegant reformulation enables tools from probability theory, and elements of it will be found in all of the models to be introduced later. Gisiger \cite{gisiger2010risk} and Tham \cite{tham2001risk} provide a more formal explanation of risk-neutral valuation. The full derivation of \cref{eq:risk-neutral-expectancy} is provided in \cref{appendix:risk_neutral_derivation}.
 
 \clearpage
 
