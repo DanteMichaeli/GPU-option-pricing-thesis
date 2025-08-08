@@ -567,18 +567,14 @@ Under the no-arbitrage assumption, the price of the option must equal the price 
 The derivation assumed neither a call nor a put option, and therefore works as a pricing model for any European (and in a one-period setting, American) option. An interesting observation is that the approach utilized no information about the expected return of the stock, or the probability of its price movements. The authors motivate this intuitively by the fact that such expectations are already reflected in the stock price itself, and need not be explicitly accounted for when pricing the derivative. The option is priced relative to the underlying stock \cite{hull2016options}.\clearpage
 
 \cref{eq:replicating-portfolio} can be rewritten as
-
 \begin{equation*}
      \frac{1}{1+r}\left(f_u\frac{(1+r)-d}{u-d}+f_d\frac{u-(1+r)}{u-d}\right).
 \end{equation*}
-
 Defining $\tilde{p} := \frac{(1+r)-d}{u-d}$, this weight and its complement $1-\tilde{p} = \frac{u-(1+r)}{u-d}$ sum to one and lie in $[0,1]$ under the no-arbitrage condition $d \leq 1+r \leq u$, thus behaving like probabilities. The calculation can therefore be interpreted as an expected value of the option payoff, discounted at the risk-free rate:
-
 \begin{equation}
      \frac{1}{1+r}(f_u\cdot \tilde p + f_d \cdot (1-\tilde p)).
 \label{eq:risk-neutral-expectancy}
 \end{equation}
-
 While risk-neutral probabilities often cause confusion, they can simply be understood as a mathematical reformulation into a more familiar approach for pricing assets --- discounting future cash flows. They do not reflect actual stock price movements, but rather form an artificial probability measure that yields the same price as the replicating portfolio. The term risk-neutral stems from the fact that the risk-free rate is used for discounting, resembling how a risk-neutral investor would not demand a premium for uncertain cash flows. This elegant reformulation enables tools from probability theory, and elements of it will be found in all of the models to be introduced later. Gisiger \cite{gisiger2010risk} and Tham \cite{tham2001risk} provide more formal explanations of risk-neutral valuation. The full derivation of \cref{eq:risk-neutral-expectancy} is provided in \cref{appendix:risk_neutral_derivation}.
 
 \clearpage
@@ -802,31 +798,23 @@ For large lattices, the naive parallelization encounters synchronization bottlen
 \clearpage
 
 \subsection{Additional Parallelization Across Time}
-Ganesan, Chamberlain and Buhler \cite{ganesan2009acceleration} present another approach that aims to utilize parallelism over the time periods in addition to within them. This method focuses more on pricing a single option, and achieves parallelism over different periods by a clever reformulation of the problem that breaks the direct dependencies between the first and last set of nodes. \cref{eq:risk-neutral-expectancy} relates the (European) option values at time $i$ to the prices at the next time point $i+1$. By repeatedly substituting the same formula into itself and expanding, one obtains a general formula that relates the option values at the nodes at a previous time $i-m$ with the current time $i$:
+Ganesan et al. \cite{ganesan2009acceleration} present another approach that exploits parallelism across time, not just at individual time points. This is achieved by a reformulation of the problem that establishes direct relationships between non-adjacent nodes. \cref{eq:risk-neutral-expectancy} relates the option values at time $i$ to the values at the next time point $i+1$. By repeatedly substituting this formula into itself and expanding, one obtains a general relationship between option values at time $i-m$ and those at time $i$:
 
 \begin{equation}
     F_{i-m}(j) = e^{-m r \Delta t} \sum_{k=0}^m c_k F_i(j+k)
 \label{relative-prices}
 \end{equation}
+where $j$ indexes the nodes at time $i-m$, and the coefficients $c_k, 0 \leq k \leq m$ represent the (risk-neutral) probabilities of all paths from node $(i-m,j)$ to node $(i,j+k)$. These are simply binomial coefficients weighted by the appropriate powers of the probabilities: $c_k = \binom{m}{k}p^k(1-p)^{m-k}$. The key insight is that while the coefficients in this reformulation still exhibit the same sequential dependencies between successive time points, they can be computed independently for different segments of the lattice. Unlike the actual option values, there is no strict requirement for starting at the terminal nodes when calculating these coefficients.
 
-where $0 \leq j \leq i-m$ are the nodes at time $i-m$, and the coefficients $c_k, 0 \leq k \leq m$ are the corresponding (risk-neutral) probabilities of the different possible price paths from node $j$ at time $i-m$ to the nodes $j+k$ at time $i$. Just like the one-period version computes the current value using a weighted sum (risk-neutral expected value) of the values in the future two states, this general formula extends the weighted sum to include all the nodes over several future periods that affect its value. The coefficients in this formula follow the same pattern as the option values themselves, and can be computed through backward induction. Starting from time $t$ itself, where each coefficient represents the direct relationship of a node with itself, these coefficients are built up as we move backward in time. With each step backward, they are updated using the risk-neutral probabilities to reflect all possible paths between the two time points.
-
-The key insight is that while the coefficients in this reformulation still exhibits the same sequential dependency chains between sequential time points, they can be computed independently for different segments of the lattice. Unlike for the actual option values, there is no strict requirement for starting at the terminal nodes when calculating relative option values. Using this, the authors present the following outline of a parallel algorithm:
-
-PSEUDO ALGORITHM
-
-1. Divide the lattice of N time steps into p partitions, each of length N/p
-2. For all partitions except the rightmost one, calculate coefficients that relate the option values at the left boundary to those at the right boundary. This is done recursively and in parallel, backtracking from the right edge to the left. Since the rightmost partition already has the option values available at its right edge (terminal nodes) we can simply compute the option prices normally here.
-3. Once all partition coefficients have been calculated, use equation \eqref{relative-prices} to sequentially calculate the option value at each partition boundary, rapidly propagating towards the initial node while "skipping" many intermediate calculations.
-
-Figure ABC depicts the algorithm.
+Based on this insight, the authors present the following parallel algorithm \cite{ganesan2009acceleration}: First, divide the $n$-period lattice into $p$ partitions of length $n/p$. Each partition then computes coefficients relating the nodes at its left boundary to the ones at its right boundary. These independent operations proceed in parallel across all partitions. Once the coefficients are computed, the option values can be propagated from right to left across partition boundaries using \cref{relative-prices}. This requires only $p$ sequential steps rather than $n$. \cref{fig:partitioned} illustrates the idea.
 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[height=5cm]{CRRpartitioned.png}
-    \caption{A visualization of the parallelized CRR algorithm using partitioning. BLA BLA BLA lorem ipsum. MAKE YOUR OWN PICTURE OF THIS, OR CHECK IF THE FIGURES ARE OK TO USE UNDER COPYRIGHT}
-    \label{fig:combined}
+    \includegraphics[height=5cm]{External Images/CRRpartitioned.png}
+    \caption{Partitioned CRR algorithm for parallel computation across time. The binomial lattice is divided into partitions. Within each partition, coefficients relating nodes at left and right boundaries are computed in parallel. Once coefficients are computed, option values propagate sequentially from right to left across partition boundaries, skipping many intermediate values.}
+
+    \label{fig:partitioned}
 \end{figure}
 
 
