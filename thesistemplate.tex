@@ -836,34 +836,38 @@ S_{t+\Delta t} = S_t \cdot \exp \left( \nu \Delta t + \sigma \sqrt{\Delta t} \cd
 where $\nu=r-\frac{1}{2}\sigma^2$ and $\epsilon_i \sim N(0,1)$. Hence, there is no need to use more than one period unless the payoff is path dependent. Asian options, for example, have payoffs based on mean stock prices over the holding period. In this case, much like the CRR algorithm, we get a better approximation with a smaller time step \cite{clewlow1998implementing}. \cref{alg:MC-algo}, based on Clewlow and Strickland \cite{clewlow1998implementing}, demonstrates a generic MC implementation. Simulating $m$ paths of length $n$ and evaluating a payoff with cost $p$ yields a time complexity of $O(m \cdot (n+p))$. For most payoffs $p=O(1)$ as even path-dependent payoffs can often be computed incrementally during path generation. For European options where $n=1$, this reduces to $O(m)$.
 
 \begin{algorithm}
+\LinesNumbered
 \caption{MC Option Pricing}
 \label{alg:MC-algo}
-\textbf{Data:} $S_0$ (initial stock price), $K$ (strike price), $T$ (time to maturity), $r$ (risk-free rate), $n$ (time steps), $\sigma$ (volatility), $M$ (simulated paths), $\text{payoff}(\cdot)$ (payoff function)\\
-\textbf{Result:} Option price at $t=0$\\
+\KwIn{$S_0$ (initial stock price), $K$ (strike price), $T$ (time to maturity), $r$ (risk-free rate), $n$ (time steps), $\sigma$ (volatility), $M$ (paths), option type, payoff function}
+\KwOut{Option price at $t=0$}
 
 $\Delta t \gets T/n$\;
 $\nu \gets r - 0.5 \cdot \sigma^2$\;
 $\text{nudt} \gets \nu \cdot \Delta t$\;
 $\text{sigsqrt} \gets \sigma \cdot \sqrt{\Delta t}$\;
+$C_{\text{sum}} \gets 0$\;
 
-Initialize $C_{\text{sum}} \gets 0$\;
-
-/* Simulate $M$ stock price paths */\\
-\For{$j \gets 1$ \KwTo $M$}{
-    Initialize $S[0] \gets S_0$\;
-    /* Simulate stock price path through $n$ time steps */\\
+\BlankLine
+\tcp{Simulate $M$ stock price paths}
+\For{$m \gets 1$ \KwTo $M$}{
+    $S[0] \gets S_0$\;
+    \BlankLine
+    \tcp{Generate price path through $n$ time steps}
     \For{$i \gets 1$ \KwTo $n$}{
         Sample $\epsilon \sim \mathcal{N}(0,1)$\;
         $\ln S[i] \gets \ln S[i-1] + \text{nudt} + \text{sigsqrt} \cdot \epsilon$\;
         $S[i] \gets \exp(\ln S[i])$\;
     }
-    /* Compute option payoff for the simulated path */\\
-    $C_j \gets \text{payoff}(S[0..n])$\;
-    $C_{\text{sum}} \gets C_{\text{sum}} + C_j$\;
+    \BlankLine
+    \tcp{Compute payoff for this path}
+    $C_m \gets \text{payoff}(S[0..n], K)$\;
+    $C_{\text{sum}} \gets C_{\text{sum}} + C_m$\;
 }
 
-/* Discount and average the payoffs */\\
-$C_0 \gets \exp(-r \cdot T) \cdot \frac{C_{\text{sum}}}{M}$\;
+\BlankLine
+\tcp{Average and discount payoffs}
+$C_0 \gets e^{-rT} \cdot \frac{C_{\text{sum}}}{M}$\;
 
 \Return{$C_0$}\;
 \end{algorithm}
@@ -1000,12 +1004,12 @@ Given these distinct characteristics, the algorithms present different optimizat
 
 While the results suggest MC methods may achieve larger GPU speedups, this does not make them the optimal solution for option pricing. In practice, the choice algorithm depends on multiple factors: option type, available hardware, and other case-specific requirements and constraints. For instance, vanilla options are rarely priced using MC methods since analytical or lattice-based models often provide faster solutions. The practical approach is to first select an appropriate pricing model and then apply GPU acceleration. Both CRR and MC implementations demonstrate substantial speedups even with naive approaches, making GPU acceleration worth considering in both cases. This becomes particularly valuable for high-throughput applications like portfolio-wide risk calculations or bulk pricing operations.
 
-An important caveat is that the analyzed research spans 2005-2010. Cutting-edge research often remains proprietary within financial institutions that safeguard their competitive advantage, making it difficult to review the most recent developments in the field. GPU architectures have also evolved dramatically since then, largely driven by the massive demand for AI computing. Modern GPUs feature improved memory hierarchies, better divergence handling, and enhanced support for general-purpose computing, mitigating several of the mentioned bottlenecks while perhaps introducing new ones. Likewise, modern multi-core CPUs provide faster baselines than those in the original studies. Despite these hardware advances, the fundamental principle persists: effective GPU utilization requires both clever algorithmic design and hardware-conscious optimization. Future work could benchmark these algorithms on current architectures to enable direct comparisons. Additional research opportunities include GPU acceleration of other models, such as finite difference or machine learning-based methods.
+An important caveat is that the analyzed research spans 2005-2010. Cutting-edge research often remains proprietary within financial institutions that safeguard their competitive advantage, making it difficult to review the most recent developments in the field. GPU architectures have also evolved dramatically since then, largely driven by the massive demand for AI computing. Modern GPUs feature improved memory hierarchies, better divergence handling, and enhanced support for general-purpose computing, mitigating several of the mentioned bottlenecks while perhaps introducing new ones. Likewise, modern multi-core CPUs provide faster baselines than those in the original studies. Despite these hardware advances, the fundamental principle persists: effective GPU utilization requires both clever algorithmic design and hardware-conscious optimization. Future work could benchmark these algorithms on current architetures to enable direct comparisons. Additional research opportunities include GPU acceleration of other models, such as finite difference or machine learning-based methods.
 
 \begin{table}[h]
 \centering
 \begin{threeparttable}
-\caption{Empirically measured GPU speedups for selected option pricing models. Reported results are based on real implementations and vary in terms of baseline architecture and research methodology. While not directly comparable, they provide indicative insight into practical performance improvements when interpreted with appropriate caution.}
+\caption{Empirically measured GPU speedups for selected option pricing models. Reported results are based on real implementations with varying baseline architecture and research methodologies. While not directly comparable, they provide indicative insight into performance improvements when interpreted with appropriate caution.}
 
 
 \label{tab:results-table}
