@@ -291,7 +291,7 @@ Options are zero-sum contracts: gains to one party exactly offset losses to the 
 
 The following presentation of option payoffs draws from Hull \cite{hull2016options} and Hull et al. \cite{hull2013fundamentals}. It presents diagrams that visualize how profit varies with the spot price at exercise. Each vanilla option type is examined through both long and short positions, supplemented by practical examples. For simplicity, all options are written on one share of the underlying stock, transaction costs and taxes are ignored, and markets are assumed sufficiently liquid to permit instantaneous trading.
 
-A call option buyer pays a premium upfront to secure the right to purchase stock at the strike price. This position profits when the stock price rises sufficiently to offset the premium paid. Figure~\ref{fig:long_call_payoff} illustrates this long position. Let $S_T$ denote the spot price at exercise and $K$ the strike price. When $S_T < K$, the option is said to be \emph{out of the money (OTM)} and has zero payoff. At $S_T = K$, the option is \emph{at the money (ATM)}, and when $S_T > K$, the option becomes \emph{in the money (ITM)} with payoff $S_T - K$ \cite{hull2013fundamentals}. However, the position only becomes profitable once the payoff offsets the premium paid. The ``moneyness'' terminology always reflects the perspective of the long position. Rational investors only exercise ITM options to capture the payoff, even if it only partially offsets the premium paid. In liquid markets, this involves buying stock at the strike price and immediately selling at the higher spot price.
+A call option buyer pays a premium upfront to secure the right to purchase stock at the strike price. This position profits when the stock price rises sufficiently to offset the premium paid. Figure~\ref{fig:long_call_payoff} illustrates this long position. Let $S_T$ denote the spot price at exercise and $K$ the strike price. When $S_T < K$, the option is said to be \emph{out of the money (OTM)} and has zero payoff. At $S_T = K$, the option is \emph{at the money (ATM)}, and when $S_T > K$, the option becomes \emph{in the money (ITM)} with payoff $S_T - K$ \cite{hull2013fundamentals}. However, the position only becomes profitable once the payoff offsets the premium paid. The ``moneyness'' terminology always reflects the perspective of the long position. Rational investors exercise ITM options to capture the payoff, even if it only partially offsets the premium paid. In liquid markets, this involves buying stock at the strike price and immediately selling at the higher spot price.
 
 To demonstrate the use of options for risk management, consider a manufacturer dependent on crude oil who anticipates price increases. By purchasing call options, they fix a price ceiling for future oil purchases, effectively buying insurance against adverse price movements. The premium represents the cost of this protection, with the strike price chosen to align with their risk tolerance and budget constraints.
 
@@ -781,7 +781,7 @@ $p \gets (e^{r\Delta t} - d)/(u - d)$\;
 \Return{$C_0$}\;
 \end{algorithm}
 
-A key advantage of the CRR and other lattice-based models is their natural ability to price American options, which generally cannot be valued using closed-form solutions like the BSM model \cite{wilmott2013paul}. For American options, the option value calculation on line~15 is modified to include the early-exercise possibility:
+The core of the algorithm lies in line 15, which directly implements the risk-neutral valuation principle shown in \cref{eq:risk-neutral-expectancy}. A key advantage of the CRR and other lattice-based models is their natural ability to price American options, which generally cannot be valued using closed-form solutions like the BSM model \cite{wilmott2013paul}. For American options, the option value calculation on line~15 is modified to include the early-exercise possibility:
 \begin{equation*}
 C[j] \gets \max(\text{payoff}(S[j]), disc \cdot (p \cdot C[j+1] + (1-p) \cdot C[j])),
 \end{equation*}
@@ -790,9 +790,65 @@ where $\text{payoff}(S[j])$ equals $\max(K - S[j], 0)$ for puts or $\max(S[j] - 
 \subsection{Naive GPU-acceleration}
 The sequential algorithm has asymptotic time complexity $O(n^2)$ due to the nested loop in the backward induction phase. This poses a significant computational challenge as the number of time periods increases. While nodes at successive time points form a clear dependency chain, nodes at the same time point are independent and can be computed in parallel. This structure suggests substantial parallelization opportunities.
 
-Kolb and Pharr \cite{pharr2005gpu} implement a GPU-accelerated version using this approach. At each time point, they spawn one thread per node, letting each thread compute a single node value from its two child nodes. Threads synchronize after each time point to prevent data races. The implementation uses two alternating arrays for reading and writing intermediate results. To maximize GPU utilization, the algorithm is run in parallel for ``a thousand or so independent options''. The full source code is found in the original article\footnote{The implementation from 2005 predates CUDA, using the Cg language common for GPU programming at the time.}
+Kolb and Pharr \cite{pharr2005gpu} implement a GPU-accelerated version using this approach. At each time point, they spawn one thread per node, letting each thread compute a single node value from its two child nodes. Threads synchronize after each time point to prevent data races. The implementation uses two alternating arrays for reading and writing intermediate results. To maximize GPU utilization, the algorithm is run in parallel for ``a thousand or so independent options''. The full source code is found in the original article\footnote{The implementation from 2005 predates CUDA, using the Cg language common for GPU programming at the time.}.
 
-The parallel implementation has a span of $O(n)$ compared to $O(n^2)$ work, achieving linear runtime with sufficient processors. Using $n=1024$ time periods, the authors report throughput as a function of the number of American options processed. The sequential CPU implementation achieves approximately 110 options/s. The GPU version initially underperforms for batches of fewer than 5 options, likely due to parallelization overhead, but scales to approximately 1150 options/s with larger batches --- a 10x speedup. The throughput plateau suggests either full GPU utilization or other bottlenecks.
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        scale=1.3,
+        >=stealth,
+        every node/.style={font=\normalsize}
+    ]
+    
+   % Draw lattice nodes
+    \foreach \i in {0,...,4} {
+        \foreach \j in {0,...,\i} {
+            \pgfmathsetmacro\y{\j*2-\i}
+            \ifnum\i=4
+                \node[circle, draw, minimum size=7mm, fill=gray!40] (n\i\j) at (\i*2,\y) {};
+            \else
+                \ifnum\i=3
+                    \node[circle, draw, minimum size=7mm, fill=gray!20] (n\i\j) at (\i*2,\y) {};
+                \else
+                    \node[circle, draw, minimum size=7mm] (n\i\j) at (\i*2,\y) {};
+                \fi
+            \fi
+        }
+    }
+    
+    \draw[<-, thick, gray] (0.5,4.8) -- (7.5,4.8);
+    \node[gray] at (4,5) {\small Backward induction};
+    
+    % Draw edges
+    \foreach \i in {0,...,3} {
+        \pgfmathtruncatemacro\nexti{\i+1}
+        \foreach \j in {0,...,\i} {
+            \pgfmathtruncatemacro\nextj{\j+1}
+            \draw[->] (n\i\j) -- (n\nexti\j);
+            \draw[->] (n\i\j) -- (n\nexti\nextj);
+        }
+    }
+    
+    % Highlight one time column
+    \fill[blue!20, opacity=0.5] (3.5,-2.5) rectangle (4.5,2.5);
+
+    
+    % Add thread labels for the highlighted column (time step 2)
+    \node[blue, font=\footnotesize] at (4,-2) {T0};
+    \node[blue, font=\footnotesize] at (4,0) {T1};
+    \node[blue, font=\footnotesize] at (4,2) {T2};
+    
+    % Simple time labels
+    \draw[->] (0,-5.0) -- (8,-5.0);
+    \node at (0,-5.0) [below] {$t=0$};
+    \node at (8,-5.0) [below] {$t=T$};
+    
+    \end{tikzpicture}
+    \caption{Naive GPU acceleration of the CRR algorithm. The binomial lattice structure reveals instruction dependencies across time. Nodes at each time step can be computed in parallel by independent threads (T0, T1, T2) during backward induction. Filled nodes are already computed, with the terminal nodes in dark gray.}
+    \label{fig:crr-gpu-naive}
+\end{figure}
+
+The parallel implementation does not redesign the algorithm in any way, but simply utilizes more resources for parallel computation. The work of the algorithm is thus $O(n^2)$, identical to the sequential time complexity. On the other hand, the span is only $O(n)$, so linear run-time is achievable with sufficient processors. \cref{fig:crr-gpu-naive} illustrates this parallel execution. Using $n=1024$ time periods, the authors report throughput as a function of the number of American options processed. The sequential CPU implementation achieves approximately 110 options/s. The GPU version initially underperforms for batches of fewer than 5 options, likely due to parallelization overhead, but scales to approximately 1150 options/s with larger batches --- a 10x speedup. The throughput plateau suggests either full GPU utilization or other bottlenecks.
 
 For large lattices, the naive parallelization encounters synchronization bottlenecks. Threads must synchronize after each time point, creating overhead that grows with $n$. This overhead is particularly severe when the lattice exceeds the capacity of a single streaming multiprocessor, forcing communication through slower global memory rather than shared memory. Suo et al. \cite{suo2015gpu} explore strategies to mitigate this. A naive attempt sacrifices parallelism by having a thread compute multiple nodes over several time periods, thereby reducing synchronization frequency. This, however, leads to redundant computation as nodes at intermediate time points must be calculated multiple times by different threads. More sophisticated approaches avoid this redundancy --- the authors propose a ``triangle method'' that carefully partitions the lattice to minimize both synchronization overhead and redundant calculations.
 \clearpage
@@ -816,7 +872,7 @@ Based on this insight, the authors present the following parallel algorithm \cit
     \label{fig:partitioned}
 \end{figure}
 
-The total work remains $O(n^2)$ since every node must still be processed, either directly calculating the option value or the corresponding coefficient. The span, however, is further reduced from $O(n)$ to $O(n/p + p)$. In the GPU implementation, partitions are computed on independent streaming multiprocessors. Communication between partitions is done through global memory, introducing latency $L$ at each propagation step \cite{ganesan2009acceleration}. Increasing $p$ improves execution time up to a certain point, where the communication latency and boundary calculation overhead outweighs the benefit of additional parallelism. The authors derive the optimal number of partitions as $p = \sqrt{2n/L}$ \cite{ganesan2009acceleration}. In practice, they achieve a 2x speedup over a naive GPU implementation. In clear contrast to bulk pricing, this approach dedicates all computing resources to an individual option, making it suitable for pricing of a single or small group of key portfolio assets.
+The total work remains $O(n^2)$ since every node must still be processed, either directly calculating the option value or the corresponding coefficient. The span, however, is further reduced from $O(n)$ to $O(n/p + p)$ due to the algorithmic reformulation. The corresponding DAG transforms from a tall, narrow lattice into a shorter, wider one. In the GPU implementation, partitions are computed on independent streaming multiprocessors. Communication between partitions is done through global memory, introducing latency $L$ at each propagation step \cite{ganesan2009acceleration}. Increasing $p$ improves execution time up to a certain point, where the communication latency and boundary calculation overhead outweighs the benefit of additional parallelism. The authors derive the optimal number of partitions as $p = \sqrt{2n/L}$ \cite{ganesan2009acceleration}. In practice, they achieve a 2x speedup over a naive GPU implementation. In clear contrast to bulk pricing, this approach dedicates all computing resources to an individual option, making it suitable for pricing of a single or small group of key portfolio assets.
 
 \section{GPU Acceleration of Monte Carlo Methods} \label{sec:gpu-mc}
 \subsection{Monte Carlo Methods}
@@ -874,9 +930,11 @@ $C_0 \gets e^{-rT} \cdot \frac{C_{\text{sum}}}{M}$\;
 
 
 \subsection{Naive GPU-acceleration}
-MC simulation is considered an \emph{embarrassingly parallel} problem --- each path is independent, allowing straightforward parallelization without further redesign. Instead, the primary challenge becomes generating independent random numbers across threads. Naive parallelization can produce correlated number sequences between threads, violating the independence assumption of MC simulation. Effective implementations must therefore partition the RNG state space to ensure statistical independence across all threads \cite{gentle2003random}. Early GPU implementations, such as those by Howes and Thomas \cite{nguyen2007gpu}, had to manually construct such generators. Today, GPU libraries like cuRAND \cite{curand2025} provide parallel RNGs as standard functionality, eliminating the need for manual implementation.
+MC simulation is considered an \emph{embarrassingly parallel} problem --- each path is independent, allowing straightforward parallelization without further redesign. By a similar argument as earlier, the work of the algorithm therefore equals the sequential time complexity $O(m \cdot (n+p))$. The span is $O(n+p)$, assuming an infinite-processor machine that can simulate all $m$ paths in parallel.
 
-Howes and Thomas \cite{nguyen2007gpu} benchmarked GPU-accelerated MC opiton pricing using an Nvidia GeForce 8 GPU and quad-core AMD Opteron 2.2 GHz CPU. They achieved a 26x speedup for random number generation alone, with overall speedups of 59x for Asian options and 23x for a variant of lookback options. These results show that even fairly naive GPU implementations of the early days (2007) achieved substantial speedups over multi-core CPU versions, despite the inherent challenges of parallel random number generation. When isolating the simulation-related computations (using constants instead of random numbers), speedups reached 118x and 45x respectively. This indicates that random number generation becomes the dominant bottleneck in GPU implementations. 
+Instead, the primary challenge becomes generating independent random numbers across threads. Naive parallelization can produce correlated number sequences between threads, violating the independence assumption of MC simulation. Effective implementations must therefore partition the RNG state space to ensure statistical independence across all threads \cite{gentle2003random}. Early GPU implementations, like the one by Howes and Thomas \cite{nguyen2007gpu}, had to manually construct such generators. Today, GPU libraries like cuRAND \cite{curand2025} provide parallel RNGs as standard functionality, eliminating the need for manual implementation.
+
+Howes and Thomas \cite{nguyen2007gpu} benchmarked GPU-accelerated MC option pricing using an Nvidia GeForce 8 GPU and quad-core AMD Opteron 2.2 GHz CPU. They achieved a 26x speedup for random number generation alone, with overall speedups of 59x for Asian options and 23x for a variant of lookback options. These results show that even fairly naive GPU implementations of the early days (2007) achieved substantial speedups over multi-core CPU versions, despite the inherent challenges of parallel random number generation. When isolating the simulation-related computations (using constants instead of random numbers), speedups reached 118x and 45x respectively. This indicates that random number generation becomes the dominant bottleneck in GPU implementations. 
 
 The choice of random number generator often depends on the option type and memory constraints, as some option payoffs require storing intermediate values in memory. In this example, the sum used for the mean calculation in the Asian option can be accumulated in a single variable, leading to minimal memory requirements. This enabled the use of the faster Wallace RNG, which could not be used in the pricing of more memory-intensive variant of lookback options that needed to store entire price paths.
 
@@ -996,13 +1054,13 @@ for s = 1 to numSteps \{\\
 \end{figure}
 
 \section{Summary and Conclusions}  \label{sec:summary-conclusions}
-This thesis evaluates the effectiveness of GPU acceleration for two widely used option pricing algorithms: The Cox-Ross-Rubinstein (CRR) model and Monte Carlo (MC) simulation. The analysis examines each algorithm's parallelization potential, implementation strategies, achievable speedups and performance bottlenecks. Both models benefit significantly from GPU acceleration, though their inherent characteristics dictate different optimization approaches and performance gains. MC methods achieve greater speedups through straightforward implementations. The CRR model, constrained by sequential dependencies, requires algorithmic restructuring to fully exploit GPU capabilities. The results of the reviewed research are aggregated in \cref{tab:results-table}.
+This thesis evaluates the effectiveness of GPU acceleration for two widely used option pricing algorithms: The Cox-Ross-Rubinstein (CRR) model and Monte Carlo (MC) simulation. The analysis examines each algorithm's parallelization potential, implementation strategies, achievable speedups and performance bottlenecks. The data show that both models benefit significantly from GPU acceleration, though their inherent characteristics dictate different optimization approaches and performance gains. The results of the reviewed research are aggregated in \cref{tab:results-table}.
 
-An algorithm's inherent dependencies largely determine both its parallelization potential and optimization strategies. The CRR model operates through backward induction on a recombining lattice, creating sequential dependencies across time steps. This limits parallelization to computations within each time step. MC methods, by contrast, simulate independent price paths, making them ideally suited for parallel execution. While direct comparison is complicated by differences in GPU hardware, the reported results are consistent with this distinction: the naive CRR-GPU implementation achieved an approximately 10x speedup over a single-core CPU \cite{pharr2005gpu}, whereas the MC-GPU version reported 23-59x speedups despite being benchmarked against a quad-core CPU \cite{nguyen2007gpu}. Nonetheless, both approaches yield substantial improvements relative to implementation effort, making GPU acceleration worthwhile for either algorithm. Scalability is eventually limited by bottlenecks: thread synchronization overhead limits CRR performance, while MC methods face memory bandwidth constraints, particularly when using memory-intensive random number generators.
+The CRR model's backward induction creates sequential dependencies across time steps, limiting parallelization to computations within each time step. By contrast, MC methods simulate independent price paths, making them ideally suited for parallel execution. While direct comparison is complicated by differences in GPU hardware, the reported results are consistent with this distinction: the naive CRR-GPU implementation achieved an approximately 10x speedup over a single-core CPU \cite{pharr2005gpu}, whereas the MC-GPU version reported 23-59x speedups despite being benchmarked against a quad-core CPU \cite{nguyen2007gpu}. The disparity can likely be attributed to synchronization overhead affecting the CRR algorithm. Nonetheless, both naive implementations yield substantial improvements relative to implementation effort, making GPU acceleration worthwhile for either algorithm. 
 
-Given these distinct characteristics, the algorithms present different optimization opportunities. For CRR, the dependencies motivate algorithmic reformulation to expose additional parallelism. MC methods already fully expose parallelism, so optimization efforts focus on hardware utilization. Ganesan et al. \cite{ganesan2009acceleration} exemplify the algorithmic reformulation approach for CRR by partitioning the time axis and computing relationship coefficients in parallel, effectively circumventing sequential dependencies. They achieved a 2x speedup over the naive GPU implementation. For MC methods, Liu et al. \cite{liu2010efficient} applied hardware-specific optimizations, including memory coalescing and warp divergence minimization, achieving a 43x speedup over their CPU baseline. These contrasting approaches demonstrate how an algorithm's inherent structure dictates the path for further optimization.
+These algorithmic characteristics determine optimization strategies. CRR benefits from algorithmic reformulation to expose hidden parallelism, as demonstrated by Ganesan et al. \cite{ganesan2009acceleration} who partitioned the time axis to achieve a 2x improvement over a naive GPU implementation. MC methods already expose the available parallelism, and benefit more from hardware-specific optimizations. Liu et al. \cite{liu2010efficient} achieved 43x speedup over a CPU baseline through techniques including memory coalescing and minimizing warp divergence. Ultimately, both algorithms face scalability limits: CRR implementations contend with synchronization or communication overhead, while MC methods remain constrained by memory bandwidth, particularly when using memory-intensive random number generators.
 
-While the results suggest MC methods may achieve larger GPU speedups, this does not make them the optimal solution for option pricing. In practice, the choice algorithm depends on multiple factors: option type, available hardware, and other case-specific requirements and constraints. For instance, vanilla options are rarely priced using MC methods since analytical or lattice-based models often provide faster solutions. The practical approach is to first select an appropriate pricing model and then apply GPU acceleration. Both CRR and MC implementations demonstrate substantial speedups even with naive approaches, making GPU acceleration worth considering in both cases. This becomes particularly valuable for high-throughput applications like portfolio-wide risk calculations or bulk pricing operations.
+While the results suggest MC methods may achieve larger GPU speedups, this does not make them the optimal solution for option pricing. In practice, the choice of algorithm depends on multiple factors: option type, available hardware, and other case-specific requirements and constraints. For instance, vanilla options are rarely priced using MC methods since analytical or lattice-based models often provide faster solutions. The practical approach is to first select an appropriate pricing model and then apply GPU acceleration. Both CRR and MC implementations demonstrate substantial speedups even with naive approaches, making GPU acceleration worth considering in both cases. This becomes particularly valuable for high-throughput applications like portfolio-wide risk calculations or bulk pricing operations.
 
 An important caveat is that the analyzed research spans 2005-2010. Cutting-edge research often remains proprietary within financial institutions that safeguard their competitive advantage, making it difficult to review the most recent developments in the field. GPU architectures have also evolved dramatically since then, largely driven by the massive demand for AI computing. Modern GPUs feature improved memory hierarchies, better divergence handling, and enhanced support for general-purpose computing, mitigating several of the mentioned bottlenecks while perhaps introducing new ones. Likewise, modern multi-core CPUs provide faster baselines than those in the original studies. Despite these hardware advances, the fundamental principle persists: effective GPU utilization requires both clever algorithmic design and hardware-conscious optimization. Future work could benchmark these algorithms on current architetures to enable direct comparisons. Additional research opportunities include GPU acceleration of other models, such as finite difference or machine learning-based methods.
 
