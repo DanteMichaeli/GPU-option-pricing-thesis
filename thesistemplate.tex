@@ -103,20 +103,14 @@
 
 %% Change the school field to specify your school if the automatically 
 %% set name is wrong
- \university{aalto University}
+ \university{Aalto University}
  \school{School of Science}
 
 %% Only for B.Sc. thesis: Choose your degree programme. 
 \degreeprogram{Computer Science}
 %%
 
-
-%% Valitse yksi näistä kolmesta
-%%
-%% Choose one of these:
 \univdegree{BSc}
-%\univdegree{MSc}
-%\univdegree{Lic}
 
 %% Your own name (should be self explanatory...)
 \author{Daniel Michaeli}
@@ -151,7 +145,7 @@
 %%
 %\advisor{Prof.\ Pirjo Professori}
 %\advisor{D.Sc.\ (Tech.) Olli Ohjaaja}
-\advisor{M.Sc.\ Henrik Lievonen}
+\advisor{D.Sc.\ Jukka Suomela?}
 
 %% Aalto logo: syntax:
 %% \uselogo{aaltoRed|aaltoBlue|aaltoYellow|aaltoGray|aaltoGrayScale}{?|!|''}
@@ -178,7 +172,7 @@
 %% niin kuin se on yllä määritelty.
 %% Avainsanat
 %%
-\keywords{moi, mojn, moin, morjens, moro}
+\keywords{options, pricing, GPU, parallel algorithms}
 %% Abstract text
 \begin{abstractpage}[english]
 
@@ -198,13 +192,13 @@ English bla bla bla
 %
 %% Swedish abstract. Delete if you don't need it. 
 %% 
-\thesistitle{Genomströmning och latens i datorsystem: en anlays av avvägningseffekter och optimeringsstrategier}
+\thesistitle{GPU-accelererade optionsprissättningsalgoritmer}
 \advisor{M.Sc.\ Henrik Lievonen} %
 \degreeprogram{Datateknik}
 \department{Högskolan för teknikvetenskaper}%
 \professorship{?}  %
 %% Abstract keywords
-\keywords{Nyckelord p\aa{} svenska,\\ Moi, moin, moidå, mojjdå}
+\keywords{Nyckelord p\aa{} svenska,\\ optioner, prissättning, GPU, grafikkort, parallella algoritmer}
 %% Abstract text
 \begin{abstractpage}[swedish]
  svenska bla bla bla
@@ -244,7 +238,7 @@ English bla bla bla
 \section{Introduction}
 %% Leave first page empty
 \thispagestyle{empty}
-Options are financial contracts between two parties that grant the holder the right, but not the obligation, to buy or sell an underlying asset at a predetermined price by a future date \cite{hull2018}. Options belong to a broader class of financial instruments known as derivatives, which derive their value from the price of the underlying asset. These instruments enable both speculative trading and risk management strategies, making them attractive even to non-financial institutions \cite{bartram2009international}. The derivatives market has experienced substantial growth over the past half-century, driven by advances in financial mathematics \cite{merton1994influence} and exponential increases in affordable computing power~\cite{nordhaus2007two}.
+Options are financial contracts between two parties that grant the holder the right, but not the obligation, to buy or sell an asset at a predetermined price by a future date \cite{hull2018}. Options are a type of derivative --- a financial instrument which derives its value from the price of an underlying asset. These instruments enable both speculative trading and risk management strategies, making them valuable even to non-financial institutions \cite{bartram2009international}. The derivatives market has grown substantially over the past half-century, driven by advances in financial mathematics \cite{merton1994influence} and exponential growth of computing power~\cite{nordhaus2007two}.
 
 Modern option pricing employs various models with different theoretical foundations and computational requirements. Execution speed is often critical. For example, high-frequency trading strategies exploit transient pricing anomalies through millions of rapid transactions, where millisecond delays can determine profitability. Faster computation also benefits risk management practices that rely on extensive portfolio simulations across multiple market scenarios. These performance requirements have motivated research into adapting option pricing algorithms to leverage the GPU's parallel computing capabilities.
 
