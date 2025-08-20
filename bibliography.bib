@@ -1,67 +1,27 @@
-% Finance / Mathy sources:
-
-% Law of no arbitrage, time value of money:
-@book{berk2007corporate,
-  title={Corporate finance},
-  author={Berk, Jonathan B and DeMarzo, Peter M},
-  year={2007},
-  publisher={Pearson Education}
-}
-
-% MM-theorem, dividend drops share price by same amount:
-@article{modigliani1958cost,
-  title={The cost of capital, corporation finance and the theory of investment},
-  author={Modigliani, Franco and Miller, Merton H},
-  journal={The American economic review},
-  volume={48},
-  number={3},
-  pages={261--297},
-  year={1958},
-  publisher={JSTOR}
-}
-
-% EMH Fama:
-@article{fama1970efficient,
-  title={Efficient capital markets},
-  author={Fama, Eugene F},
-  journal={Journal of finance},
-  volume={25},
-  number={2},
-  pages={383--417},
-  year={1970}
-}
-
-
-% Greeks:
 @book{wilmott2013paul,
   title={Paul Wilmott on quantitative finance},
   author={Wilmott, Paul},
   year={2013},
-  publisher={John Wiley \& Sons}
+  publisher={John Wiley \& Sons},
+  note={{ISBN}:978-1-118-83683-5}
 }
 
-%risk neutral valuation - portfolio replication approach:
+%RISK NEUTRAL PROBABILITIES EXPLAINED%
 @article{gisiger2010risk,
   title={Risk-neutral probabilities explained},
   author={Gisiger, Nicolas},
-  year={2010}
+  year={2010},
+  doi={10.2139/ssrn.1395390}
 }
-
 @article{tham2001risk,
   title={Risk-neutral valuation: A gentle introduction (1)},
   author={Tham, Joseph},
   journal={Available at SSRN 290044},
-  year={2001}
+  year={2001},
+  doi={10.2139/ssrn.290044}
 }
-
-@book{natenberg1994option,
-  title={Option volatility and pricing},
-  author={Natenberg, Sheldon},
-  year={1994},
-  publisher={McGraw-Hill New York}
-}
-
-%why we use options:
+    
+%MISC%
 @article{bartram2009international,
   title={International evidence on financial derivatives usage},
   author={Bartram, S{\"o}hnke M and Brown, Gregory W and Fehle, Frank R},
@@ -70,10 +30,9 @@
   number={1},
   pages={185--206},
   year={2009},
-  publisher={Wiley Online Library}
+  publisher={Wiley Online Library},
+  doi={10.1111/j.1755-053X.2009.01033.x}
 }
-
-%used for introduction on how math has allowed derivatives to blososm:
 @article{merton1994influence,
   title={Influence of mathematical models in finance on practice: past, present and future},
   author={Merton, Robert C},
@@ -82,10 +41,9 @@
   number={1684},
   pages={451--463},
   year={1994},
-  publisher={The Royal Society London}
+  publisher={The Royal Society London},
+  doi={10.1098/rsta.1994.0055}
 }
-
-%used for introduction on the progress of computing:
 @article{nordhaus2007two,
   title={Two centuries of productivity growth in computing},
   author={Nordhaus, William D},
@@ -94,314 +52,26 @@
   number={1},
   pages={128--159},
   year={2007},
-  publisher={Cambridge University Press}
+  publisher={Cambridge University Press},
+  doi={10.1017/S0022050707000058}
 }
-
-
-% Options theory:
-
-% used for introduction
-@book{hunt2004financial,
-  title={Financial derivatives in theory and practice},
-  author={Hunt, Philip and Kennedy, Joanne},
-  year={2004},
-  publisher={John Wiley and Sons}
-}
-
-@book{hull2016options,
-  title={Options, futures, and other derivatives},
-  author={Hull, John C and Basu, Sankarshan},
-  year={2016},
-  publisher={Pearson Education India}
-}
-
-@book{hull2013fundamentals,
-  title={Fundamentals of futures and options markets},
-  author={Hull, John and Treepongkaruna, Sirimon and Colwell, David and Heaney, Richard and Pitt, David},
-  year={2013},
-  publisher={Pearson Higher Education AU}
-}
-
-% quant forum discussion:
-(https://quant.stackexchange.com/questions/55239/explaining-the-risk-neutral-measure)
-
-
-%Risk aversion:
-@incollection{kahneman2013prospect,
-  title={Prospect theory: An analysis of decision under risk},
-  author={Kahneman, Daniel and Tversky, Amos},
-  booktitle={Handbook of the fundamentals of financial decision making: Part I},
-  pages={99--127},
-  year={2013},
-  publisher={World Scientific}
-}
-
-
-
-% Monte Carlo Information (in finance)
-@book{jackel2002monte,
-  title={Monte Carlo methods in finance},
-  author={J{\"a}ckel, Peter},
-  year={2002},
-  publisher={John Wiley \& Sons}
-}
-
-% CRR Binomial model original paper:
-
-@article{cox1979option,
-  title={Option pricing: A simplified approach},
-  author={Cox, John C and Ross, Stephen A and Rubinstein, Mark},
-  journal={Journal of financial Economics},
-  volume={7},
-  number={3},
-  pages={229--263},
-  year={1979},
-  publisher={Elsevier}
-}
-
-% Black and Scholes original paper
-@article{black1973pricing,
-  title={The pricing of options and corporate liabilities},
-  author={Black, Fischer and Scholes, Myron},
-  journal={Journal of political economy},
-  volume={81},
-  number={3},
-  pages={637--654},
-  year={1973},
-  publisher={The University of Chicago Press}
-}
-
-% The first MC option model source
-@article{boyle1977options,
-  title={Options: A monte carlo approach},
-  author={Boyle, Phelim P},
-  journal={Journal of financial economics},
-  volume={4},
-  number={3},
-  pages={323--338},
-  year={1977},
-  publisher={Elsevier}
-}
-
-
-% GPU and Parallel computing sources:
-
-
-% example of european put benefiting from shorter time to expiry:
-
-https://analystnotes.com/cfa-study-notes-identify-the-factors-that-determine-the-value-of-an-option-and-explain-how-each-factor-affects-the-value-of-an-option.html
-
-
-% Sources specifically on GPU MC methods:
-
-% Specific method for American MC option pricing, "Longstaff-Schwarz Model"
-@article{li2024gpu,
-  title={GPU-Accelerated American Option Pricing: The Case of the Longstaff-Schwartz Monte Carlo Model.},
-  author={Li, Leon Xing and Chen, Ren-Raw and Fabozzi, Frank J},
-  journal={Journal of Derivatives},
-  volume={32},
-  number={2},
-  year={2024}
-}
-
-
-% MC GPU models for different types of options
-@phdthesis{jespersen2015monte,
-  title={Monte Carlo Evaluation of Financial Options using a GPU},
-  author={Jespersen, Claus},
-  year={2015},
-  school={Aarhus Universitet, Datalogisk Institut}
-}
-
-
-% General theory, as well as results on basket options
-@phdthesis{jespersen2015monte,
-  title={Monte Carlo Evaluation of Financial Options using a GPU},
-  author={Jespersen, Claus},
-  year={2015},
-  school={Aarhus Universitet, Datalogisk Institut}
-}
-
-% General theory?
-@article{abbas2014pricing,
-  title={Pricing derivatives on graphics processing units using Monte Carlo simulation},
-  author={Abbas-Turki, Lokman A and Vialle, St{\'e}phane and Lapeyre, Bernard and Mercier, Patrick},
-  journal={Concurrency and Computation: Practice and Experience},
-  volume={26},
-  number={9},
-  pages={1679--1697},
-  year={2014},
-  publisher={Wiley Online Library}
-}
-
-
-
-%% GPU / Computer Architecture STUFF:
-
-@book{hennessy2011computer,
-  title={Computer architecture: a quantitative approach},
-  author={Hennessy, John L and Patterson, David A},
-  year={2011},
-  publisher={Elsevier}
-}
-
-@book{stallings2011operating,
-  title={Operating systems: internals and design principles},
-  author={Stallings, William},
-  year={2011},
-  publisher={Prentice Hall Press}
-}
-
-
-@book{kirk2016programming,
-  title={Programming Massively Parallel Processors: A Hands-on Approach},
-  author = {Kirk, David B. and Hwu, {W. W.}},
-  year={2016},
-  publisher={Morgan Kaufmann}
-}
-
-
-@article{liu2010efficient,
-  title={Efficient Monte Carlo-based options pricing on graphics processors and its optimizations},
-  author={Liu, Li and Zhang, YouHui and Liu, Li and Yang, GuangWen and Zheng, WeiMin},
-  journal={Science China Information Sciences},
-  volume={53},
-  pages={1703--1712},
-  year={2010},
-  publisher={Springer}
-}
-
-@book{sanders2010cuda,
-  title={CUDA by example: an introduction to general-purpose GPU programming},
-  author={Sanders, Jason and Kandrot, Edward},
-  year={2010},
-  publisher={Addison-Wesley Professional}
-}
-
-
-
-@book{pharr2005gpu,
-  title={GPU Gems 2: Programming techniques for high-performance graphics and general-purpose computation (gpu gems)},
-  author={Pharr, Matt and Fernando, Randima},
-  year={2005},
-  publisher={Addison-Wesley Professional}
-}
-
-
-@book{nguyen2007gpu,
-  title={Gpu gems 3},
-  author={Nguyen, Hubert},
-  year={2007},
-  publisher={Addison-Wesley Professional}
-}
-
-
-@inproceedings{ganesan2009acceleration,
-  title={Acceleration of binomial options pricing via parallelizing along time-axis on a GPU},
-  author={Ganesan, Narayan and Chamberlain, Roger D and Buhler, Jeremy},
-  booktitle={Proceedings of Symposium on Application Accelerators in High Performance Computing},
-  year={2009}
-}
-
-@inproceedings{suo2015gpu,
-  title={GPU option pricing},
-  author={Suo, Simon and Zhu, Ruiming and Attridge, Ryan and Wan, Justin},
-  booktitle={Proceedings of the 8th Workshop on High Performance Computational Finance},
-  pages={1--6},
-  year={2015}
-}
-
-%QuantPy Github
-
-https://github.com/TheQuantPy/youtube-tutorials/blob/main/2021/003%20Jul-Sep/2021-07-06%20Binomial%20Option%20Pricing%20Model%20_%20Theory%20_%20Implementation%20in%20Python.ipynb
-
-@article{clewlow1998implementing,
-  title={Implementing derivative models},
-  author={Clewlow, L and Strickland, C},
-  journal={Jonh Wiley \& Sons, Nonsei},
-  year={1998}
-}
-
-
-
-@misc{thequantpy2024github,
-    author = {Emerick, Joanthon},
-    title = {youtube-tutorials},
-    year = {2021},
-    publisher = {GitHub},
-    journal = {GitHub repository},
-    howpublished = {\url{https://github.com/TheQuantPy/youtube-tutorials/blob/main/2021/003%20Jul-Sep/2021-07-06%20Binomial%20Option%20Pricing%20Model%20_%20Theory%20_%20Implementation%20in%20Python.ipynb}},
-}
-
-%ross prob & stats for MC. NEEDS TO BE FIXED!!
-
-@incollection{FOO,
-title = {Front Matter},
-author = {Sheldon M. Ross},
-editor = {Sheldon M. Ross},
-booktitle = {Introduction to Probability and Statistics for Engineers and Scientists (Sixth Edition)},
-publisher = {Academic Press},
-edition = {Sixth Edition},
-pages = {i-iii},
-year = {2021},
-isbn = {978-0-12-824346-6},
-doi = {https://doi.org/10.1016/B978-0-12-824346-6.00003-X},
-url = {https://www.sciencedirect.com/science/article/pii/B978012824346600003X}
-}
-
-@book{Ross2020prob,
-title = {Introduction to Probability and Statistics for Engineers and Scientists (Sixth Edition)},
-author = {Sheldon M. Ross},
-publisher = {Academic Press},
-edition = {6},
-year = {2020},
-isbn = {978-0-12-824346-6},
-doi = {https://doi.org/10.1016/C2018-0-02166-0}
-}
-
-%MC random numbers
-@book{gentle2003random,
-  title={Random number generation and Monte Carlo methods},
-  author={Gentle, James E},
-  volume={381},
-  year={2003},
-  publisher={Springer}
-}
-
-@manual{cuda2025guide,
-  title        = {CUDA C++ Programming Guide},
-  author       = {{NVIDIA Corporation}},
+@misc{enccs2025gpu,
+  author       = {{ENCCS and individual contributors}},
+  title        = {GPU Programming: Ecosystem and Architecture},
   year         = {2025},
-  organization = {NVIDIA},
-  note         = {Version 12.x, accessed July 2, 2025},
-  url          = {https://docs.nvidia.com/cuda/cuda-c-programming-guide/}
+  howpublished = {\url{https://enccs.github.io/gpu-programming/2-gpu-ecosystem/}},
+  note         = {Licensed under CC-BY 4.0},
 }
 
-@online{curand2025,
-  title = {{cuRAND} Documentation},
-  author = {{NVIDIA Corporation}},
-  year = {2025},
-  url = {https://docs.nvidia.com/cuda/curand/index.html},
-  urldate = {2025-08-16}
-}
-
-
-@misc{suomela_ppc,
-    author       = {Jukka Suomela},
-    title        = {Programming Parallel Computers},
-    howpublished = {Course lecture slides, Aalto University},
-    url          = {https://ppc.cs.aalto.fi/index/},
-    year         = {n.d.},
-    note         = {Accessed: July 2, 2025}
-}
-
-@misc{acar2016parallel,
-  author       = {Umut A. Acar},
-  title        = {Parallel Computing: Theory and Practice},
-  year         = {2016},
-  howpublished = {\url{https://www.cs.cmu.edu/afs/cs/academic/class/15210-f15/www/tapp.html}},
-  note         = {Version 1.0, Accessed: July 20 2025.},
-  institution  = {Carnegie Mellon University}
+% OPTIONS THEORY
+@book{hull2018,
+	author = {Hull, John C.},
+	title = {Options, futures, and other derivatives /},
+	publisher = {Pearson Education Limited},
+	year = {c2018.},
+	address = {Harlow:},
+	edition = {Ninth Edition.},
+        note = {{ISBN}:978-1-292-21289-0}
 }
 
 @misc{nobel1997,
@@ -414,13 +84,151 @@ doi = {https://doi.org/10.1016/C2018-0-02166-0}
   note         = {Accessed: July 25, 2025}
 }
 
-
-
-// CPU GPU OG IMAGE:
-@misc{enccs2025gpu,
-  author       = {{ENCCS and individual contributors}},
-  title        = {GPU Programming: Ecosystem and Architecture},
+%CS / GPU THEORY%
+@book{hennessy2011computer,
+  title={Computer architecture: a quantitative approach},
+  author={Hennessy, John L and Patterson, David A},
+  year={2011},
+  publisher={Elsevier},
+  note={{ISBN}:978-0123704900}
+}
+@book{stallings2011operating,
+  title={Operating systems: internals and design principles},
+  author={Stallings, William},
+  year={2011},
+  publisher={Prentice Hall Press},
+  note={{ISBN}:9780132309981}
+}
+@book{kirk2016programming,
+  title={Programming Massively Parallel Processors: A Hands-on Approach},
+  author = {Kirk, David B. and Hwu, {W. W.}},
+  year={2016},
+  publisher={Morgan Kaufmann},
+  note={{ISBN}:9780128119860}
+}
+@book{sanders2010cuda,
+  title={CUDA by example: an introduction to general-purpose GPU programming},
+  author={Sanders, Jason and Kandrot, Edward},
+  year={2010},
+  publisher={Addison-Wesley Professional},
+  note={{ISBN}:978-0131387683}
+}
+@manual{cuda2025guide,
+  title        = {CUDA C++ Programming Guide},
+  author       = {{NVIDIA Corporation}},
   year         = {2025},
-  howpublished = {\url{https://enccs.github.io/gpu-programming/2-gpu-ecosystem/}},
-  note         = {Licensed under CC-BY 4.0},
+  organization = {NVIDIA},
+  note         = {Version 12.x, accessed July 2, 2025},
+  url          = {https://docs.nvidia.com/cuda/cuda-c-programming-guide/}
+}
+@online{curand2025,
+  title = {{cuRAND} Documentation},
+  author = {{NVIDIA Corporation}},
+  year = {2025},
+  url = {https://docs.nvidia.com/cuda/curand/index.html},
+  urldate = {2025-08-16}
+}
+@misc{suomela_ppc,
+    author       = {Jukka Suomela},
+    title        = {Programming Parallel Computers},
+    howpublished = {Course lecture slides, Aalto University},
+    url          = {https://ppc.cs.aalto.fi/index/},
+    year         = {n.d.},
+    note         = {Accessed: July 2, 2025}
+}
+@misc{acar2016parallel,
+  author       = {Umut A. Acar},
+  title        = {Parallel Computing: Theory and Practice},
+  year         = {2016},
+  howpublished = {\url{https://www.cs.cmu.edu/afs/cs/academic/class/15210-f15/www/tapp.html}},
+  note         = {Version 1.0, Accessed: July 20 2025.},
+  institution  = {Carnegie Mellon University}
+}
+
+%CRR BINOMIAL MODEL
+@article{cox1979option,
+  title={Option pricing: A simplified approach},
+  author={Cox, John C and Ross, Stephen A and Rubinstein, Mark},
+  journal={Journal of financial Economics},
+  volume={7},
+  number={3},
+  pages={229--263},
+  year={1979},
+  publisher={Elsevier},
+  doi={10.1016/0304-405X(79)90015-1}
+}
+@book{pharr2005gpu,
+  title={GPU Gems 2: Programming techniques for high-performance graphics and general-purpose computation (gpu gems)},
+  author={Pharr, Matt and Fernando, Randima},
+  year={2005},
+  publisher={Addison-Wesley Professional},
+  note={{ISBN}:0321335597}
+}
+@inproceedings{suo2015gpu,
+  title={GPU option pricing},
+  author={Suo, Simon and Zhu, Ruiming and Attridge, Ryan and Wan, Justin},
+  booktitle={Proceedings of the 8th Workshop on High Performance Computational Finance},
+  pages={1--6},
+  year={2015},
+  doi={10.1145/2830556.2830564}
+}
+@inproceedings{ganesan2009acceleration,
+  title={Acceleration of binomial options pricing via parallelizing along time-axis on a GPU},
+  author={Ganesan, Narayan and Chamberlain, Roger D and Buhler, Jeremy},
+  booktitle={Proceedings of Symposium on Application Accelerators in High Performance Computing},
+  year={2009}
+}
+@article{clewlow1998implementing,
+  title={Implementing derivative models},
+  author={Clewlow, L and Strickland, C},
+  journal={Jonh Wiley \& Sons, Nonsei},
+  year={1998},
+  note={{ISBN}:9780470328965}
+}
+
+%MC METHODS%
+@book{Ross2020prob,
+title = {Introduction to Probability and Statistics for Engineers and Scientists (Sixth Edition)},
+author = {Sheldon M. Ross},
+publisher = {Academic Press},
+edition = {6},
+year = {2020},
+isbn = {978-0-12-824346-6},
+doi = {10.1016/C2018-0-02166-0}
+}
+@book{gentle2003random,
+  title={Random number generation and Monte Carlo methods},
+  author={Gentle, James E},
+  volume={381},
+  year={2003},
+  publisher={Springer},
+  note={{ISBN}:978-0387001784}
+}
+@article{boyle1977options,
+  title={Options: A monte carlo approach},
+  author={Boyle, Phelim P},
+  journal={Journal of financial economics},
+  volume={4},
+  number={3},
+  pages={323--338},
+  year={1977},
+  publisher={Elsevier},
+  doi={10.1016/0304-405X(77)90005-8}
+}
+@book{nguyen2007gpu,
+  title={Gpu gems 3},
+  author={Nguyen, Hubert},
+  year={2007},
+  publisher={Addison-Wesley Professional},
+  note={{ISBN}:9780321515261}
+}
+@article{liu2010efficient,
+  title={Efficient Monte Carlo-based options pricing on graphics processors and its optimizations},
+  author={Liu, Li and Zhang, YouHui and Liu, Li and Yang, GuangWen and Zheng, WeiMin},
+  journal={Science China Information Sciences},
+  volume={53},
+  pages={1703--1712},
+  year={2010},
+  publisher={Springer},
+  doi={10.1007/s11432-010-3109-7}
 }

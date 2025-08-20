@@ -244,7 +244,7 @@ English bla bla bla
 \section{Introduction}
 %% Leave first page empty
 \thispagestyle{empty}
-Options are financial contracts between two parties that grant the holder the right, but not the obligation, to buy or sell an underlying asset at a predetermined price by a future date \cite{hull2016options}. Options belong to a broader class of financial instruments known as derivatives, which derive their value from the price of the underlying asset. These instruments enable both speculative trading and risk management strategies, making them attractive even to non-financial institutions \cite{bartram2009international}. The derivatives market has experienced substantial growth over the past half-century, driven by advances in financial mathematics \cite{merton1994influence} and exponential increases in affordable computing power~\cite{nordhaus2007two}.
+Options are financial contracts between two parties that grant the holder the right, but not the obligation, to buy or sell an underlying asset at a predetermined price by a future date \cite{hull2018}. Options belong to a broader class of financial instruments known as derivatives, which derive their value from the price of the underlying asset. These instruments enable both speculative trading and risk management strategies, making them attractive even to non-financial institutions \cite{bartram2009international}. The derivatives market has experienced substantial growth over the past half-century, driven by advances in financial mathematics \cite{merton1994influence} and exponential increases in affordable computing power~\cite{nordhaus2007two}.
 
 Modern option pricing employs various models with different theoretical foundations and computational requirements. Execution speed is often critical. For example, high-frequency trading strategies exploit transient pricing anomalies through millions of rapid transactions, where millisecond delays can determine profitability. Faster computation also benefits risk management practices that rely on extensive portfolio simulations across multiple market scenarios. These performance requirements have motivated research into adapting option pricing algorithms to leverage the GPU's parallel computing capabilities.
 
@@ -269,7 +269,7 @@ For scope restriction purposes, the following choices have been made:
 The following section provides the theoretical background necessary to understand option pricing and the algorithms that will be GPU-accelerated. First, general definitions are established along with vanilla option payoffs. The section then covers the key determinants of option prices. Two essential principles anchor the theoretical framework: \emph{no-arbitrage pricing} and \emph{risk-neutral valuation}. Together, these concepts form the mathematical foundation underlying modern option pricing models.
 
 \subsection{Definitions}\label{subsec:definitions}
-The following terminology is adapted from Hull's ``Options, Futures, and Other Derivatives'' \cite{hull2016options}:
+The following terminology is adapted from Hull's ``Options, Futures, and Other Derivatives'' \cite{hull2018}:
 
 \vspace{0.5\baselineskip}
 \noindent\textbf{Call Option.} A contract granting the holder the right, but not the obligation, to purchase an underlying asset at a predetermined price by a specified date.
@@ -293,9 +293,9 @@ Every option contract involves two parties with opposing positions. The buyer as
 
 Options are zero-sum contracts: gains to one party exactly offset losses to the other. The \emph{payoff} of an option represents its intrinsic value at exercise, whereas the profit accounts for the premium paid or received: \mbox{$\text{profit} = \text{payoff} - \text{premium}$} for long positions. The payoff is mechanically determined by the option's characteristics and market conditions at exercise, while the premium is the upfront cost determined by market participants. Option pricing models aim to determine the theoretical fair value of this premium.
 
-The following presentation of option payoffs draws from Hull \cite{hull2016options} and Hull et al.\ \cite{hull2013fundamentals}. It presents diagrams that visualize how profit varies with the spot price at exercise. Each vanilla option type is examined through both long and short positions, supplemented by practical examples. For simplicity, all options are written on one share of the underlying stock, transaction costs and taxes are ignored, and markets are assumed sufficiently liquid to permit instantaneous trading.
+The following presentation of option payoffs draws from Hull \cite{hull2018}. It presents diagrams that visualize how profit varies with the spot price at exercise. Each vanilla option type is examined through both long and short positions, supplemented by practical examples. For simplicity, all options are written on one share of the underlying stock, transaction costs and taxes are ignored, and markets are assumed sufficiently liquid to permit instantaneous trading.
 
-A call option buyer pays a premium upfront to secure the right to purchase stock at the strike price. This position profits when the stock price rises sufficiently to offset the premium paid. Figure~\ref{fig:long_call_payoff} illustrates this long position. Let $S_T$ denote the spot price at exercise and $K$ the strike price. When $S_T < K$, the option is said to be \emph{out of the money (OTM)} and has zero payoff. At $S_T = K$, the option is \emph{at the money (ATM)}, and when $S_T > K$, the option becomes \emph{in the money (ITM)} with payoff $S_T - K$ \cite{hull2013fundamentals}. However, the position only becomes profitable once the payoff offsets the premium paid. The ``moneyness'' terminology always reflects the perspective of the long position. Rational investors exercise ITM options to capture the payoff, even if it only partially offsets the premium paid. In liquid markets, this involves buying stock at the strike price and immediately selling at the higher spot price.
+A call option buyer pays a premium upfront to secure the right to purchase stock at the strike price. This position profits when the stock price rises sufficiently to offset the premium paid. \cref{fig:long_call_payoff} illustrates this long position. Let $S_T$ denote the spot price at exercise and $K$ the strike price. When $S_T < K$, the option is said to be \emph{out of the money (OTM)} and has zero payoff. At $S_T = K$, the option is \emph{at the money (ATM)}, and when $S_T > K$, the option becomes \emph{in the money (ITM)} with payoff $S_T - K$ \cite{hull2018}. However, the position only becomes profitable once the payoff offsets the premium paid. The ``moneyness'' terminology always reflects the perspective of the long position. Rational investors exercise ITM options to capture the payoff, even if it only partially offsets the premium paid. In liquid markets, this involves buying stock at the strike price and immediately selling at the higher spot price.
 
 To demonstrate the use of options for risk management, consider a manufacturer dependent on crude oil who anticipates price increases. By purchasing call options, they fix a price ceiling for future oil purchases, effectively buying insurance against adverse price movements. The premium represents the cost of this protection, with the strike price chosen to align with their risk tolerance and budget constraints.
 
@@ -320,7 +320,7 @@ To demonstrate the use of options for risk management, consider a manufacturer d
 \end{figure}
 \end{center}
 
-The short call position has an inverse profit diagram. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to sell the stock at the strike price $K$ despite the higher spot price $S_T$ \cite{hull2013fundamentals}. The position remains profitable as long as the premium offsets this loss, with break-even at $S_T - K = p$. ~\cref{fig:short_call_payoff} illustrates the corresponding profit diagram. Continuing with the previous example, this position could be taken by a crude oil producer expecting prices to remain below or near the strike price at maturity. The risk taken by the writer commands the premium.
+The short call position has an inverse profit diagram. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to sell the stock at the strike price $K$ despite the higher spot price $S_T$ \cite{hull2018}. The position remains profitable as long as the premium offsets this loss, with break-even at $S_T - K = p$. ~\cref{fig:short_call_payoff} illustrates the corresponding profit diagram. Continuing with the previous example, this position could be taken by a crude oil producer expecting prices to remain below or near the strike price at maturity. The risk taken by the writer commands the premium.
 
 The payoff from the long position in a call option is defined as
 \begin{equation}
@@ -331,7 +331,7 @@ as the buyer will only exercise when ITM to either profit or offset losses. Cons
 \begin{equation*}
     -\max(S_T-K,0) = \min(K-S_T,0)
 \end{equation*}
-due to the zero-sum nature of the contract \cite{hull2016options}.\footnote{For American options with the right to early-exercise, the payoff is calculated using $S_\tau$ instead of $S_T$, where $\tau \le T$ is the chosen point of exercise.}
+due to the zero-sum nature of the contract \cite{hull2018}.\footnote{For American options with the right to early-exercise, the payoff is calculated using $S_\tau$ instead of $S_T$, where $\tau \le T$ is the chosen point of exercise.}
 
 \begin{center}
 \begin{figure}[H]
@@ -354,9 +354,9 @@ due to the zero-sum nature of the contract \cite{hull2016options}.\footnote{For 
 \end{figure}
 \end{center}
 
-A put option buyer pays a premium upfront to secure the right to sell stock at the strike price. This position profits when the stock price falls sufficiently to offset the premium paid. Figure~\ref{fig:put_option_payoffs} illustrates both long and short positions. When $S_T > K$, the put option is OTM and expires worthless --- no rational investor would sell at the strike price $K$ when they could sell at the higher spot price $S_T$. When $S_T < K$, the option becomes ITM with payoff $K - S_T$ \cite{hull2013fundamentals}. The buyer profits only when this payoff exceeds the premium paid. At exercise, the buyer can buy stock at the spot price and immediately sell it at the higher strike price.
+A put option buyer pays a premium upfront to secure the right to sell stock at the strike price. This position profits when the stock price falls sufficiently to offset the premium paid. \cref{fig:put_option_payoffs} illustrates both long and short positions. When $S_T > K$, the put option is OTM and expires worthless --- no rational investor would sell at the strike price $K$ when they could sell at the higher spot price $S_T$. When $S_T < K$, the option becomes ITM with payoff $K - S_T$ \cite{hull2018}. The buyer profits only when this payoff exceeds the premium paid. At exercise, the buyer can buy stock at the spot price and immediately sell it at the higher strike price.
 
-The short put position profits under opposite conditions. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to purchase stock at the strike price $K$ despite the lower spot price $S_T$ \cite{hull2013fundamentals}. The position remains profitable as long as the premium offsets this loss, with break-even at $K - S_T = p$.
+The short put position profits under opposite conditions. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to purchase stock at the strike price $K$ despite the lower spot price $S_T$ \cite{hull2018}. The position remains profitable as long as the premium offsets this loss, with break-even at $K - S_T = p$.
 
 An example use case would be a crude oil supplier forecasting low prices in a year's time and taking the long position to secure a minimum revenue. A premium is paid to hedge against unfavorable price movements. The short position would be taken by a market participant who anticipates crude oil prices not to fall enough to offset the premium.
 
@@ -412,7 +412,7 @@ The payoff from the long position in a put option is defined as
     \max(K-S_T,0)
 \label{eq:long_put_payoff}
 \end{equation}
-as being ITM now means $K > S_T$ \cite{hull2016options}. Conversely, the payoff in the corresponding short position is defined as
+as being ITM now means $K > S_T$ \cite{hull2018}. Conversely, the payoff in the corresponding short position is defined as
 \begin{equation*}
     -\max(K-S_T,0) = \min(S_T-K,0).
 \end{equation*}
@@ -440,13 +440,13 @@ Pricing models aim to determine the theoretical fair value of the option \mbox{p
 
 \subsection{Price Determinants}
 
-Hull et al.\ \cite{hull2013fundamentals} define the following primary factors that affect an option's value. While these serve as parameters in pricing models, their directional effects can be reasoned through without formal mathematics. The analysis examines each factor in isolation (ceteris paribus), although they often interact with each other in practice.
+Hull \cite{hull2018} defines the following primary factors that affect an option's value. While these serve as parameters in pricing models, their directional effects can be reasoned through without formal mathematics. The analysis examines each factor in isolation (ceteris paribus), although they often interact with each other in practice.
 
 \paragraph{Stock Price.} The relationship between stock and option prices follows directly from the payoff definitions. Call option values increase with stock price, while put option values decrease, as demonstrated in \cref{subsec:payoffs}.
 
 \paragraph{Volatility.} Higher volatility increases both call and put option values. The asymmetric risk-reward profile --- losses limited to premium paid versus potentially large gains --- means increased price variability improves expected outcomes. This effect is most pronounced for OTM options that require significant price movements to gain value.
 
-\paragraph{Maturity.} Following the asymmetric risk-reward logic, longer-dated options generally command higher premiums due to increased opportunity for favorable price movements. American options particularly benefit through early-exercise flexibility. However, expected dividends can reverse this relationship for call options --- an option expiring before the ex-dividend date may be worth more than one expiring after, since dividends reduce stock prices without benefiting option holders \cite{hull2013fundamentals}.
+\paragraph{Maturity.} Following the asymmetric risk-reward logic, longer-dated options generally command higher premiums due to increased opportunity for favorable price movements. American options particularly benefit through early-exercise flexibility. However, expected dividends can reverse this relationship for call options --- an option expiring before the ex-dividend date may be worth more than one expiring after, since dividends reduce stock prices without benefiting option holders \cite{hull2018}.
 
 \paragraph{Risk-Free Rate.} The risk-free rate represents the return on a theoretically risk-free investment, such as a government bond, and serves as a baseline for valuing riskier assets. In option pricing, it affects value by discounting future cash flows. Higher interest rates reduce the present value of the strike price. For call options, this makes exercising cheaper in present terms, increasing the option’s value. For puts, it reduces the value of the payoff received, lowering the option’s price. In real markets, interest rate changes also influence stock prices, complicating this relationship.
 
@@ -456,15 +456,15 @@ Hull et al.\ \cite{hull2013fundamentals} define the following primary factors th
 
 \subsection{No-Arbitrage Pricing and Risk-Neutral Valuation}\label{sec:risk-neutral-theory}
 
-This section introduces ideas from the work of Fischer Black, Myron Scholes, and Robert Merton that revolutionized option pricing and led to the 1997 Nobel Prize in Economic Sciences\footnote{The prize was awarded to Scholes and Merton; Black had passed away in 1995.}. Their breakthrough insight was showing how a portfolio could be constructed to replicate and thus price an option. This replicating portfolio approach, and its elegant reformulation using risk-neutral probabilities, form the foundation for all modern option pricing models, including the CRR binomial model and MC methods. The presentation emphasizes intuition over rigor, and avid readers are encouraged to explore the references in greater detail \cite{hull2016options, gisiger2010risk, tham2001risk}. The assumptions presented in \cref{subsec:payoffs} continue to hold.
+This section introduces ideas from the work of Fischer Black, Myron Scholes, and Robert Merton that revolutionized option pricing and led to the 1997 Nobel Prize in Economic Sciences\footnote{The prize was awarded to Scholes and Merton; Black had passed away in 1995.}. Their breakthrough insight was showing how a portfolio could be constructed to replicate and thus price an option. This replicating portfolio approach, and its elegant reformulation using risk-neutral probabilities, form the foundation for all modern option pricing models, including the CRR binomial model and MC methods. The presentation emphasizes intuition over rigor, and avid readers are encouraged to explore the references in greater detail \cite{hull2018, gisiger2010risk, tham2001risk}. The assumptions presented in \cref{subsec:payoffs} continue to hold.
 
 Traditional asset valuation discounts expected future cash flows to present value. For options, this approach faced fundamental problems: calculating the expected payoff required assigning probabilities to future stock prices --- an inherently difficult and at least partially subjective task. Even if the expected payoff were somehow known, there was no consistent way to determine the appropriate discount rate, as investors naturally have differing risk preferences \cite{nobel1997}. The key insight was recognizing that these subjective estimates could be circumvented entirely by making a reasonable assumption about market behavior --- the absence of arbitrage.
 
-\emph{Arbitrage} denotes simultaneous buying and selling of an asset at different prices to make risk-free profit. Imagine tomato prices being lower in town A than town B due to an exceptionally good harvest. An astute tradesman could buy tomatoes in town A and immediately sell them in town B, pocketing the difference without taking any position on future price movements. This opportunity is self-eliminating: as the tradesman introduces more tomatoes from town A into town B, the corresponding prices adjust to the changes in supply until an equilibrium is reached \cite{hull2016options, wilmott2013paul}. Other traders observing this opportunity might adopt the same strategy, eliminating it even faster. While arbitrage opportunities do arise, they are typically rare and short-lived in modern markets, as sophisticated traders quickly eliminate them. Hence, the no-arbitrage assumption is reasonable, at least over longer time periods.
+\emph{Arbitrage} denotes simultaneous buying and selling of an asset at different prices to make risk-free profit. Imagine tomato prices being lower in town A than town B due to an exceptionally good harvest. An astute tradesman could buy tomatoes in town A and immediately sell them in town B, pocketing the difference without taking any position on future price movements. This opportunity is self-eliminating: as the tradesman introduces more tomatoes from town A into town B, the corresponding prices adjust to the changes in supply until an equilibrium is reached \cite{hull2018, wilmott2013paul}. Other traders observing this opportunity might adopt the same strategy, eliminating it even faster. While arbitrage opportunities do arise, they are typically rare and short-lived in modern markets, as sophisticated traders quickly eliminate them. Hence, the no-arbitrage assumption is reasonable, at least over longer time periods.
 
-It logically follows that in absence of arbitrage opportunities, two assets producing identical cash flows must be equally valued \cite{hull2016options, wilmott2013paul}. This conclusion suggests a new approach: construct a portfolio that matches the option payoff in all scenarios. The option value must then equal the price of constructing such a portfolio.
+It logically follows that in absence of arbitrage opportunities, two assets producing identical cash flows must be equally valued \cite{hull2018, wilmott2013paul}. This conclusion suggests a new approach: construct a portfolio that matches the option payoff in all scenarios. The option value must then equal the price of constructing such a portfolio.
 
-Hull~et~al.~\cite{hull2013fundamentals} demonstrate this approach using a one-period binomial model. The current stock price $S_0$ can move to either $S_0u$ or $S_0d$ ($u>1,d<1$) after time~$T$. These prices result in option payoffs $f_u$ and $f_d$ respectively. \cref{fig:oneperiodbinom} illustrates the setup. Restricting the stock price to two future outcomes makes it possible to construct a \emph{replicating portfolio}, consisting of $\Delta$ shares of the stock and $B$ amount of a risk-free asset growing at the risk-free rate $r$. Equating the portfolio value with the option payoff in each future state gives:
+Hull \cite{hull2018} demonstrates this approach using a one-period binomial model. The current stock price $S_0$ can move to either $S_0u$ or $S_0d$ ($u>1,d<1$) after time~$T$. These prices result in option payoffs $f_u$ and $f_d$ respectively. \cref{fig:oneperiodbinom} illustrates the setup. Restricting the stock price to two future outcomes makes it possible to construct a \emph{replicating portfolio}, consisting of $\Delta$ shares of the stock and $B$ of a risk-free asset growing at the risk-free rate $r$. Equating the portfolio value with the option payoff in each future state gives:
 
 \begin{equation*}
 \begin{cases}
@@ -507,13 +507,13 @@ Under the no-arbitrage assumption, the value of the option must equal the price 
     \caption{One-period binomial model. The stock price moves from $S_0$ to either $S_0u$ or $S_0d$ over time $T$, with corresponding option values $f$, $f_u$ and $f_d$.}
     \label{fig:oneperiodbinom}
 \end{figure}
-The derivation assumed neither a call nor a put option, and therefore works as a pricing model for any European (and in a one-period setting, American) option. An interesting observation is that the approach utilized no information about the expected return of the stock, or the probability of its price movements. The authors motivate this intuitively by the fact that such expectations are already reflected in the stock price itself, and need not be explicitly accounted for when pricing the derivative. The option is priced relative to the underlying stock \cite{hull2016options}.\clearpage
+The derivation assumed neither a call nor a put option, and therefore works as a pricing model for any European (and in a one-period setting, American) option. An interesting observation is that the approach utilized no information about the expected return of the stock, or the probability of its price movements. The authors motivate this intuitively by the fact that such expectations are already reflected in the stock price itself, and need not be explicitly accounted for when pricing the derivative. The option is priced relative to the underlying stock \cite{hull2018}.\clearpage
 
 \cref{eq:replicating-portfolio} can be rewritten as
 \begin{equation*}
      \frac{1}{1+r}\left(f_u\frac{(1+r)-d}{u-d}+f_d\frac{u-(1+r)}{u-d}\right).
 \end{equation*}
-Defining $\tilde{p} := \frac{(1+r)-d}{u-d}$, this weight and its complement $1-\tilde{p} = \frac{u-(1+r)}{u-d}$ sum to one and lie in $[0,1]$ under the no-arbitrage condition $d \leq 1+r \leq u$, thus behaving like probabilities. The calculation can therefore be interpreted as an expected value of the option payoff, discounted at the risk-free rate:
+Defining $\tilde{p} := \frac{(1+r)-d}{u-d}$, this weight and its complement $1-\tilde{p} = \frac{u-(1+r)}{u-d}$ sum to one and lie in $[0,1]$ under the no-arbitrage condition $d \leq 1+r \leq u$, thus behaving like probabilities. These are known as \emph{risk-neutral probabilities}, and the calculation can therefore be interpreted as an expected value of the option payoff, discounted at the risk-free rate:
 \begin{equation}
      \frac{1}{1+r}(f_u\cdot \tilde p + f_d \cdot (1-\tilde p)).
 \label{eq:risk-neutral-expectancy}
@@ -524,9 +524,9 @@ While risk-neutral probabilities often cause confusion, they can simply be under
 
 \section{GPU and Parallel Computing}\label{sec:gpu}
 
-The graphics processing unit (GPU) is a specialized processor originally designed to accelerate the rendering of images and video. The rapid growth of video games and graphics-intensive applications in the 1980s created unprecedented demand for capable hardware ~\cite{sanders2010cuda, kirk2016programming}. Graphics-related tasks like shading, rasterization, and texture mapping require massive amounts of floating-point operations per second (FLOPS), far exceeding what general-purpose CPUs could deliver. Companies like NVIDIA and ATI Technologies (later acquired by AMD) emerged as front-runners in the GPU industry \cite{sanders2010cuda}.
+The graphics processing unit (GPU) is a specialized processor originally designed to accelerate the rendering of images and video. The rapid growth of video games and graphics-intensive applications in the 1980s created unprecedented demand for capable hardware ~\cite{sanders2010cuda, kirk2016programming}. Graphics-related tasks like shading, rasterization, and texture mapping require a massive number of floating-point operations per second (FLOPS), far exceeding what general-purpose CPUs could deliver. Companies like NVIDIA and ATI Technologies (later acquired by AMD) emerged as front-runners in the GPU industry \cite{sanders2010cuda}.
 
-\emph{Latency} denotes the time between the start and completion of a single event, while \emph{throughput} measures the total amount of work performed in a given time \cite{hennessy2011computer}. These fundamental metrics are widely used to measure computing performance. Hennessy and Patterson \cite{hennessy2011computer} demonstrate that while both CPUs and GPUs have improved in both dimensions, throughput improvements have significantly outpaced latency improvements. This disparity reflects fundamental constraints: throughput can be increased by adding more processing units. Reducing latency, however, requires making individual processing units faster, which is approaching theoretical limits imposed by the laws of physics \cite{hennessy2011computer, sanders2010cuda}. Suomela's analysis of clock speed and instruction latency trends corroborate these observations \cite{suomela_ppc}. This, along with the parallel nature of graphics-related computation, led to the exceptionally throughput-optimized GPU architectures of today.
+Graphics-related tasks presented a unique computational challenge: they required massive parallelism rather than fast sequential processing. This led GPU designers to optimize for throughput rather than latency. \emph{Latency} denotes the time between the start and completion of a single event, while \emph{throughput} measures the total amount of work performed in a given time \cite{hennessy2011computer}. These fundamental metrics are widely used in computing performance-related contexts. Hennessy and Patterson \cite{hennessy2011computer} demonstrate that while both CPUs and GPUs have improved in both dimensions, throughput improvements have significantly outpaced latency improvements. This disparity reflects fundamental constraints: throughput can be increased by adding more processing units. Reducing latency, however, requires making individual processing units faster, which is approaching theoretical limits imposed by the laws of physics~\cite{hennessy2011computer, sanders2010cuda}. Suomela's analysis of clock speed and instruction latency trends corroborate these observations \cite{suomela_ppc}. This, along with the parallel nature of graphics-related computation, led to the exceptionally throughput-optimized GPU architectures of today.
 
 As GPU architectures evolved, researchers and developers increasingly sought to utilize their parallel computing power for non-graphics applications. However, early GPUs were not designed for general-purpose computing. The hardware lacked flexibility, and no suitable programming tools existed. Developers were forced to mask their problems as graphics operations \cite{sanders2010cuda, kirk2016programming}. This changed in 2007 when NVIDIA released CUDA (Compute Unified Device Architecture), a software abstraction layer that exposed GPU hardware capabilities through familiar C/C++ extensions. Developers could now write parallel programs directly without disguising them as pixel operations. Today, general-purpose GPU (GPGPU) applications span diverse fields, including computational finance \cite{sanders2010cuda, kirk2016programming}.
 \clearpage
@@ -534,7 +534,7 @@ As GPU architectures evolved, researchers and developers increasingly sought to 
 \subsection{CPU and GPU Architecture}
  \cref{fig:cpu-gpu-architecture} presents a simple architectural diagram of a modern CPU and GPU. The CPU diagram is based on the writings of Stallings~\cite{stallings2011operating}, while the GPU diagram is derived from both the work of Kirk and Hwu~\cite{kirk2016programming} and the CUDA C++ Programming Guide by NVIDIA~\cite{cuda2025guide}.
 
-The CPU contains several key components working together. The arithmetic logic unit (ALU) is responsible for performing computational operations on data. Registers (not visible in the figure) store instructions, data, and memory addresses. Additional control units manage program flow and coordination with external components. The CPU executes programs in a two-step fetch-execute cycle. First, an instruction is fetched from memory and loaded into a register. The instruction is then executed, which in practice means either data processing, data transfer, or control flow operations. This cycle repeats until the program terminates, either by completing successfully, encountering an error, or being interrupted by another component.
+The CPU contains several key components working together. The arithmetic logic unit is responsible for performing computational operations on data. Registers (not visible in the figure) store instructions, data, and memory addresses. Additional control units manage program flow and coordination with external components. The CPU executes programs in a two-step fetch-execute cycle. First, an instruction is fetched from memory and loaded into a register. The instruction is then executed, which in practice means either data processing, data transfer, or control flow operations. This cycle repeats until the program terminates, either by completing successfully, encountering an error, or being interrupted by another component.
 
 CPUs have evolved to leverage multiple forms of parallelism. Instruction-level parallelism refers to a set of techniques to improve performance by executing multiple independent instructions simultaneously or in overlapping stages \cite{hennessy2011computer, suomela_ppc}. These techniques range from instruction pipelining and superscalar execution, which process multiple instructions concurrently, to out-of-order execution and branch prediction, which maximize pipeline utilization and anticipate control flow.
 
@@ -614,13 +614,10 @@ Using these graphs, Acar \cite{acar2016parallel} defines the \emph{work} of an a
 \noindent\textbf{Work-limited lower bound $T_p \geq T_1/p$.} $p$ processors can perform at most $p$ operations in parallel, even if there are no dependencies. This highlights hardware constraints.
 
 \vspace{\baselineskip}
-\noindent Furthermore, Acar demonstrates that for both level-by-level and \mbox{greedy scheduling}\footnote{Level-by-level scheduling assigns nodes to processors by a level-order traversal of the DAG. This can leave processors idle if the amount of nodes per level does not evenly divide the amount of processors. In contrast, greedy scheduling minimizes idle time by immediately assigning available nodes to idle processors.} the upper bound is within a factor 2 of the lower bound, again highlighting the importance of minimizing span and providing sufficient resources \cite{acar2016parallel}. In practice, runtime analysis is often more complex due to factors such as varying instruction latencies, parallelization overhead, and synchronization and shared resource contention.
+\noindent Furthermore, Acar demonstrates that for both level-by-level and \mbox{greedy scheduling}\footnote{Level-by-level scheduling assigns nodes to processors by a level-order traversal of the DAG. This can leave processors idle if the number of nodes per level does not evenly divide the number of processors. In contrast, greedy scheduling minimizes idle time by immediately assigning available nodes to idle processors.} the upper bound is within a factor 2 of the lower bound, again highlighting the importance of minimizing span and providing sufficient resources \cite{acar2016parallel}. In practice, runtime analysis is often more complex due to factors such as varying instruction latencies, parallelization overhead, and synchronization and shared resource contention.
 \clearpage
 
 \section{GPU Acceleration of the Cox-Ross-Rubinstein Binomial Model} \label{sec:gpu-crr}
-
-\subsection{The Cox-Ross-Rubinstein Model}
-
 The Cox-Ross-Rubinstein (CRR) model \cite{cox1979option} extends the single-period setting into its multi-period counterpart, providing a more realistic model of asset price evolution. The model maintains the same assumptions as before: discrete periods and constant multiplicative factors $u$ and $d$ for price movements. Over multiple periods, this creates a binomial lattice of possible price paths. This lattice expands outward from the initial stock price, generating a set of final states for the stock price and the corresponding option payoff.
 
 The CRR model solves for the initial option value using backward induction. Starting at the terminal nodes, where option payoffs are calculated using \cref{eq:long_call_payoff,eq:long_put_payoff}, the algorithm works backward through the lattice. Each interior node is treated as a single-period problem, with option values calculated using \cref{eq:risk-neutral-expectancy}. \cref{fig:crr-twoperiod} visualizes a two-period lattice, though the model extends to any number of periods.
@@ -664,7 +661,7 @@ The CRR model solves for the initial option value using backward induction. Star
         \caption{Two-period binomial lattice. Stock prices evolve over time, creating an expanding set of possible outcomes. Option payoffs are calculated at the terminal nodes, after which option values at interior nodes can be calculated using \cref{eq:risk-neutral-expectancy}. The symbols $C_{i,j}$ represent the algorithmic notation for the option values, where $i$ indexes time and $j$ the number of up-ticks the stock price has moved.}
     \label{fig:crr-twoperiod}
 \end{figure}
-Cox, Ross, and Rubinstein defined $u = e^{\sigma\sqrt{T/n}}$ and $d = e^{-\sigma\sqrt{T/n}}$, where $\sigma$ is the annualized volatility of the asset's log-returns, $T$ is the total time in years, and $n$ is the number of periods \cite{cox1979option}. They show this to be useful for several reasons. First, it ensures the model converges to the famous Black-Scholes-Merton (BSM) model as $n \rightarrow \infty$. Second, the lattice recombines --- permutations of a price path reach the same node. This maintains computational feasibility as the number of states grows linearly with $n$ instead of exponentially. Additionally, the discount rate must be adjusted for $n$ such that it matches that of the one-period example. The continuous rate $e^{rT/n}$ is typically used instead of discrete compounding \cite{hull2013fundamentals}.
+Cox, Ross, and Rubinstein defined $u = e^{\sigma\sqrt{T/n}}$ and $d = e^{-\sigma\sqrt{T/n}}$, where $\sigma$ is the annualized volatility of the asset's log-returns, $T$ is the total time in years, and $n$ is the number of periods \cite{cox1979option}. They show this to be useful for several reasons. First, it ensures the model converges to the famous Black-Scholes-Merton (BSM) model as $n \rightarrow \infty$. Second, the lattice recombines --- permutations of a price path reach the same node. This maintains computational feasibility as the number of states grows linearly with $n$ instead of exponentially. Additionally, the discount rate must be adjusted for $n$ such that it matches that of the one-period example. The continuous rate $e^{rT/n}$ is typically used instead of discrete compounding \cite{hull2018}.
 
 The following pseudocode is based on the implementation by Clewlow and Strickland \cite{clewlow1998implementing}. Let $S_0$ be the initial stock price and $n$ the number of periods. The nodes of the recombining lattice are indexed by $(i,j)$, where $0 \leq i \leq n$ indexes time\footnote{A period denotes an interval between two discrete points in time, hence for $n$ periods we have $n+1$ time points from $0$ to $n$.} and $0 \le j \le i$ the number of up-ticks $j$ the stock price has moved. The stock price at each node is defined as $S_{i,j} = S_0u^jd^{i-j}$, and $C_{i,j}$ denotes the corresponding option value. The option value  $C_{0,0}$ is calculated as shown in \cref{alg:crr-european}.
 
@@ -785,7 +782,7 @@ Ganesan et al.\ \cite{ganesan2009acceleration} present another approach that exp
 \end{equation}
 where $j$ indexes the nodes at time $i-m$, and the coefficients $c_k, 0 \leq k \leq m$ represent the (risk-neutral) probabilities of all paths from node $(i-m,j)$ to node $(i,j+k)$. These are simply binomial coefficients weighted by the appropriate powers of the probabilities: $c_k = \binom{m}{k}p^k(1-p)^{m-k}$. The key insight is that while the coefficients in this reformulation still exhibit the same sequential dependencies between successive time points, they can be computed independently for different segments of the lattice. Unlike the actual option values, there is no strict requirement for starting at the terminal nodes when calculating these coefficients.
 
-Based on this insight, the authors present the following parallel algorithm \cite{ganesan2009acceleration}: First, divide the $n$-period lattice into $p$ partitions of length $n/p$. Each partition then computes coefficients relating the nodes at its left boundary to the ones at its right boundary. These independent operations proceed in parallel across all partitions. Once the coefficients are computed, the option values can be propagated from right to left across partition boundaries using \cref{eq:relative-prices}. This requires only $p$ sequential steps rather than $n$ \footnote{While the authors claim this method extends to American options, they provide insufficient detail on how early exercise opportunities are evaluated when intermediate nodes are computed after the main propagation phase.}. \cref{fig:partitioned} illustrates the idea.
+Based on this insight, the authors present the following parallel algorithm \cite{ganesan2009acceleration}: First, divide the $n$-period lattice into $p$ partitions of length $n/p$. Each partition then computes coefficients relating the nodes at its left boundary to the ones at its right boundary. These independent operations proceed in parallel across all partitions. Once the coefficients are computed, the option values can be propagated from right to left across partition boundaries using \cref{eq:relative-prices}. This requires only $p$ sequential steps rather than $n$\footnote{While the authors claim this method extends to American options, they provide insufficient detail on how early exercise opportunities are evaluated when intermediate nodes are computed after the main propagation phase.}. \cref{fig:partitioned} illustrates the idea.
 
 \begin{figure}[h]
     \centering
@@ -798,12 +795,11 @@ Based on this insight, the authors present the following parallel algorithm \cit
 The total work remains $O(n^2)$ since every node must still be processed, either directly calculating the option value or the corresponding coefficient. The span, however, is further reduced from $O(n)$ to $O(n/p + p)$ due to the algorithmic reformulation. The corresponding DAG transforms from a tall, narrow lattice into a shorter, wider one. In the GPU implementation, partitions are computed on independent streaming multiprocessors. Communication between partitions is done through global memory, introducing latency $L$ at each propagation step \cite{ganesan2009acceleration}. Increasing $p$ improves execution time up to a certain point, where the communication latency and boundary calculation overhead outweighs the benefit of additional parallelism. The authors derive the optimal number of partitions as $p = \sqrt{2n/L}$ \cite{ganesan2009acceleration}. In practice, they achieve a 2x speedup over a naive GPU implementation. In clear contrast to bulk pricing, this approach dedicates all computing resources to an individual option, making it suitable for pricing of a single or small group of key portfolio assets.
 
 \section{GPU Acceleration of Monte Carlo Methods} \label{sec:gpu-mc}
-\subsection{Monte Carlo Methods}
 Monte Carlo (MC) methods are a class of computational algorithms that approximate solutions to problems through random sampling. Unlike analytical solutions and deterministic numerical methods, both of which rely on domain-specific mathematical theory, MC methods are relatively simple and broadly applicable across many domains. The theoretical foundation is the \emph{law of large numbers}, which states that the sample average tends toward the true expected value with increasing sample size~\cite{Ross2020prob}. Therefore, with a well-chosen sampling distribution whose expectation matches the target quantity, the average of a large number of simulated outcomes provides a reliable approximation of the solution.
 
 While true random number generation is difficult, there exist many so-called pseudorandom number generators (RNGs) whose deterministic sequences are statistically indistinguishable from true randomness. Most RNGs first generate samples from a uniform distribution $U(0,1)$, and then apply a transformation to map these to the desired distribution. The Box-Muller transform, for instance, converts uniform samples to normally distributed values: $U(0,1) \rightarrow N(0,1)$ \cite{gentle2003random}.
 
-Many software libraries provide RNGs for various distributions. Combined with affordable computing power, this has driven widespread adoption of MC methods across different domains. However, their generality comes at a significant computational cost. While analytical and deterministic methods exploit problem-specific structure for faster convergence, MC methods typically require many iterations to achieve accuracy. Nevertheless, MC methods excel at high-dimensional problems where traditional approaches fail or become exceedingly slow \cite{gentle2003random}. In derivatives pricing, MC methods are mostly used for exotic options with complex payoff structures, for example basket options whose payoffs depend on numerous underlying assets~\cite{hull2016options,wilmott2013paul}.
+Many software libraries provide RNGs for various distributions. Combined with affordable computing power, this has driven widespread adoption of MC methods across different domains. However, their generality comes at a significant computational cost. While analytical and deterministic methods exploit problem-specific structure for faster convergence, MC methods typically require many iterations to achieve accuracy. Nevertheless, MC methods excel at high-dimensional problems where traditional approaches fail or become exceedingly slow \cite{gentle2003random}. In derivatives pricing, MC methods are mostly used for exotic options with complex payoff structures, for example basket options whose payoffs depend on numerous underlying assets~\cite{hull2018,wilmott2013paul}.
 
 MC option pricing relies on the same risk-neutral valuation framework presented in \cref{sec:risk-neutral-theory}. While the BSM model solves a partial differential equation analytically for the expected discounted payoff, the MC approach estimates this value by averaging many simulated option payoffs, each computed from a risk-neutral stock price path~\cite{boyle1977options}. This estimate converges toward the theoretical value as the number of simulations increases.
 
@@ -967,13 +963,13 @@ An important caveat is that the analyzed research spans 2005-2010. Cutting-edge 
 \midrule
 CRR\\
 \cmidrule{1-2}
-Naive & 10x\tnote{1} & Parallelization within time points & Synchronization latency between time points \\
+Naive & 10x\tnote{1} & Parallelization at time points & Synchronization latency between nodes \\
 Partitioned & 2x\tnote{2} & Additional parallelization across time periods & Inter-partition communication \\
 \addlinespace 
 MC\\
 \cmidrule{1-2}
-Naive & 23–59x\tnote{3} & Parallel simulation paths & random number generation, memory bandwidth \\
-Optimized & 43x\tnote{4} & Memory coalescing, register reuse, warp divergence minimization & Memory bandwidth and register pressure \\
+Naive & 23–59x\tnote{3} & Parallel simulation paths & Random number generation, memory constraints \\
+Optimized & 43x\tnote{4} & Memory coalescing, register reuse, warp divergence minimization & Memory bandwidth \\
 \bottomrule
 \end{tabular}
 \begin{tablenotes}
@@ -988,12 +984,17 @@ Optimized & 43x\tnote{4} & Memory coalescing, register reuse, warp divergence mi
 
 \cleardoublepage
 
+\phantomsection
+\addcontentsline{toc}{chapter}{\bibname}
+\bibliographystyle{IEEEtranDOI}
+\bibliography{bibliography.bib}
+
 % Start of Appendices
 \appendix
 \section{Derivation of Risk-Neutral Probability Form}  % For 
 \label{appendix:risk_neutral_derivation}
 
-In this appendix, we derive the risk-neutral probability form of the one-period binomial model option pricing formula.
+In this appendix, I derive the risk-neutral probability form of the one-period binomial model option pricing formula.
 
 \begin{align}
 &\text{Starting from \eqref{eq:replicating-portfolio}:} \nonumber\\[0.7em]
@@ -1006,19 +1007,6 @@ In this appendix, we derive the risk-neutral probability form of the one-period 
 &= \frac{1}{1+r} \left( f_u \cdot \frac{(1+r) - d}{u-d} + f_d \cdot \frac{u - (1+r)}{u-d} \right)\nonumber
 \end{align}
 
-This final form reveals the risk-neutral probabilities: $\tilde p = \frac{(1+r) - d}{u-d}$ and $\tilde q = 1-\tilde p = \frac{u - (1+r)}{u-d}$.
-
-The no-arbitrage condition ensures $\tilde p$ and $\tilde q$ are correctly bounded by 0 and 1. If $1+r > u$, investors could profit by shorting the stock and investing in the risk-free asset. Conversely, if $d > 1+r$, they could earn guaranteed profits. Therefore, $d \leq 1+r \leq u$ must hold, which leads to $0\leq \tilde p, \tilde q \leq 1$. Furthermore, $\tilde p + \tilde q = 1$. Thus, our risk-neutral probabilities form a valid probability distribution over the two possible outcomes.
-
-
-
-
-
-\phantomsection
-
-\addcontentsline{toc}{chapter}{\bibname}
-\bibliographystyle{IEEEtran}
-\bibliography{bibliography.bib}
-
+This reveals the risk-neutral probabilities: $\tilde p = \frac{(1+r) - d}{u-d}$ and \mbox{$\tilde q=1-\tilde p = \frac{u - (1+r)}{u-d}$}. The no-arbitrage condition ensures $\tilde p$ and $\tilde q$ are correctly bounded by 0 and 1. If $1+r > u$, investors could profit by shorting the stock and investing in the risk-free asset. Conversely, if $d > 1+r$, they could earn guaranteed profits. Therefore, $d \leq 1+r \leq u$ must hold, which leads to $0\leq \tilde p, \tilde q \leq 1$. Furthermore, $\tilde p + \tilde q = 1$. Thus, our risk-neutral probabilities form a valid probability distribution over the two possible outcomes.
 
 \end{document}
