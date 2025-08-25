@@ -283,7 +283,7 @@ as the buyer will only exercise when ITM to either profit or offset losses. Cons
 \end{equation*}
 due to the zero-sum nature of the contract \cite{hull2018}.\footnote{For American options with the right to early-exercise, the payoff is calculated using $S_\tau$ instead of $S_T$, where $\tau \le T$ is the chosen point of exercise.}
 
-\begin{figure}[!h]
+\begin{figure}[tbp]
 \centering
     \begin{tikzpicture}[scale=1.4, >=stealth]
         \fill[gray!10] (2,-1.5) -- (6,-1.5) -- (6,4) -- (2,4) -- cycle;
@@ -300,9 +300,7 @@ due to the zero-sum nature of the contract \cite{hull2018}.\footnote{For America
     \end{tikzpicture}
     \caption{Profit diagram for the long position in a call option. $K$ = strike price, \mbox{$S_T$ = spot price} at exercise, $p$ = premium. The buyer pays a premium to secure the right to purchase stock at price $K$. When $S_T < K$, the option is out of the money (OTM) and expires worthless with profit $-p$. When $S_T > K$, the option is in the money (ITM) and is exercised: the buyer purchases stock for $K$ to sell at $S_T$. The position becomes profitable only when $S_T - K > p$.}
     \label{fig:long_call_payoff}
-    
-    \vspace{0.5cm}
-    
+    \vspace{0.8cm}
     \begin{tikzpicture}[scale=1.4, >=stealth]
         \fill[gray!10] (2,-3) -- (6,-3) -- (6,2) -- (2,2) -- cycle;
         \fill[gray!20] (0,-3) -- (2,-3) -- (2,2) -- (0,2) -- cycle;
@@ -322,15 +320,9 @@ due to the zero-sum nature of the contract \cite{hull2018}.\footnote{For America
 
 A put option buyer pays a premium upfront to secure the right to sell stock at the strike price. This position profits when the stock price falls sufficiently to offset the premium paid. \cref{fig:put_option_payoffs} illustrates both long and short positions. When $S_T > K$, the put option is OTM and expires worthless --- no rational investor would sell at the strike price $K$ when they could sell at the higher spot price $S_T$. When $S_T < K$, the option becomes ITM with payoff $K - S_T$ \cite{hull2018}. The buyer profits only when this payoff exceeds the premium paid. At exercise, the buyer can buy stock at the spot price and immediately sell it at the higher strike price.
 
-The short put position profits under opposite conditions. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to purchase stock at the strike price $K$ despite the lower spot price $S_T$ \cite{hull2018}. The position remains profitable as long as the premium offsets this loss, with break-even at $K - S_T = p$.
-
-An example case would be a crude oil supplier forecasting low prices in a year's time and taking the long position to secure a minimum revenue. The supplier pays a premium to hedge against unfavorable price movements. The short position would be taken by a market participant who anticipates crude oil prices not to fall enough to offset the premium.
-
-
-\begin{figure}[H]
+\begin{figure}[tbp]
 \centering
-
-\begin{subfigure}[t]{0.45\textwidth}
+\begin{subfigure}[tbp]{0.45\textwidth}
 \centering
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[>=stealth]
@@ -350,7 +342,7 @@ An example case would be a crude oil supplier forecasting low prices in a year's
 \caption{Long put position}
 \end{subfigure}
 \hfill
-\begin{subfigure}[t]{0.45\textwidth}
+\begin{subfigure}[tbp]{0.45\textwidth}
 \centering
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[>=stealth]
@@ -372,6 +364,10 @@ An example case would be a crude oil supplier forecasting low prices in a year's
 \caption{Profit diagrams for long (a) and short (b) positions in a put option. \mbox{$K$ = strike price}, $S_T$ = spot price at exercise, $p$ = premium. (a) The buyer pays the premium $p$ for the right to sell stock at strike price $K$. When $S_T < K$, the option is in the money (ITM) and is exercised. The position profits when $K - S_T > p$. When $S_T > K$, the option is out of the money (OTM) and expires worthless with \mbox{loss $-p$}. (b) The writer receives premium $p$ for the obligation to buy at price $K$. When ITM, the writer must purchase at the strike price $K$ despite the lower spot price $S_T$. When OTM, the option expires worthless and the writer keeps the premium $p$. The position becomes unprofitable when $K - S_T > p$.}
 \label{fig:put_option_payoffs}
 \end{figure}
+
+The short put position profits under opposite conditions. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to purchase stock at the strike price $K$ despite the lower spot price $S_T$ \cite{hull2018}. The position remains profitable as long as the premium offsets this loss, with break-even at $K - S_T = p$.
+
+An example case would be a crude oil supplier forecasting low prices in a year's time and taking the long position to secure a minimum revenue. The supplier pays a premium to hedge against unfavorable price movements. The short position would be taken by a market participant who anticipates crude oil prices not to fall enough to offset the premium.
 
 The payoff from the long position in a put option is defined as
 \begin{equation}
@@ -448,7 +444,20 @@ It is evidently possible to construct a portfolio with identical payoff as the o
 \label{eq:replicating-portfolio}.
 \end{equation}
 Under the no-arbitrage assumption, the value of the option must equal the price of constructing this portfolio, that is buying $\Delta$ shares and investing $B$ in a risk-free asset. A negative $\Delta$ implies shorting the stock\footnote{Short selling involves borrowing shares from a broker, selling them immediately at the current price, and later repurchasing them to return to the lender. If the price falls, the short seller profits from the difference.}, and a negative $B$ implies borrowing money at the risk-free rate instead of investing it.
-\begin{figure}[htbp]
+
+The derivation assumed neither a call nor a put option, and therefore works as a pricing model for any European (and in a one-period setting, American) option. An interesting observation is that the approach utilized no information about the expected return of the stock, or the probability of its price movements. The authors motivate this intuitively by the fact that such expectations are already reflected in the stock price itself, and need not be explicitly accounted for when pricing the derivative. The option is priced relative to the underlying stock \cite{hull2018}.\clearpage
+
+\cref{eq:replicating-portfolio} can be rewritten as
+\begin{equation*}
+     \frac{1}{1+r}\left(f_u\frac{(1+r)-d}{u-d}+f_d\frac{u-(1+r)}{u-d}\right).
+\end{equation*}
+Defining $\tilde{p} := \frac{(1+r)-d}{u-d}$, this weight and its complement $1-\tilde{p} = \frac{u-(1+r)}{u-d}$ sum to one and lie in $[0,1]$ under the no-arbitrage condition $d \leq 1+r \leq u$, thus behaving like probabilities. These are known as \emph{risk-neutral probabilities}, and the calculation can therefore be interpreted as an expected value of the option payoff, discounted at the risk-free rate:
+\begin{equation}
+     \frac{1}{1+r}(f_u\cdot \tilde p + f_d \cdot (1-\tilde p)).
+\label{eq:risk-neutral-expectancy}
+\end{equation}
+
+\begin{figure}[tbp]
     \centering
     \begin{tikzpicture}[
         scale=1.5,
@@ -470,18 +479,8 @@ Under the no-arbitrage assumption, the value of the option must equal the price 
     \caption{One-period binomial model. The stock price moves from $S_0$ to either $S_0u$ or $S_0d$ over time $T$, with corresponding option values $f$, $f_u$ and $f_d$.}
     \label{fig:oneperiodbinom}
 \end{figure}
-The derivation assumed neither a call nor a put option, and therefore works as a pricing model for any European (and in a one-period setting, American) option. An interesting observation is that the approach utilized no information about the expected return of the stock, or the probability of its price movements. The authors motivate this intuitively by the fact that such expectations are already reflected in the stock price itself, and need not be explicitly accounted for when pricing the derivative. The option is priced relative to the underlying stock \cite{hull2018}.\clearpage
 
-\cref{eq:replicating-portfolio} can be rewritten as
-\begin{equation*}
-     \frac{1}{1+r}\left(f_u\frac{(1+r)-d}{u-d}+f_d\frac{u-(1+r)}{u-d}\right).
-\end{equation*}
-Defining $\tilde{p} := \frac{(1+r)-d}{u-d}$, this weight and its complement $1-\tilde{p} = \frac{u-(1+r)}{u-d}$ sum to one and lie in $[0,1]$ under the no-arbitrage condition $d \leq 1+r \leq u$, thus behaving like probabilities. These are known as \emph{risk-neutral probabilities}, and the calculation can therefore be interpreted as an expected value of the option payoff, discounted at the risk-free rate:
-\begin{equation}
-     \frac{1}{1+r}(f_u\cdot \tilde p + f_d \cdot (1-\tilde p)).
-\label{eq:risk-neutral-expectancy}
-\end{equation}
-While risk-neutral probabilities often cause confusion, they can simply be understood as a mathematical reformulation into a more familiar approach for pricing assets~--- discounting future cash flows. They do not reflect actual stock price movements, but rather form an artificial probability measure that yields the same price as the replicating portfolio. The term risk-neutral stems from the fact that the risk-free rate is used for discounting, resembling how a risk-neutral investor would not demand a premium for uncertain cash flows. This elegant reformulation enables tools from probability theory, and elements of it will be found in all of the models to be introduced later. Gisiger \cite{gisiger2010risk} and Tham \cite{tham2001risk} provide more formal explanations of risk-neutral valuation. The full derivation of \cref{eq:risk-neutral-expectancy} is provided in \cref{appendix:risk_neutral_derivation}.
+\noindent While risk-neutral probabilities often cause confusion, they can simply be understood as a mathematical reformulation into a more familiar approach for pricing assets~--- discounting future cash flows. They do not reflect actual stock price movements, but rather form an artificial probability measure that yields the same price as the replicating portfolio. The term risk-neutral stems from the fact that the risk-free rate is used for discounting, resembling how a risk-neutral investor would not demand a premium for uncertain cash flows. This elegant reformulation enables tools from probability theory, and elements of it will be found in all of the models to be introduced later. Gisiger \cite{gisiger2010risk} and Tham \cite{tham2001risk} provide more formal explanations of risk-neutral valuation. The full derivation of \cref{eq:risk-neutral-expectancy} is provided in \cref{appendix:risk_neutral_derivation}.
 
 \clearpage
 
@@ -496,13 +495,7 @@ As GPU architectures evolved, researchers and developers increasingly sought to 
 \subsection{CPU and GPU Architecture}
  \cref{fig:cpu-gpu-architecture} presents a simple architectural diagram of a modern CPU and GPU. The CPU diagram is based on the writings of Stallings~\cite{stallings2011operating}, while the GPU diagram is derived from both the work of Kirk and Hwu~\cite{kirk2016programming} and the CUDA C++ Programming Guide by NVIDIA~\cite{cuda2025guide}.
 
-The CPU contains several key components working together. The arithmetic logic unit is responsible for performing computational operations on data. Registers (not visible in the figure) store instructions, data, and memory addresses. Additional control units manage program flow and coordination with external components. The CPU executes programs in a two-step fetch-execute cycle. First, an instruction is fetched from memory and loaded into a register. The instruction is then executed, which in practice means either data processing, data transfer, or control flow operations. This cycle repeats until the program terminates, either by completing successfully, encountering an error, or being interrupted by another component.
-
-CPUs have evolved to leverage multiple forms of parallelism. Instruction-level parallelism refers to a set of techniques to improve performance by executing multiple independent instructions simultaneously or in overlapping stages \cite{hennessy2011computer, suomela_ppc}. These techniques range from instruction pipelining and superscalar execution, which process multiple instructions concurrently, to out-of-order execution and branch prediction, which maximize pipeline utilization and anticipate control flow.
-
-Modern CPUs also incorporate \emph{single instruction multiple data} (SIMD) capabilities through vector registers that store multiple data elements of the same type. This allows for executing a single instruction on all elements in the register simultaneously. Furthermore, most modern processors are multi-core, containing multiple instances of the core computational components. This enables thread-level parallelism, where a \emph{thread} --- an independent sequence of instructions that can be scheduled and \mbox{executed \cite{stallings2011operating}} --- can run on each core simultaneously \cite{hennessy2011computer, suomela_ppc}. Nonetheless, CPUs remain fundamentally optimized for low-latency sequential execution and control flow rather than maximizing throughput \cite{hennessy2011computer, suomela_ppc}.
-
-\begin{figure}[htbp]
+ \begin{figure}[tbp]
   \centering
   \begin{tikzpicture}
     \node[anchor=south west, inner sep=0] (image) at (0,0) {\includegraphics[width=\textwidth]{External Images/CPUandGPU.png}};
@@ -520,6 +513,12 @@ Modern CPUs also incorporate \emph{single instruction multiple data} (SIMD) capa
   \label{fig:cpu-gpu-architecture}
 \end{figure}
 
+The CPU contains several key components working together. The arithmetic logic unit is responsible for performing computational operations on data. Registers (not visible in the figure) store instructions, data, and memory addresses. Additional control units manage program flow and coordination with external components. The CPU executes programs in a two-step fetch-execute cycle. First, an instruction is fetched from memory and loaded into a register. The instruction is then executed, which in practice means either data processing, data transfer, or control flow operations. This cycle repeats until the program terminates, either by completing successfully, encountering an error, or being interrupted by another component.
+
+CPUs have evolved to leverage multiple forms of parallelism. Instruction-level parallelism refers to a set of techniques to improve performance by executing multiple independent instructions simultaneously or in overlapping stages \cite{hennessy2011computer, suomela_ppc}. These techniques range from instruction pipelining and superscalar execution, which process multiple instructions concurrently, to out-of-order execution and branch prediction, which maximize pipeline utilization and anticipate control flow.
+
+Modern CPUs also incorporate \emph{single instruction multiple data} (SIMD) capabilities through vector registers that store multiple data elements of the same type. This allows for executing a single instruction on all elements in the register simultaneously. Furthermore, most modern processors are multi-core, containing multiple instances of the core computational components. This enables thread-level parallelism, where a \emph{thread} --- an independent sequence of instructions that can be scheduled and \mbox{executed \cite{stallings2011operating}} --- can run on each core simultaneously \cite{hennessy2011computer, suomela_ppc}. Nonetheless, CPUs remain fundamentally optimized for low-latency sequential execution and control flow rather than maximizing throughput \cite{hennessy2011computer, suomela_ppc}.
+
 In contrast, while lacking the sophistication that makes CPUs excel at sequential and control-heavy tasks, GPUs dedicate most of their silicon area to processing units, creating massively parallel architectures optimized for numerical computation. GPU execution follows a \emph{single instruction multiple thread} (SIMT) paradigm: thousands of threads execute the same instruction in parallel \cite{cuda2025guide}. This increases throughput far beyond single- or multithreading on comparatively few CPU cores.
 
 A modern GPU contains multiple independent \emph{streaming multiprocessors} (SMs), each comprising numerous processing units that share control logic and local memory resources \cite{kirk2016programming, cuda2025guide}. Within each multiprocessor, threads execute in groups of 32 called \emph{warps}. These warps generally operate in lockstep --- all threads in a warp execute the same instruction simultaneously on their respective data.\footnote{Since the NVIDIA Volta architecture (2017), threads within a warp can follow independent control paths, enabling more flexible algorithms. However, divergent execution reduces efficiency as different paths must be serialized \cite{cuda2025guide}.} Similarly to CPUs, all SMs share access to high-capacity but high-latency global memory (RAM), while each SM contains faster local caches. Additionally, each SM contains a programmer-managed memory region called \emph{shared memory}, enabling inter-thread communication within the same multiprocessor \cite{sanders2010cuda, cuda2025guide}.
@@ -532,7 +531,7 @@ Kirk and Hwu \cite{kirk2016programming} distinguish between two forms of paralle
 
 Acar \cite{acar2016parallel} provides a framework for formal analysis of parallel algorithms. Algorithms are represented as directed acyclic graphs (DAGs), where nodes represent executions of individual instructions and edges represent dependencies between them. The DAG can be viewed as a Hasse diagram that depicts a partial ordering of instructions under the relation "must execute before". Acar restricts the maximum node \emph{out-degree} and \emph{in-degree}\footnote{The number of edges extending out from or into a node.} to two, corresponding to spawning a new thread and synchronizing the result from two threads. \cref{fig:DAG-algo} depicts a DAG representation of an algorithm.
 
-\begin{figure}[h]
+\begin{figure}[tbp]
 \centering
 \begin{tikzpicture}[
     node distance=1.5cm and 1.5cm,
@@ -565,7 +564,7 @@ Acar \cite{acar2016parallel} provides a framework for formal analysis of paralle
 \caption{Directed acyclic graph (DAG) representation of a parallel algorithm. Nodes represent individual instructions and edges represent instruction dependencies that determine execution order. At node A2, a new thread is spawned, after which both threads execute independent instruction sequences in parallel. The threads synchronize at nodes A5 and A6, but thread B terminates only at the latter. DAG representations help visualize the algorithm structure and identify opportunities for parallel execution on independent paths.}
 \label{fig:DAG-algo}
 \end{figure}
-\clearpage
+
 Using these graphs, Acar \cite{acar2016parallel} defines the \emph{work} of an algorithm as the total number of nodes in the DAG, and \emph{span} as the length of its longest path. Alternatively, assuming each instruction takes a unit of time and no overhead cost of thread management, one can think of the work as the sequential run-time on a single processor $T_1$, and span as the run-time on an idealized infinite-processor machine $T_{\infty}$. For instance, the DAG presented in \cref{fig:DAG-algo} contains nine units of work but a span of only six units. It is now possible to define two lower bounds on algorithm run-time on a p-processor machine $T_p$:
 
 \vspace{0.5\baselineskip}
@@ -583,7 +582,7 @@ The Cox-Ross-Rubinstein (CRR) model \cite{cox1979option} extends the single-peri
 
 The CRR model solves for the initial option value using backward induction. Starting at the terminal nodes, where option payoffs are calculated using \cref{eq:long_call_payoff,eq:long_put_payoff}, the algorithm works backward through the lattice. Each interior node is treated as a single-period problem, with option values calculated using \cref{eq:risk-neutral-expectancy}. \cref{fig:crr-twoperiod} visualizes a two-period lattice, though the model extends to any number of periods.
 
-\begin{figure}[bp]
+\begin{figure}[tbp]
     \centering
     \begin{tikzpicture}[
         scale=1.3,
@@ -674,7 +673,9 @@ The sequential algorithm has asymptotic time complexity $O(n^2)$ due to the nest
 
 Kolb and Pharr \cite{pharr2005gpu} implemented a GPU-accelerated version using this approach. At each time point, they spawned one thread per node, letting each thread compute a single node from its two child nodes. Threads synchronized after each time point to prevent data races. The implementation read and wrote intermediate results into two alternating arrays. To maximize GPU utilization, the algorithm was run in parallel for ``a thousand or so independent options''. The full source code is found in the original article\footnote{The implementation from 2005 predates CUDA, using the Cg language common for GPU programming at the time.}.
 
-\begin{figure}[htbp]
+The parallel implementation does not redesign the algorithm in any way, but simply utilizes more resources for parallel computation. The work of the algorithm is thus $O(n^2)$, identical to the sequential time complexity. On the other hand, the span is only $O(n)$, so linear run-time can be achieved with sufficient processors. \cref{fig:crr-gpu-naive} illustrates this parallel execution. Using $n=1024$ periods, the authors reported throughput as a function of the number of American options processed. The single-threaded CPU implementation achieved approximately 110 options/s. The GPU version initially underperformed for batches of fewer than 5 options, likely due to parallelization overhead, but scaled to approximately 1150 options/s with larger batches --- a 10x speedup. The throughput plateau suggests either full GPU utilization or other bottlenecks.
+
+\begin{figure}[tbp]
     \centering
     \begin{tikzpicture}[
         scale=1.3,
@@ -729,8 +730,6 @@ Kolb and Pharr \cite{pharr2005gpu} implemented a GPU-accelerated version using t
     \label{fig:crr-gpu-naive}
 \end{figure}
 
-The parallel implementation does not redesign the algorithm in any way, but simply utilizes more resources for parallel computation. The work of the algorithm is thus $O(n^2)$, identical to the sequential time complexity. On the other hand, the span is only $O(n)$, so linear run-time can be achieved with sufficient processors. \cref{fig:crr-gpu-naive} illustrates this parallel execution. Using $n=1024$ periods, the authors reported throughput as a function of the number of American options processed. The single-threaded CPU implementation achieved approximately 110 options/s. The GPU version initially underperformed for batches of fewer than 5 options, likely due to parallelization overhead, but scaled to approximately 1150 options/s with larger batches --- a 10x speedup. The throughput plateau suggests either full GPU utilization or other bottlenecks.
-
 For large lattices, the naive parallelization encounters synchronization bottlenecks. Threads must synchronize after each time point, creating overhead that grows with $n$. This overhead is particularly severe when the lattice exceeds the capacity of a single streaming multiprocessor, forcing communication via slower global memory rather than shared memory. Suo et al.\ \cite{suo2015gpu} explored several strategies to mitigate this. A naive attempt sacrificed parallelism by having a thread compute multiple nodes over several periods, thereby reducing synchronization frequency. This, however, led to redundant computation as nodes at intermediate time points must be calculated multiple times by different threads. More sophisticated approaches avoid this redundancy --- the authors proposed a ``triangle method'' that carefully partitions the lattice to minimize both synchronization overhead and redundant calculations.
 
 \subsection{Additional Parallelization Across Time}
@@ -744,9 +743,9 @@ where $j$ indexes the nodes at time $i-m$, and the coefficients $c_k, 0 \leq k \
 
 Based on this insight, the authors presented the following parallel algorithm \cite{ganesan2009acceleration}: First, divide the $n$-period lattice into $p$ partitions of length $n/p$. Each partition then computes coefficients relating the nodes at its left boundary to the ones at its right boundary. These independent operations proceed in parallel across all partitions. Once the coefficients are computed, the option values can be propagated from right to left across partition boundaries using \cref{eq:relative-prices}. This requires only $p$ sequential steps rather than $n$\footnote{While the authors claimed this method extends to American options, they provided insufficient detail on how early exercise opportunities are evaluated when intermediate nodes are computed after the main propagation phase.}. \cref{fig:partitioned} illustrates the idea.
 
-\begin{figure}[h]
+\begin{figure}[tbp]
     \centering
-    \includegraphics[scale=0.6]{External Images/CRRpartitioned.png}
+    \includegraphics[scale=0.8]{External Images/CRRpartitioned.png}
     \caption{Partitioned Cox-Ross-Rubinstein (CRR) algorithm for parallel computation across time. The binomial lattice is divided into partitions. Within each partition, coefficients relating nodes at left and right boundaries are computed in parallel. Once coefficients are computed, option values propagate sequentially from right to left across partition boundaries, skipping many intermediate values. The rightmost partition can alternatively compute option values directly using standard backward induction, as is done in the figure. Reproduced with permission from the authors~\cite{ganesan2009acceleration}.}
 
     \label{fig:partitioned}
@@ -825,7 +824,7 @@ Liu et al.\ \cite{liu2010efficient} demonstrated several hardware-specific optim
 
 The authors also examined two different execution strategies for large workloads, where a single thread computed multiple stock price paths. In ``path mode'', the thread computed its assigned paths sequentially from start to finish. This minimized memory usage and suited homogeneous workloads, like simulating paths for the same option. In ``slice mode'', the thread instead simulated one step at a time for all its price paths. This was more memory intensive as intermediary data was stored for all the paths. On the other hand, slice mode handled heterogeneous workloads better, for example simultaneous pricing of different options. If these options have different maturities, some path simulations will finish earlier than others, leading to warp divergence \cite{liu2010efficient}. Slice mode organized the computations to minimize the associated overhead cost. \cref{fig:gpu-divergence} depicts the different execution modes and their effect on divergence. While GPU architectures have evolved significantly since the paper was published in 2010, the underlying tradeoffs between memory usage and thread utilization remain central to high-performance MC implementations.
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
 \centering
 \begin{tikzpicture}[
     node distance=0.9cm,
