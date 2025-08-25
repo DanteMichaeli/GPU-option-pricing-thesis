@@ -50,7 +50,9 @@
 \usepackage[ruled]{algorithm2e}
 \usepackage{threeparttable}
 \usepackage{booktabs}
+\usepackage[nottoc]{tocbibind}
 \SetKwComment{Comment}{/* }{ */}
+
 
 %% Use this if you write hard core mathematics, these are usually needed
 \usepackage{amsfonts,amssymb,amsbsy, amsmath}
@@ -66,7 +68,7 @@
 %% Use this if you want to get links and nice output. Works well with pdflatex.
 \usepackage[hidelinks]{hyperref}
 \hypersetup{pdfpagemode=UseNone, pdfstartview=FitH,
-  colorlinks=true,urlcolor=blue,linkcolor=blue,citecolor=black,
+  colorlinks=true,urlcolor=black,linkcolor=blue,citecolor=black,
   pdftitle={GPU-accelerated option pricing algorithms},pdfauthor={Daniel Michaeli},
   pdfkeywords={option pricing, options, gpu, gpu-acceleration, parallell computing, computational finance}}
 \usepackage[capitalise,noabbrev]{cleveref}
@@ -114,7 +116,7 @@
 %% should be followed by a slightly longer space but is to be followed
 %% by a regular space.
 %%
-\supervisor{M.Sc.\ Henrik Lievonen} %{Prof.\ Pirjo Professori}
+\supervisor{Prof.\ Lauri Savioja} %{Prof.\ Pirjo Professori}
 
 %% B.Sc. or M.Sc. thesis advisors(s). You can give upto two advisors in
 %% this template. Check with your supervisor how many official advisors
@@ -122,8 +124,7 @@
 %%
 %\advisor{Prof.\ Pirjo Professori}
 %\advisor{D.Sc.\ (Tech.) Olli Ohjaaja}
-\advisor{Prof.\ Lauri Savioja?}
-
+\advisor{M.Sc.\ Henrik Lievonen}
 %% Aalto logo: syntax:
 %% \uselogo{aaltoRed|aaltoBlue|aaltoYellow|aaltoGray|aaltoGrayScale}{?|!|''}
 %%
@@ -154,7 +155,7 @@
 \begin{abstractpage}[english]
 The digital transformation of financial markets has created unprecedented demand for speed in asset pricing, trading and hedging. This becomes particularly relevant for options and other complex derivatives that are often priced using computationally intensive numerical methods.
 
-This thesis examines GPU acceleration techniques for two fundamental option pricing algorithms: the Cox-Ross-Rubinstein (CRR) binomial model and Monte Carlo (MC) methods. For each approach, the analysis includes a naive GPU mapping with minimal algorithm redesign and an optimized implementation targeting maximum performance. The thesis examines how the algorithms' structure impacts parallelism, compares relative GPU speedups against baseline implementations, and identifies bottlenecks with corresponding optimization strategies.
+This thesis examines GPU-acceleration techniques for two fundamental option pricing algorithms: the Cox-Ross-Rubinstein (CRR) binomial model and Monte Carlo (MC) methods. For each approach, the analysis includes a naive GPU mapping with minimal algorithm redesign and an optimized implementation targeting maximum performance. The thesis examines how the algorithms' structure impacts parallelism, compares relative GPU speedups against baseline implementations, and identifies bottlenecks with corresponding optimization strategies.
 
 The results indicate substantial performance improvements for both algorithms, with naive implementations achieving 10x and 23-59x speedups for CRR and MC respectively. The CRR model benefits primarily from algorithmic restructuring to mitigate synchronization overhead, whereas MC methods, already being easy to parallelize, gain additional performance improvements from hardware-conscious optimization. The reviewed literature suggests that GPU acceleration is highly effective for both CRR and MC option pricing, and provides practical guidance for such implementations. 
 \end{abstractpage}
@@ -928,11 +929,11 @@ Additional research opportunities include GPU acceleration of other models, such
 CRR\\
 \cmidrule{1-2}
 Naive & 10x\tnote{1} & Parallelization at time points & Synchronization latency between nodes \\
-Partitioned & 2x\tnote{2} & Additional parallelization across time periods & Inter-partition communication \\
+Partitioned & 2x\tnote{2} & Parallelization across time axis & Inter-partition communication \\
 \addlinespace 
 MC\\
 \cmidrule{1-2}
-Naive & 23–59x\tnote{3} & Parallel simulation paths & Random number generation, memory constraints \\
+Naive & 23–59x\tnote{3} & Parallelized simulation paths & Random number generation, memory constraints \\
 Optimized & 43x\tnote{4} & Memory coalescing, register reuse, warp divergence minimization & Memory bandwidth \\
 \bottomrule
 \end{tabular}
@@ -949,7 +950,6 @@ Optimized & 43x\tnote{4} & Memory coalescing, register reuse, warp divergence mi
 \cleardoublepage
 
 \phantomsection
-\addcontentsline{toc}{chapter}{\bibname}
 \bibliographystyle{IEEEtranDOI}
 \bibliography{bibliography.bib}
 
