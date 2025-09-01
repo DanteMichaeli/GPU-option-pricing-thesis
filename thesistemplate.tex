@@ -68,9 +68,8 @@
 %% Use this if you want to get links and nice output. Works well with pdflatex.
 \usepackage[hidelinks]{hyperref}
 \hypersetup{pdfpagemode=UseNone, pdfstartview=FitH,
-  colorlinks=true,urlcolor=black,linkcolor=blue,citecolor=black,
   pdftitle={GPU-accelerated option pricing algorithms},pdfauthor={Daniel Michaeli},
-  pdfkeywords={option pricing, options, gpu, gpu-acceleration, parallell computing, computational finance}}
+  pdfkeywords={option pricing, options, gpu, gpu-acceleration, parallel computing, computational finance}}
 \usepackage[capitalise,noabbrev]{cleveref}
 
 
@@ -124,7 +123,7 @@
 %%
 %\advisor{Prof.\ Pirjo Professori}
 %\advisor{D.Sc.\ (Tech.) Olli Ohjaaja}
-\advisor{M.Sc.\ Henrik Lievonen}
+\advisor{MSc\ Henrik Lievonen}
 %% Aalto logo: syntax:
 %% \uselogo{aaltoRed|aaltoBlue|aaltoYellow|aaltoGray|aaltoGrayScale}{?|!|''}
 %%
@@ -150,14 +149,14 @@
 %% niin kuin se on yllä määritelty.
 %% Avainsanat
 %%
-\keywords{options, pricing, GPU, parallel algorithms}
+\keywords{option pricing, options, GPU, GPU acceleration, parallel computing, computational finance}
 %% Abstract text
 \begin{abstractpage}[english]
-The digital transformation of financial markets has created unprecedented demand for speed in asset pricing, trading and hedging. This becomes particularly relevant for options and other complex derivatives that are often priced using computationally intensive numerical methods.
+The digital transformation of financial markets has created unprecedented demand for computational speed in asset pricing, trading and hedging. This becomes particularly relevant for options and other complex derivatives that are often priced using computationally intensive numerical methods. These demands have motivated the use of graphics processing units (GPU) for option pricing. While initially designed for graphics-related processing, GPUs are now widely applied to high-performance computing tasks.
 
-This thesis examines GPU-acceleration techniques for two fundamental option pricing algorithms: the Cox-Ross-Rubinstein (CRR) binomial model and Monte Carlo (MC) methods. For each approach, the analysis includes a naive GPU mapping with minimal algorithm redesign and an optimized implementation targeting maximum performance. The thesis examines how the algorithms' structure impacts parallelism, compares relative GPU speedups against baseline implementations, and identifies bottlenecks with corresponding optimization strategies.
+This thesis forms a literature review of GPU-acceleration techniques for two common option pricing algorithms: the Cox-Ross-Rubinstein (CRR) binomial model and Monte Carlo (MC) methods. For each model, the analysis includes a naive GPU mapping with minimal algorithm redesign and an optimized implementation targeting maximum performance. The thesis examines how the algorithms' structure impacts parallelism, compares relative GPU speedups against baseline implementations, and identifies bottlenecks with corresponding optimization \mbox{strategies.}
 
-The results indicate substantial performance improvements for both algorithms, with naive implementations achieving 10x and 23-59x speedups for CRR and MC respectively. The CRR model benefits primarily from algorithmic restructuring to mitigate synchronization overhead, whereas MC methods, already being easy to parallelize, gain additional performance improvements from hardware-conscious optimization. The reviewed literature suggests that GPU acceleration is highly effective for both CRR and MC option pricing, and provides practical guidance for such implementations. 
+The results indicate substantial performance improvements for both algorithms, with naive GPU implementations achieving 10x and 23-59x speedups for CRR and MC respectively. The binomial lattice in CRR forms dependencies among nodes over successive time points, limiting parallel computing to nodes at the same time point. By contrast, MC simulations are mutually independent, allowing them to be computed simultaneously. For further optimization, the CRR model benefits primarily from algorithmic restructuring to enable more parallelism and mitigate synchronization overhead. MC methods, already being easy to parallelize, gain additional performance improvements from hardware-conscious optimization. Overall, the reviewed literature suggests that GPU acceleration is highly effective for both option pricing models, and provides practical guidance for such implementations. 
 \end{abstractpage}
 
 %% Force a new page so that the possible English abstract starts on a new page
@@ -174,20 +173,20 @@ The results indicate substantial performance improvements for both algorithms, w
 %% Swedish abstract. Delete if you don't need it. 
 %% 
 \thesistitle{GPU-accelererade optionsprissättningsalgoritmer}
-\advisor{M.Sc.\ Henrik Lievonen} %
+\advisor{DI\ Henrik Lievonen} %
 \supervisor{Prof.\ Lauri Savioja}
 \degreeprogram{Datateknik}
 \department{Högskolan för teknikvetenskaper}%
 \professorship{?}  %
 %% Abstract keywords
-\keywords{Nyckelord p\aa{} svenska,\\ optioner, prissättning, GPU, grafikkort, parallella algoritmer}
+\keywords{option pricing, options, GPU, GPU acceleration, parallel computing, computational finance}
 %% Abstract text
 \begin{abstractpage}[swedish]
-Digitaliseringen av värdepappersmarknader har skapat en enorm efterfråga på snabbhet inom prissättning, handel och hedging. Detta är speciellt relevant för optioner och andra derivatinstrument som ofta värderas genom beräkningsintensiva numeriska metoder.
+Digitaliseringen av värdepappersmarknader har skapat en enorm efterfrågan på beräkningssnabbhet inom prissättning, handel och hedging. Detta är speciellt relevant för optioner och andra komplexa derivatinstrument som ofta värderas genom beräkningsintensiva numeriska metoder. Dessa krav har motiverat användningen av grafikkort (GPU) för optionsprissättning. GPU:er utvecklades ursprungligen för grafikrelaterad beräkning, men används idag för många olika beräkningsintensiva problem.
 
-Detta examensarbete analyserar GPU-accelerationstekniker för två grundläggande optionsprissättningsmetoder: Cox-Ross-Rubinstein (CRR)-modellen och Monte Carlo (MC) simulering. För varje metod presenteras en naiv GPU-implementation med minimal omarbetning, och en optimerad implementation för maximal prestanda. Arbetet analyserar hur algoritmernas struktur påverkar parallelberäkning, jämför prestanda gentemot basversioner, och identifierar flaskhalsar med motsvarande optimeringsstrategier.
+Detta examensarbete utgör en litteraturöversikt av GPU-acceleration för två vanliga optionsprissättningsmetoder: Cox-Ross-Rubinstein-modellen (CRR) och Monte Carlo-simulering (MC). För varje modell presenteras en naiv GPU-implementering med minimal omarbetning, och en optimerad implementering för maximal prestanda. Arbetet analyserar hur algoritmernas struktur påverkar parallelberäkning, jämför prestanda gentemot basversioner och identifierar flaskhalsar med motsvarande optimeringsstrategier.
 
-Resultaten tyder på en avsevärd prestandaförbättring för båda algoritmerna. Den naiva GPU-implementationen av CRR-modellen uppnådde 10x snabbare beräkningar, medan MC simulering uppnådde 23-59x förbättring. CRR gynnas huvudsakligen av algoritmisk omdesign för att motverka synkroniseringsoverhead. MC simulering är ursprungligen lätt att parallellisera, och försnabbas maximalt genom hårdvarumedveten optimering. Litteraturanalysen visar att GPU-acceleration är mycket effektivt för både CRR- och MC-baserad prissättning, och erbjuder praktisk vägledning för sådana implementeringar.
+Resultaten tyder på en avsevärd prestandaförbättring för båda algoritmerna. Den naiva GPU-implementeringen av CRR-modellen uppnådde 10x snabbare beräkningar, medan MC-simulering uppnådde 23-59x förbättring. Binomialgittret i CRR skapar beroendeförhållanden mellan noder i på varandra följande tidpunkter, vilket begränsar parallell beräkning till noder i samma tidpunkt. Däremot är simuleringarna i MC oberoende av varandra och kan beräknas samtidigt. För vidare optimering gynnas CRR huvudsakligen av algoritmisk omdesign som möjliggör mer parallellisering och motverkar synkroniseringsoverhead. MC-simulering som redan ursprungligen är lätt att parallellisera försnabbas maximalt genom hårdvarumedveten optimering. Sammantaget visar litteraturanalysen att GPU-acceleration är mycket effektivt för både CRR- och MC-baserad prissättning, och erbjuder praktisk vägledning för sådana implementeringar.
 \end{abstractpage}
 
 \newpage
@@ -222,11 +221,11 @@ Resultaten tyder på en avsevärd prestandaförbättring för båda algoritmerna
 \section{Introduction}
 %% Leave first page empty
 \thispagestyle{empty}
-Like many other parts of modern society, financial markets have undergone a radical digital transformation. Where traders once shouted orders across crowded exchange floors, computer algorithms on powerful servers now execute trades with minimal direct human interaction \cite{mcgowan2010rise, mackenzie2018material}. This shift has made computational speed a critical competitive advantage. For example, high-frequency trading strategies exploit transient price discrepancies through millions of rapid transactions, where mere millisecond delays can determine profitability. These strategies are adopted not only by proprietary trading firms but also by large mutual and pension funds that need to minimize the market impact of large trades \cite{mcgowan2010rise}.
+Like many other parts of modern society, financial markets have undergone a radical digital transformation. Where traders once shouted orders across crowded exchange floors, computer algorithms on powerful servers now execute trades with minimal direct human interaction \cite{mcgowan2010rise, mackenzie2018material}. This shift has made computational speed a critical competitive advantage. For example, high-frequency trading strategies exploit transient price discrepancies through millions of rapid transactions, where mere millisecond delays can determine profitability. These strategies are adopted not only by proprietary trading firms but also by pension funds that need to minimize the market impact of large trades \cite{mcgowan2010rise}.
 
 The algorithmic trading landscape also extends to derivatives markets, where advances in financial mathematics \cite{merton1994influence} and the exponential increase in computing power \cite{nordhaus2007two} have enabled increasingly sophisticated pricing models. Derivatives denote financial instruments whose value is derived from the price of an underlying asset, such as a share, commodity or currency. Options are derivative contracts between two parties that grant the holder the right, but not the obligation, to buy or sell an asset at a predetermined price by a future date \cite{hull2018}. These instruments enable both speculative trading and risk management strategies, making them valuable even to non-financial institutions \cite{bartram2009international}.
 
-Modern option pricing often employs numerical and algorithmic solutions whose computational intensity conflicts with the response times demanded by algorithmically driven markets. This challenge is magnified by the scale of real-world applications. Market participants rarely price single options in isolation, but instead perform portfolio-wide stress testing and hedging that requires simultaneous pricing of many options across multiple scenarios. These performance requirements have motivated research into adapting option pricing algorithms to leverage the graphics processing unit's (GPU) parallel computing capabilities.
+Modern option pricing often employs numerical and algorithmic solutions whose computational intensity conflicts with the response times demanded by algorithmically driven markets. This challenge is magnified by the scale of real-world applications. Market participants rarely price single options in isolation, but instead perform portfolio-wide stress testing and hedging that requires simultaneous pricing of many options across multiple scenarios. These performance requirements have motivated research into adapting option pricing algorithms to leverage the parallel computing capabilities of modern graphics processing units (GPU).
 
 This thesis reviews GPU acceleration for two common option pricing algorithms: the Cox-Ross-Rubinstein (CRR) binomial model and Monte Carlo (MC) methods. The objectives are threefold: understanding how algorithm structure impacts parallelization, measuring relative performance gains, and identifying computational bottlenecks. The famous Black-Scholes-Merton (BSM) model is omitted as it is an analytical formula rather than an algorithm, providing no meaningful parallelization opportunities beyond arithmetic operations.
 
@@ -241,7 +240,7 @@ This thesis is structured as follows. \cref{sec:theory} defines key terms and ou
 The following section presents the theoretical background necessary to understand option pricing and the algorithms that will be GPU-accelerated. First, general definitions are established. The section then analyzes vanilla option payoffs and the key determinants of option prices. Two essential principles anchor the theoretical framework: \emph{no-arbitrage pricing} and \emph{risk-neutral valuation}. Together, these concepts form the mathematical foundation underlying modern option pricing models.
 
 \subsection{Definitions}\label{subsec:definitions}
-The following terminology is adapted from Hull's ``Options, Futures, and Other Derivatives'' \cite{hull2018}:
+The following terminology is adapted from Hull's \emph{Options, Futures, and Other Derivatives} \cite{hull2018}:
 
 \vspace{0.5\baselineskip}
 \noindent\textbf{Call Option.} A contract granting the holder the right, but not the obligation, to purchase an underlying asset at a predetermined price by a specified date.
@@ -256,7 +255,7 @@ The following terminology is adapted from Hull's ``Options, Futures, and Other D
 \noindent\textbf{Maturity.} The expiration date of the option contract, after which it becomes worthless if not exercised.
 
 \vspace{\baselineskip}
-\noindent The phrase ``by a specified date'' warrants clarification, as exercise rules vary by option style. \emph{European options} may be exercised only at maturity, while \emph{American options} can be exercised at any time before maturity. Throughout this thesis, the underlying asset is generally referred to as ``the stock,'' with its current market value denoted as the \emph{spot price}.
+\noindent The phrase ``by a specified date'' warrants clarification, as exercise rules vary by option style. \emph{European options} may be exercised only at maturity, while \emph{American options} can be exercised at any time before maturity. Throughout this thesis, the underlying asset is generally referred to as ``the stock'', with its current market value denoted as the \emph{spot price}.
 
 Every option contract involves two parties with opposing positions. The buyer assumes the \emph{long position}, paying an upfront premium for the right to exercise the option. The seller --- also known as the option writer --- takes the corresponding \emph{short position}, receiving the premium in exchange for accepting the obligation to fulfill the contract if exercised.
 
@@ -365,7 +364,7 @@ A put option buyer pays a premium upfront to secure the right to sell stock at t
 \label{fig:put_option_payoffs}
 \end{figure}
 
-The short put position profits under opposite conditions. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to purchase stock at the strike price $K$ despite the lower spot price $S_T$ \cite{hull2018}. The position remains profitable as long as the premium offsets this loss, with break-even at $K - S_T = p$.
+The short put position profits under opposite conditions. When the option is OTM, it expires worthless and the writer retains the full premium as profit. When it is ITM, the buyer exercises, forcing the writer to purchase stock at the strike price~$K$ despite the lower spot price $S_T$ \cite{hull2018}. The position remains profitable as long as the premium offsets this loss, with break-even at $K - S_T = p$.
 
 An example case would be a crude oil supplier forecasting low prices in a year's time and taking the long position to secure a minimum revenue. The supplier pays a premium to hedge against unfavorable price movements. The short position would be taken by a market participant who anticipates crude oil prices not to fall enough to offset the premium.
 
@@ -382,7 +381,7 @@ The buyer of an option is never obligated to exercise, and the loss is therefore
 
 \begin{table}[!htb]
 \centering
-\caption{Extreme-case upside and downside potential for different option positions. \mbox{$p$ = premium}, $K$ = strike price. The long position in a call option has unlimited upside potential due to theoretically unbounded underlying asset prices, with losses limited to the premium paid. The corresponding short position inverts this behavior with unlimited downside risk. Put options have bounded payoffs as asset prices cannot fall below zero. The maximum gain for a long put position is $K-p$ when the spot price reaches zero, and the maximum loss for the corresponding short position is $-(K-p)$.}\label{tab:options_table}
+\caption{Extreme-case upside and downside potential for different option positions. \mbox{$p$ = premium}, $K$ = strike price. The long position in a call option has unlimited upside potential due to theoretically unbounded underlying asset prices, with losses limited to the premium paid. The corresponding short position inverts this behavior with unlimited downside risk. Put options have bounded payoffs as asset prices cannot fall below zero. The maximum gain for a long put position is $K-p$ when the spot price reaches zero, and the maximum loss for the corresponding short position is $-(K-p) = p-K$.}\label{tab:options_table}
 \begin{tabular}{|l|p{5cm}|p{5cm}|}
 \hline
 \textbf{} & \textbf{Call Option} & \textbf{Put Option} \\
@@ -393,7 +392,7 @@ The buyer of an option is never obligated to exercise, and the loss is therefore
 \hline
 \textbf{Short} & \textbf{Maximum Gain:} $+p$
 \newline \textbf{Maximum Loss:} $-\infty$ & \textbf{Maximum Gain:} $+p$
-\newline \textbf{Maximum Loss:} $-(K-p)$ \\
+\newline \textbf{Maximum Loss:} $p-K$ \\
 \hline
 \end{tabular}
 \end{table}
@@ -419,7 +418,7 @@ This section introduces ideas from the work of Fischer Black, Myron Scholes, and
 
 Traditional asset valuation discounts expected future cash flows to present value. While theoretically sound, these approaches require subjective inputs that produce differing valuations. Expected cash flow calculations require probabilities of future outcomes --- an inherently speculative exercise. Even if this value were known, no consistent methodology exists to determine the appropriate discount rate, as investors naturally have differing risk preferences \cite{nobel1997}. The key insight of Black, Scholes, and Merton was recognizing that for options, these subjective estimates could be eliminated entirely by making a reasonable assumption about market behavior --- the absence of arbitrage.
 
-\emph{Arbitrage} denotes simultaneous buying and selling of an asset at different prices to make risk-free profit. Imagine tomato prices being lower in town A than town B due to an exceptionally good harvest. An astute tradesman could buy tomatoes in town A and immediately sell them in town B, pocketing the difference without taking any position on future price movements. This opportunity is self-eliminating: as the tradesman introduces more tomatoes from town A into town B, the corresponding prices adjust to the changes in supply until an equilibrium is reached \cite{hull2018, wilmott2013paul}. Other traders observing this opportunity might adopt the same strategy, eliminating it even faster. While arbitrage opportunities do arise, they are typically rare and short-lived in modern markets, as sophisticated traders quickly eliminate them. Hence, the no-arbitrage assumption is reasonable, at least over longer time periods.
+\emph{Arbitrage} denotes simultaneous buying and selling of an asset at different prices to make risk-free profit. Imagine tomato prices being lower in town A than town B due to an exceptionally good harvest. An astute trader could buy tomatoes in town A and immediately sell them in town B, pocketing the difference without taking any position on future price movements. This opportunity is self-eliminating: as the tradesman introduces more tomatoes from town A into town B, the corresponding prices adjust to the changes in supply until an equilibrium is reached \cite{hull2018, wilmott2013paul}. Other traders observing this opportunity might adopt the same strategy, eliminating it even faster. While arbitrage opportunities do arise, they are typically rare and short-lived in modern markets, as sophisticated traders quickly eliminate them. Hence, the no-arbitrage assumption is reasonable, at least over longer time periods.
 
 It logically follows that in absence of arbitrage opportunities, two assets producing identical cash flows must be equally valued \cite{hull2018, wilmott2013paul}. This conclusion suggests a new approach: construct a portfolio that matches the option payoff in all scenarios. The option value must then equal the price of constructing such a portfolio.
 
@@ -440,7 +439,7 @@ Solving for $\Delta$ and $B$ yields
 \end{equation*}
 It is evidently possible to construct a portfolio with identical payoff as the option itself, according to
 \begin{equation}
-     \frac{f_u - f_d}{S_0(u-d)} S_0 + \frac{f_du-f_ud}{(u-d)(1+r)}
+     \Delta S_0 + B=\frac{f_u - f_d}{S_0(u-d)} S_0 + \frac{f_du-f_ud}{(u-d)(1+r)}
 \label{eq:replicating-portfolio}.
 \end{equation}
 Under the no-arbitrage assumption, the value of the option must equal the price of constructing this portfolio, that is buying $\Delta$ shares and investing $B$ in a risk-free asset. A negative $\Delta$ implies shorting the stock\footnote{Short selling involves borrowing shares from a broker, selling them immediately at the current price, and later repurchasing them to return to the lender. If the price falls, the short seller profits from the difference.}, and a negative $B$ implies borrowing money at the risk-free rate instead of investing it.
@@ -457,7 +456,7 @@ Defining $\tilde{p} := \frac{(1+r)-d}{u-d}$, this weight and its complement $1-\
 \label{eq:risk-neutral-expectancy}
 \end{equation}
 
-\begin{figure}[tbp]
+\begin{figure}[t]
     \centering
     \begin{tikzpicture}[
         scale=1.5,
@@ -486,15 +485,13 @@ Defining $\tilde{p} := \frac{(1+r)-d}{u-d}$, this weight and its complement $1-\
 
 \section{GPU and Parallel Computing}\label{sec:gpu}
 
-The graphics processing unit (GPU) is a specialized processor originally designed to accelerate the rendering of images and video. The rapid growth of video games and graphics-intensive applications in the 1980s created unprecedented demand for capable hardware ~\cite{sanders2010cuda, kirk2016programming}. Graphics-related tasks like shading, rasterization, and texture mapping require a massive number of floating-point operations per second (FLOPS), far exceeding what general-purpose CPUs could deliver. Companies like NVIDIA and ATI Technologies (later acquired by AMD) emerged as front-runners in the GPU industry \cite{sanders2010cuda}.
+The graphics processing unit (GPU) is a specialized processor originally designed to accelerate the rendering of images and video. The rapid growth of video games and graphics-intensive applications in the 1980s created unprecedented demand for capable hardware ~\cite{sanders2010cuda, kirk2016programming}. Graphics-related tasks like shading, rasterization, and texture mapping require a massive number of floating-point operations per second (FLOPS), far exceeding what general-purpose central processing units (CPU) could deliver. Companies like NVIDIA and ATI Technologies (later acquired by AMD) emerged as front-runners in the GPU industry \cite{sanders2010cuda}.
 
 Graphics-related tasks presented a unique computational challenge: they required massive parallelism rather than fast sequential processing. This led GPU designers to optimize for throughput rather than latency. \emph{Latency} denotes the time between the start and completion of a single event, while \emph{throughput} measures the total amount of work performed in a given time \cite{hennessy2011computer}. These fundamental metrics are widely used in computing performance-related contexts. Hennessy and Patterson \cite{hennessy2011computer} demonstrate that while both CPUs and GPUs have improved in both dimensions, throughput improvements have significantly outpaced latency improvements. This disparity reflects fundamental constraints: throughput can be increased by adding more processing units. Reducing latency, however, requires making individual processing units faster, which is approaching theoretical limits imposed by the laws of physics~\cite{hennessy2011computer, sanders2010cuda}. Suomela's analysis of clock speed and instruction latency trends corroborate these observations \cite{suomela_ppc}. This, along with the parallel nature of graphics-related computation, led to the exceptionally throughput-optimized GPU architectures of today.
 
 As GPU architectures evolved, researchers and developers increasingly sought to utilize their parallel computing power for non-graphics applications. Early GPUs were, however, not designed for general-purpose computing. The hardware lacked flexibility, and no suitable programming tools existed. Developers were forced to mask their problems as graphics operations \cite{sanders2010cuda, kirk2016programming}. NVIDIA transformed this landscape in 2007 when they released CUDA (Compute Unified Device Architecture), a software abstraction layer that exposed GPU hardware capabilities through familiar C/C++ extensions. Developers could now write parallel programs directly without disguising them as pixel operations. Today, general-purpose GPU (GPGPU) applications span diverse fields, including computational finance \cite{sanders2010cuda, kirk2016programming}.
 
 \subsection{CPU and GPU Architecture}
- \cref{fig:cpu-gpu-architecture} presents a simple architectural diagram of a modern CPU and GPU. The CPU diagram is based on the writings of Stallings~\cite{stallings2011operating}, while the GPU diagram is derived from both the work of Kirk and Hwu~\cite{kirk2016programming} and the CUDA C++ Programming Guide by NVIDIA~\cite{cuda2025guide}.
-
  \begin{figure}[tbp]
   \centering
   \begin{tikzpicture}
@@ -513,7 +510,7 @@ As GPU architectures evolved, researchers and developers increasingly sought to 
   \label{fig:cpu-gpu-architecture}
 \end{figure}
 
-The CPU contains several key components working together. The arithmetic logic unit is responsible for performing computational operations on data. Registers (not visible in the figure) store instructions, data, and memory addresses. Additional control units manage program flow and coordination with external components. The CPU executes programs in a two-step fetch-execute cycle. First, an instruction is fetched from memory and loaded into a register. The instruction is then executed, which in practice means either data processing, data transfer, or control flow operations. This cycle repeats until the program terminates, either by completing successfully, encountering an error, or being interrupted by another component.
+\cref{fig:cpu-gpu-architecture} presents a simple architectural diagram of a modern CPU and GPU. The CPU contains several key components working together. The arithmetic logic unit is responsible for performing computational operations on data. Registers (not visible in the figure) store instructions, data, and memory addresses. Additional control units manage program flow and coordination with external components. The CPU executes programs in a two-step fetch-execute cycle. First, an instruction is fetched from memory and loaded into a register. The instruction is then executed, which in practice means either data processing, data transfer, or control flow operations. This cycle repeats until the program terminates, either by completing successfully, encountering an error, or being interrupted by another component.
 
 CPUs have evolved to leverage multiple forms of parallelism. Instruction-level parallelism refers to a set of techniques to improve performance by executing multiple independent instructions simultaneously or in overlapping stages \cite{hennessy2011computer, suomela_ppc}. These techniques range from instruction pipelining and superscalar execution, which process multiple instructions concurrently, to out-of-order execution and branch prediction, which maximize pipeline utilization and anticipate control flow.
 
@@ -573,16 +570,16 @@ Using these graphs, Acar \cite{acar2016parallel} defines the \emph{work} of an a
 \vspace{0.5\baselineskip}
 \noindent\textbf{Work-limited lower bound $T_p \geq T_1/p$.} $p$ processors can perform at most $p$ operations in parallel, even if there are no dependencies. This highlights hardware constraints.
 
-\vspace{\baselineskip}
+\vspace{0.5\baselineskip}
 \noindent Furthermore, Acar demonstrates that for both level-by-level and \mbox{greedy scheduling}\footnote{Level-by-level scheduling assigns nodes to processors by a level-order traversal of the DAG. This can leave processors idle if the number of nodes per level does not evenly divide the number of processors. In contrast, greedy scheduling minimizes idle time by immediately assigning available nodes to idle processors.} the upper bound is within a factor 2 of the lower bound, again highlighting the importance of minimizing span and providing sufficient resources \cite{acar2016parallel}. In practice, runtime analysis is often more complex due to factors such as varying instruction latencies, parallelization overhead, and synchronization and shared resource contention.
 \clearpage
 
 \section{GPU Acceleration of the Cox-Ross-Rubinstein Binomial Model} \label{sec:gpu-crr}
-The Cox-Ross-Rubinstein (CRR) model \cite{cox1979option} extends the single-period setting into its multi-period counterpart, providing a more realistic model of asset price evolution. The model maintains the same assumptions as before: discrete periods and constant multiplicative factors $u$ and $d$ for price movements. Over multiple periods, this creates a binomial lattice of possible price paths. This lattice expands outward from the initial stock price, generating a set of final states for the stock price and the corresponding option payoff.
+The Cox-Ross-Rubinstein (CRR) model \cite{cox1979option} extends the single-period model in \cref{fig:oneperiodbinom} into its multi-period counterpart, providing a more realistic model of asset price evolution. The model maintains the same assumptions as before: discrete periods and constant multiplicative factors $u$ and $d$ for price movements. Over multiple periods, this creates a binomial lattice of possible price paths. This lattice expands outward from the initial stock price, generating a set of final states for the stock price and the corresponding option payoff.
 
 The CRR model solves for the initial option value using backward induction. Starting at the terminal nodes, where option payoffs are calculated using \cref{eq:long_call_payoff,eq:long_put_payoff}, the algorithm works backward through the lattice. Each interior node is treated as a single-period problem, with option values calculated using \cref{eq:risk-neutral-expectancy}. \cref{fig:crr-twoperiod} visualizes a two-period lattice, though the model extends to any number of periods.
 
-\begin{figure}[tbp]
+\begin{figure}[bp]
     \centering
     \begin{tikzpicture}[
         scale=1.3,
@@ -621,7 +618,7 @@ The CRR model solves for the initial option value using backward induction. Star
         \caption{Two-period binomial lattice. Stock prices evolve over time, creating an expanding set of possible outcomes. Option payoffs are calculated at the terminal nodes, after which option values at interior nodes can be calculated using \cref{eq:risk-neutral-expectancy}. The symbols $C_{i,j}$ represent the algorithmic notation for the option values, where $i$ indexes time and $j$ the number of up-ticks the stock price has moved.}
     \label{fig:crr-twoperiod}
 \end{figure}
-Cox, Ross, and Rubinstein defined $u = e^{\sigma\sqrt{T/n}}$ and $d = e^{-\sigma\sqrt{T/n}}$, where $\sigma$ is the annualized volatility of the asset's log-returns, $T$ is the total time in years, and $n$ is the number of periods \cite{cox1979option}. They show this to be useful for several reasons. First, it ensures the model converges to the famous Black-Scholes-Merton (BSM) model as $n \rightarrow \infty$. Second, the lattice recombines --- permutations of a price path reach the same node. This maintains computational feasibility as the number of states grows linearly with $n$ instead of exponentially. Additionally, the discount rate must be adjusted for $n$ such that it matches that of the one-period example. The continuous rate $e^{rT/n}$ is typically used instead of discrete compounding \cite{hull2018}.
+Cox, Ross, and Rubinstein define $u = e^{\sigma\sqrt{T/n}}$ and $d = e^{-\sigma\sqrt{T/n}}$, where $\sigma$ is the annualized volatility of the asset's log-returns, $T$ is the total time in years, and $n$ is the number of periods \cite{cox1979option}. They show this to be useful for several reasons. First, it ensures the model converges to the famous Black-Scholes-Merton (BSM) model as $n \rightarrow \infty$. Second, the lattice recombines --- permutations of a price path reach the same node. This maintains computational feasibility as the number of states grows quadratically with $n$ instead of exponentially. Additionally, the discount rate must be adjusted for $n$ such that it matches that of the one-period example. The continuous rate $e^{rT/n}$ is typically used instead of discrete compounding \cite{hull2018}.
 
 The following pseudocode is based on the implementation by Clewlow and Strickland \cite{clewlow1998implementing}. Let $S_0$ be the initial stock price and $n$ the number of periods. The nodes of the recombining lattice are indexed by $(i,j)$, where $0 \leq i \leq n$ indexes time\footnote{A period denotes an interval between two discrete points in time, hence for $n$ periods we have $n+1$ time points from $0$ to $n$.} and $0 \le j \le i$ the number of up-ticks $j$ the stock price has moved. The stock price at each node is defined as $S_{i,j} = S_0u^jd^{i-j}$, and $C_{i,j}$ denotes the corresponding option value. \cref{alg:crr-european} calculates the option value at current time $C_{0,0}$.
 
@@ -688,7 +685,7 @@ The parallel implementation does not redesign the algorithm in any way, but simp
         \foreach \j in {0,...,\i} {
             \pgfmathsetmacro\y{\j*2-\i}
             \ifnum\i=4
-                \node[circle, draw, minimum size=7mm, fill=gray!40] (n\i\j) at (\i*2,\y) {};
+                \node[circle, draw, minimum size=7mm, fill=gray!60] (n\i\j) at (\i*2,\y) {};
             \else
                 \ifnum\i=3
                     \node[circle, draw, minimum size=7mm, fill=gray!20] (n\i\j) at (\i*2,\y) {};
@@ -712,8 +709,7 @@ The parallel implementation does not redesign the algorithm in any way, but simp
         }
     }
     
-    % Highlight one time column
-    \fill[blue!20, opacity=0.5] (3.5,-2.5) rectangle (4.5,2.5);
+ 
 
     
     \node[blue, font=\footnotesize] at (4,-2) {T0};
@@ -743,7 +739,7 @@ where $j$ indexes the nodes at time $i-m$, and the coefficients $c_k, 0 \leq k \
 
 Based on this insight, the authors presented the following parallel algorithm \cite{ganesan2009acceleration}: First, divide the $n$-period lattice into $p$ partitions of length $n/p$. Each partition then computes coefficients relating the nodes at its left boundary to the ones at its right boundary. These independent operations proceed in parallel across all partitions. Once the coefficients are computed, the option values can be propagated from right to left across partition boundaries using \cref{eq:relative-prices}. This requires only $p$ sequential steps rather than $n$\footnote{While the authors claimed this method extends to American options, they provided insufficient detail on how early exercise opportunities are evaluated when intermediate nodes are computed after the main propagation phase.}. \cref{fig:partitioned} illustrates the idea.
 
-\begin{figure}[tbp]
+\begin{figure}[tb]
     \centering
     \includegraphics[scale=0.8]{External Images/CRRpartitioned.png}
     \caption{Partitioned Cox-Ross-Rubinstein (CRR) algorithm for parallel computation across time. The binomial lattice is divided into partitions. Within each partition, coefficients relating nodes at left and right boundaries are computed in parallel. Once coefficients are computed, option values propagate sequentially from right to left across partition boundaries, skipping many intermediate values. The rightmost partition can alternatively compute option values directly using standard backward induction, as is done in the figure. Reproduced with permission from the authors~\cite{ganesan2009acceleration}.}
@@ -757,9 +753,9 @@ The total work remains $O(n^2)$ since every node must still be processed, either
 \section{GPU Acceleration of Monte Carlo Methods} \label{sec:gpu-mc}
 Monte Carlo (MC) methods are a class of computational algorithms that approximate solutions to problems through random sampling. Unlike analytical solutions and deterministic numerical methods, both of which rely on domain-specific mathematical theory, MC methods are relatively simple and broadly applicable across many domains. The theoretical foundation is the \emph{law of large numbers}, which states that the sample average tends toward the true expected value with increasing sample size~\cite{Ross2020prob}. Therefore, with a well-chosen sampling distribution whose expectation matches the target quantity, the average of a large number of simulated outcomes provides a reliable approximation of the solution.
 
-While true random number generation is difficult, there exist many so-called pseudorandom number generators (RNGs) whose deterministic sequences are statistically indistinguishable from true randomness. Most RNGs first generate samples from a uniform distribution $U(0,1)$, and then apply a transformation to map these to the desired distribution. The Box-Muller transform, for instance, converts uniform samples to normally distributed values: $U(0,1) \rightarrow N(0,1)$ \cite{gentle2003random}.
+While true random number generation is difficult, there exist many so-called pseudorandom number generators (PRNGs) whose deterministic sequences are statistically indistinguishable from true randomness. Most PRNGs first generate samples from a uniform distribution $U(0,1)$, and then apply a transformation to map these to the desired distribution. The Box-Muller transform, for instance, converts uniform samples to normally distributed values: $U(0,1) \rightarrow N(0,1)$ \cite{gentle2003random}.
 
-Many software libraries provide RNGs for various distributions. Combined with affordable computing power, this has driven widespread adoption of MC methods across different domains. However, their generality comes at a significant computational cost. While analytical and deterministic methods exploit problem-specific structure for faster convergence, MC methods typically require many iterations to achieve accuracy. Nevertheless, MC methods excel at high-dimensional problems where traditional approaches fail or become exceedingly slow \cite{gentle2003random}. In derivatives pricing, MC methods are mostly applied to exotic options with complex payoff structures, for example basket options whose payoffs depend on numerous underlying assets~\cite{hull2018,wilmott2013paul}.
+Many software libraries provide PRNGs for various distributions. Combined with affordable computing power, this has driven widespread adoption of MC methods across different domains. However, their generality comes at a significant computational cost. While analytical and deterministic methods exploit problem-specific structure for faster convergence, MC methods typically require many iterations to achieve accuracy. Nevertheless, MC methods excel at high-dimensional problems where traditional approaches fail or become exceedingly slow \cite{gentle2003random}. In derivatives pricing, MC methods are mostly applied to exotic options with complex payoff structures, for example basket options whose payoffs depend on numerous underlying assets~\cite{hull2018,wilmott2013paul}.
 
 MC option pricing relies on the same risk-neutral valuation framework presented in \cref{sec:risk-neutral-theory}. While the BSM model solves a partial differential equation analytically for the expected discounted payoff, the MC approach estimates this value by averaging many simulated option payoffs, each computed from a risk-neutral stock price path~\cite{boyle1977options}. This estimate converges toward the theoretical value as the number of simulations increases.
 
@@ -811,16 +807,16 @@ $C_0 \gets e^{-rT} \cdot \frac{C_{\text{sum}}}{M}$\;
 \subsection{Naive GPU-acceleration}
 MC simulation is considered an \emph{embarrassingly parallel} problem --- each path is independent, allowing straightforward parallelization without further redesign. By a similar argument as earlier, the work of the algorithm therefore equals the sequential time complexity $O(m \cdot (n+p))$. The span is $O(n+p)$, assuming an infinite-processor machine that can simulate all $m$ paths in parallel.
 
-Instead, the primary challenge becomes generating independent random numbers across threads. Naive parallelization can produce correlated number sequences between threads, violating the independence assumption of MC simulation. Effective implementations must therefore partition the RNG state space to ensure statistical independence across all threads \cite{gentle2003random}. Early GPU implementations, like the one by Howes and Thomas \cite{nguyen2007gpu}, had to manually construct such generators. Today, GPU libraries like cuRAND \cite{curand2025} provide parallel RNGs as standard functionality, eliminating the need for manual implementation.
+Instead, the primary challenge becomes generating independent random numbers across threads. Naive parallelization can produce correlated number sequences between threads, violating the independence assumption of MC simulation. Effective implementations must therefore partition the PRNG state space to ensure statistical independence across all threads \cite{gentle2003random}. Early GPU implementations, like the one by Howes and Thomas \cite{nguyen2007gpu}, had to manually construct such generators. Today, GPU libraries like cuRAND \cite{curand2025} provide parallel PRNGs as standard functionality, eliminating the need for manual implementation.
 
 Howes and Thomas \cite{nguyen2007gpu} benchmarked GPU-accelerated MC option pricing using an Nvidia GeForce 8 GPU and quad-core AMD Opteron 2.2 GHz CPU. They achieved a 26x speedup for random number generation alone, with overall speedups of 59x for Asian options and 23x for a variant of lookback options. These results show that even fairly naive GPU implementations of the early days (2007) achieved substantial speedups over multi-core CPU versions, despite the inherent challenges of parallel random number generation. When isolating the simulation-related computations (using constants instead of random numbers), speedups reached 118x and 45x respectively. This indicates that random number generation becomes the dominant bottleneck in GPU implementations. 
 
-The choice of random number generator often depends on the option type and memory constraints, as some option payoffs require storing intermediate values in memory. In this example, the sum for the mean calculation in the Asian option can be accumulated in a single variable, leading to minimal memory requirements. This enabled the use of the faster Wallace RNG, which could not be used in the pricing of more memory-intensive variant of lookback options that needed to store entire price paths.
+The choice of random number generator often depends on the option type and memory constraints, as some option payoffs require storing intermediate values in memory. In this example, the sum for the mean calculation in the Asian option can be accumulated in a single variable, leading to minimal memory requirements. This enabled the use of the faster but more memory-intensive Wallace PRNG, which could not be used in the pricing of this variant of lookback options that needed to store entire price paths.
 
 \subsection{Further Hardware Optimization}
-Unlike the CRR algorithm, where reformulation was necessary to expose hidden parallelism, MC simulation presents a fundamentally different optimization challenge. The parallelism is already fully exposed at the algorithmic level --- each simulation path is independent, requiring no communication or synchronization with other paths. This embarrassingly parallel structure means that further speedups must instead come from efficiently mapping this parallelism onto GPU hardware. While variance reduction techniques and quasi-random number generation can improve convergence rates \cite{clewlow1998implementing}, they benefit all implementations equally and are thus not relevant. Instead, GPU-specific optimizations focus on mitigating hardware constraints: efficient random number generation, memory access patterns and resource utilization. 
+Unlike the CRR algorithm, where reformulation was necessary to expose hidden parallelism, MC simulation presents a fundamentally different optimization challenge. The parallelism is already fully exposed at the algorithmic level --- each simulation path is independent, requiring no communication or synchronization with other paths. This embarrassingly parallel structure means that further speedups must instead come from efficiently mapping this parallelism onto GPU hardware. While variance reduction techniques and quasi-random number generation can improve convergence rates \cite{clewlow1998implementing}, they benefit all implementations equally and are thus not relevant for the comparison with the naive version. Instead, GPU-specific optimizations focus on mitigating hardware constraints: efficient random number generation, memory access patterns and resource utilization. 
 
-Liu et al.\ \cite{liu2010efficient} demonstrated several hardware-specific optimizations for GPU-accelerated MC option pricing, focusing on memory access inefficiencies and resource underutilization. The first optimization was to compress the working set, that is the amount of memory each thread must keep track of during simulation, to minimize expensive global memory access. The extent to which this was achievable heavily depended on the option type and choice of RNG. Memory bandwidth bottlenecks were addressed through coalesced access patterns, where adjacent threads access contiguous memory locations that can be fetched simultaneously. Register pressure presented another challenge. GPUs have limited registers per streaming multiprocessor, so implementations requiring many registers per thread reduce the number of concurrent threads. The authors proposed splitting the work into smaller GPU kernels\footnote{A GPU kernel is a function executed in parallel by many threads} responsible for separate sub-tasks. While this reduces register pressure, it comes at a cost of additional global memory transfers between kernels. Together, these optimizations achieved a 43x speedup for exotic option pricing on an Nvidia Tesla C1060 GPU compared to an Intel 8-core Xeon 2.0 GHz CPU.
+Liu et al.\ \cite{liu2010efficient} demonstrated several hardware-specific optimizations for GPU-accelerated MC option pricing, focusing on memory access inefficiencies and resource underutilization. The first optimization was to compress the working set, that is the amount of memory each thread must keep track of during simulation, to minimize expensive global memory access. The extent to which this was achievable heavily depended on the option type and choice of PRNG. Memory bandwidth bottlenecks were addressed through coalesced access patterns, where adjacent threads access contiguous memory locations that can be fetched simultaneously. Register pressure presented another challenge. GPUs have limited registers per streaming multiprocessor, so implementations requiring many registers per thread reduce the number of concurrent threads. The authors proposed splitting the work into smaller GPU kernels\footnote{A GPU kernel is a function executed in parallel by many threads} responsible for separate sub-tasks. While this reduces register pressure, it comes at a cost of additional global memory transfers between kernels. Together, these optimizations achieved a 43x speedup for exotic option pricing on an Nvidia Tesla C1060 GPU compared to an Intel 8-core Xeon 2.0 GHz CPU.
 
 The authors also examined two different execution strategies for large workloads, where a single thread computed multiple stock price paths. In ``path mode'', the thread computed its assigned paths sequentially from start to finish. This minimized memory usage and suited homogeneous workloads, like simulating paths for the same option. In ``slice mode'', the thread instead simulated one step at a time for all its price paths. This was more memory intensive as intermediary data was stored for all the paths. On the other hand, slice mode handled heterogeneous workloads better, for example simultaneous pricing of different options. If these options have different maturities, some path simulations will finish earlier than others, leading to warp divergence \cite{liu2010efficient}. Slice mode organized the computations to minimize the associated overhead cost. \cref{fig:gpu-divergence} depicts the different execution modes and their effect on divergence. While GPU architectures have evolved significantly since the paper was published in 2010, the underlying tradeoffs between memory usage and thread utilization remain central to high-performance MC implementations.
 
@@ -957,10 +953,10 @@ Optimized & 43x\tnote{4} & Memory coalescing, register reuse, warp divergence mi
 \section{Derivation of Risk-Neutral Probability Form}  % For 
 \label{appendix:risk_neutral_derivation}
 
-In this appendix, I derive the risk-neutral probability form of the one-period binomial model option pricing formula.
+In this appendix, I derive the risk-neutral probability form of the one-period binomial model option pricing formula from \eqref{eq:replicating-portfolio}.
 
 \begin{align}
-&\text{Starting from \eqref{eq:replicating-portfolio}:} \nonumber\\[0.7em]
+\nonumber\\[0.7em]
 &\frac{f_u - f_d}{S_0(u-d)}S_0 + \frac{f_d \cdot u-f_u \cdot d}{(u-d)(1+r)} \nonumber\\[0.7em]
 &=\frac{f_u - f_d}{u-d} + \frac{f_d \cdot u-f_u \cdot d}{(u-d)(1+r)} \nonumber\\[0.7em]
 &=\frac{(f_u - f_d)(1+r)}{(u-d)(1+r)} + \frac{f_d \cdot u - f_u \cdot d}{(u-d)(1+r)} \nonumber\\[0.7em]
@@ -970,6 +966,6 @@ In this appendix, I derive the risk-neutral probability form of the one-period b
 &= \frac{1}{1+r} \left( f_u \cdot \frac{(1+r) - d}{u-d} + f_d \cdot \frac{u - (1+r)}{u-d} \right)\nonumber
 \end{align}
 
-This reveals the risk-neutral probabilities: $\tilde p = \frac{(1+r) - d}{u-d}$ and \mbox{$\tilde q=1-\tilde p = \frac{u - (1+r)}{u-d}$}. The no-arbitrage condition ensures $\tilde p$ and $\tilde q$ are correctly bounded by 0 and 1. If $1+r > u$, investors could profit by shorting the stock and investing in the risk-free asset. Conversely, if $d > 1+r$, they could earn guaranteed profits. Therefore, $d \leq 1+r \leq u$ must hold, which leads to $0\leq \tilde p, \tilde q \leq 1$. Furthermore, $\tilde p + \tilde q = 1$. Thus, our risk-neutral probabilities form a valid probability distribution over the two possible outcomes.
+This reveals the risk-neutral probabilities: $\tilde p = \frac{(1+r) - d}{u-d}$ and \mbox{$\tilde q=1-\tilde p = \frac{u - (1+r)}{u-d}$}. The no-arbitrage condition ensures $\tilde p$ and $\tilde q$ are inclusively bounded by 0 and 1. If $1+r > u$, investors could profit by shorting the stock and investing in the risk-free asset. Conversely, if $d > 1+r$, they could earn guaranteed profits. Therefore, $d \leq 1+r \leq u$ must hold, which leads to $0\leq \tilde p, \tilde q \leq 1$. Furthermore, $\tilde p + \tilde q = 1$. Thus, our risk-neutral probabilities form a valid probability distribution over the two possible outcomes.
 
 \end{document}
