@@ -179,7 +179,7 @@ The results indicate substantial performance improvements for both algorithms, w
 \department{Högskolan för teknikvetenskaper}%
 \professorship{?}  %
 %% Abstract keywords
-\keywords{option pricing, options, GPU, GPU acceleration, parallel computing, computational finance}
+\keywords{optionsprissättning, optioner, GPU, GPU-acceleration, parallell beräkning, computational finance}
 %% Abstract text
 \begin{abstractpage}[swedish]
 Digitaliseringen av värdepappersmarknader har skapat en enorm efterfrågan på beräkningssnabbhet inom prissättning, handel och hedging. Detta är speciellt relevant för optioner och andra komplexa derivatinstrument som ofta värderas genom beräkningsintensiva numeriska metoder. Dessa krav har motiverat användningen av grafikkort (GPU) för optionsprissättning. GPU:er utvecklades ursprungligen för grafikrelaterad beräkning, men används idag för många olika beräkningsintensiva problem.
@@ -287,7 +287,7 @@ due to the zero-sum nature of the contract \cite{hull2018}.\footnote{For America
     \begin{tikzpicture}[scale=1.4, >=stealth]
         \fill[gray!10] (2,-1.5) -- (6,-1.5) -- (6,4) -- (2,4) -- cycle;
         \fill[gray!20] (0,-1.5) -- (2,-1.5) -- (2,4) -- (0,4) -- cycle;
-        \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt, align=center] {$S_T$ (€)};
+        \draw[->] (0,0) -- (6,0) node[below,xshift=-20,yshift=-2pt, align=center] {\small$S_T$ (€)};
         \draw[->] (0,-1.5) -- (0,4) node[above] {\small Profit (€)};
         \draw[dashed] (2,0) -- (2,-0.8) node[above, yshift=35] {\large$K$};
         \draw[line width=1.5pt, blue] (0,-0.8) -- (2,-0.8) -- (6,4);
@@ -297,13 +297,13 @@ due to the zero-sum nature of the contract \cite{hull2018}.\footnote{For America
         \node[gray!60] at (3,1.5) {\small \textbf{ITM}};
         \node[gray!60] at (1,1.5) {\small \textbf{OTM}};
     \end{tikzpicture}
-    \caption{Profit diagram for the long position in a call option. $K$ = strike price, \mbox{$S_T$ = spot price} at exercise, $p$ = premium. The buyer pays a premium to secure the right to purchase stock at price $K$. When $S_T < K$, the option is out of the money (OTM) and expires worthless with profit $-p$. When $S_T > K$, the option is in the money (ITM) and is exercised: the buyer purchases stock for $K$ to sell at $S_T$. The position becomes profitable only when $S_T - K > p$.}
+    \caption{Profit diagram for the long position in a call option. $K$ denotes the strike price, \mbox{$S_T$ the spot price} at exercise, and $p$ the premium. The buyer pays a premium to secure the right to purchase the stock at $K$. When $S_T < K$, the option is out of the money (OTM) and expires worthless with profit $-p$. When $S_T > K$, the option is in the money (ITM) and is exercised. The buyer purchases stock at the strike price to sell at the spot price. The position becomes profitable only when $S_T - K > p$.}
     \label{fig:long_call_payoff}
     \vspace{0.8cm}
     \begin{tikzpicture}[scale=1.4, >=stealth]
         \fill[gray!10] (2,-3) -- (6,-3) -- (6,2) -- (2,2) -- cycle;
         \fill[gray!20] (0,-3) -- (2,-3) -- (2,2) -- (0,2) -- cycle;
-        \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt, align=center] {$S_T$ (€)};
+        \draw[->] (0,0) -- (6,0) node[below,xshift=-20,yshift=-2pt, align=center] {\small$S_T$ (€)};
         \draw[->] (0,-3) -- (0,2) node[above] {\small Profit (€)};
         \draw[dashed] (2,0) -- (2,0.8) node[below, yshift=-35] {\large$K$};
         \draw[line width=1.5pt, red] (0,0.8) -- (2,0.8) -- (6,-3);
@@ -313,7 +313,7 @@ due to the zero-sum nature of the contract \cite{hull2018}.\footnote{For America
         \node[gray!60] at (1,-1.5) {\small \textbf{OTM}};
         \node[gray!60] at (3,-1.5) {\small \textbf{ITM}};
     \end{tikzpicture}
-    \caption{Profit diagram for the short position in a call option. $K$ = strike price, $S_T$ = spot price at exercise, $p$ = premium. The writer receives a premium for the obligation to sell stock at price $K$. When $S_T < K$, the option is out of the money (OTM) and expires worthless. As it is not exercised, the writer retains the full premium $p$ as profit. When $S_T > K$, the option is in the money (ITM) and is exercised: the writer is forced to sell the stock at the strike price $K$ despite the higher spot price $S_T$. The profit decreases linearly with $S_T$, becoming negative once $S_T - K > p$.}
+    \caption{Profit diagram for the short position in a call option. $K$ denotes the strike price, $S_T$ the spot price at exercise, and $p$ the premium. The writer receives a premium for the obligation to sell the stock at $K$. When $S_T < K$, the option is out of the money (OTM) and expires worthless. As it is not exercised, the writer retains the full premium as profit. When $S_T > K$, the option is in the money (ITM) and is exercised. The writer is forced to sell the stock at the strike price despite the higher spot price. The profit decreases linearly, becoming negative \mbox{once $S_T - K > p$.}}
     \label{fig:short_call_payoff}
 \end{figure}
 
@@ -327,7 +327,7 @@ A put option buyer pays a premium upfront to secure the right to sell stock at t
 \begin{tikzpicture}[>=stealth]
     \fill[gray!20] (4,-1.5) -- (6,-1.5) -- (6,4) -- (4,4) -- cycle;
     \fill[gray!10] (0,-1.5) -- (4,-1.5) -- (4,4) -- (0,4) -- cycle;
-    \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt] {$S_T$ (€)};
+    \draw[->] (0,0) -- (6,0) node[below,xshift=-20,yshift=0pt] {\small$S_T$ (€)};
     \draw[->] (0,-1.5) -- (0,4) node[above] {Profit (€)};
     \draw[dashed] (4,0) -- (4,-0.8) node[above,yshift=25] {\large$K$};
     \draw[line width=1.5pt, blue] (0,4) -- (4,-0.8) -- (6,-0.8);
@@ -347,7 +347,7 @@ A put option buyer pays a premium upfront to secure the right to sell stock at t
 \begin{tikzpicture}[>=stealth]
     \fill[gray!20] (4,-3) -- (6,-3) -- (6,2.5) -- (2,2.5) -- cycle;
     \fill[gray!10] (0,-3) -- (4,-3) -- (4,2.5) -- (0,2.5) -- cycle;
-    \draw[->] (0,0) -- (6,0) node[below,xshift=-25,yshift=-2pt] {$S_T$ (€)};
+    \draw[->] (0,0) -- (6,0) node[below,xshift=-20,yshift=0pt] {\small$S_T$ (€)};
     \draw[->] (0,-3) -- (0,2.5) node[above] {Profit (€)};
     \draw[dashed] (4,0) -- (4,0.8) node[below,yshift=-25] {\large$K$};
     \draw[line width=1.5pt, red] (0,-3) -- (4,0.8) -- (6,0.8);
@@ -360,7 +360,7 @@ A put option buyer pays a premium upfront to secure the right to sell stock at t
 }
 \caption{Short put position}
 \end{subfigure}
-\caption{Profit diagrams for long (a) and short (b) positions in a put option. \mbox{$K$ = strike price}, $S_T$ = spot price at exercise, $p$ = premium. (a) The buyer pays the premium $p$ for the right to sell stock at strike price $K$. When $S_T < K$, the option is in the money (ITM) and is exercised. The position profits when $K - S_T > p$. When $S_T > K$, the option is out of the money (OTM) and expires worthless with \mbox{loss $-p$}. (b) The writer receives premium $p$ for the obligation to buy at price $K$. When ITM, the writer must purchase at the strike price $K$ despite the lower spot price $S_T$. When OTM, the option expires worthless and the writer keeps the premium $p$. The position becomes unprofitable when $K - S_T > p$.}
+\caption{Profit diagrams for long (a) and short (b) positions in a put option. $K$ denotes the strike price, $S_T$ the spot price at exercise, and $p$ the premium. \mbox{(a) The buyer} pays the premium for the right to sell stock at $K$. When $S_T < K$, the option is in the money (ITM) and is exercised. The position profits when $K - S_T > p$. When $S_T > K$, the option is out of the money (OTM) and expires worthless with loss $-p$. (b) The writer receives the premium for the obligation to purchase the \mbox{stock at $K$}. When ITM, the writer must purchase at the strike price despite the lower spot price. When OTM, the option expires worthless and the writer keeps the premium. The position becomes unprofitable when $K - S_T > p$.}
 \label{fig:put_option_payoffs}
 \end{figure}
 
@@ -381,7 +381,7 @@ The buyer of an option is never obligated to exercise, and the loss is therefore
 
 \begin{table}[!htb]
 \centering
-\caption{Extreme-case upside and downside potential for different option positions. \mbox{$p$ = premium}, $K$ = strike price. The long position in a call option has unlimited upside potential due to theoretically unbounded underlying asset prices, with losses limited to the premium paid. The corresponding short position inverts this behavior with unlimited downside risk. Put options have bounded payoffs as asset prices cannot fall below zero. The maximum gain for a long put position is $K-p$ when the spot price reaches zero, and the maximum loss for the corresponding short position is $-(K-p) = p-K$.}\label{tab:options_table}
+\caption{Extreme-case upside and downside potential for different option positions. \mbox{$p$ denotes} the premium, and $K$ the strike price. The long position in a call option has unlimited upside potential due to theoretically unbounded underlying asset prices, with losses limited to the premium paid. The corresponding short position inverts this behavior with unlimited downside risk. Put options have bounded payoffs as asset prices cannot fall below zero. The maximum gain for a long put position is $K-p$ when the spot price reaches zero, and the maximum loss for the corresponding short position is $p-K$.}\label{tab:options_table}
 \begin{tabular}{|l|p{5cm}|p{5cm}|}
 \hline
 \textbf{} & \textbf{Call Option} & \textbf{Put Option} \\
